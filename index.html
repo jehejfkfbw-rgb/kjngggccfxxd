@@ -2,27 +2,95 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>متجر فلاش ستور - Flash Store للشحن الفوري</title>
     <style>
-        body { background-color: #0f172a; color: #fff; font-family: Tahoma, sans-serif; text-align: center; padding: 20px; }
-        .container { max-width: 800px; margin: auto; }
-        .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .tab-btn { background: #334155; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; }
+        * { box-sizing: border-box; }
+        body { 
+            background-color: #0f172a; 
+            color: #fff; 
+            font-family: Tahoma, sans-serif; 
+            text-align: center; 
+            padding: 10px; 
+            margin: 0; 
+        }
+        .container { max-width: 850px; margin: auto; padding: 15px; }
+        
+        .store-header {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid #334155;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        h1 { color: #f59e0b; margin: 0 0 10px 0; font-size: 26px; }
+        p { color: #94a3b8; margin: 0; font-size: 14px; }
+
+        .tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { 
+            background: #334155; 
+            color: white; 
+            border: none; 
+            padding: 10px 18px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 14px; 
+            transition: 0.3s; 
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .tab-btn img { width: 22px; height: 22px; border-radius: 4px; object-fit: cover; }
         .tab-btn.active, .tab-btn:hover { background: #f59e0b; color: #0f172a; }
         
         .game-section { display: none; }
         .game-section.active { display: block; }
         
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .card { background: #1e293b; padding: 15px; border-radius: 12px; border: 1px solid #334155; box-shadow: 0 4px 6px rgba(0,0,0,0.3); text-align: right; }
-        .price { color: #22c55e; font-size: 20px; font-weight: bold; margin: 5px 0; text-align: center; }
-        .title { color: #38bdf8; font-size: 18px; font-weight: bold; text-align: center; }
-        button { background: #22c55e; color: white; border: none; padding: 10px; font-size: 15px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; margin-top: 5px; }
-        button:hover { background: #16a34a; }
-        input { padding: 10px; margin: 5px 0; width: 100%; box-sizing: border-box; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: #fff; font-size: 14px; }
+        .card { 
+            background: #1e293b; 
+            padding: 15px; 
+            border-radius: 12px; 
+            border: 1px solid #334155; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3); 
+            text-align: right; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+        .card-img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; border: 1px solid #475569; }
+        .card-info { flex-grow: 1; }
+        .title { color: #38bdf8; font-size: 16px; font-weight: bold; margin: 0; }
+        .price { color: #22c55e; font-size: 18px; font-weight: bold; margin: 2px 0 0 0; }
+        
+        input { 
+            padding: 10px; 
+            margin: 8px 0; 
+            width: 100%; 
+            border-radius: 8px; 
+            border: 1px solid #475569; 
+            background: #0f172a; 
+            color: #fff; 
+            font-size: 14px; 
+        }
         input:focus { border-color: #22c55e; outline: none; }
-        h1 { color: #f59e0b; margin-bottom: 5px; }
-        p { color: #94a3b8; margin-bottom: 25px; }
+        
+        button.buy-btn { 
+            background: #22c55e; 
+            color: white; 
+            border: none; 
+            padding: 10px; 
+            font-size: 15px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            width: 100%; 
+            transition: 0.3s; 
+        }
+        button.buy-btn:hover { background: #16a34a; }
         
         @media(max-width: 600px) {
             .grid { grid-template-columns: 1fr; }
@@ -31,133 +99,222 @@
 </head>
 <body>
     <div class="container">
-        <h1>⚡ متجر فلاش ستور - Flash Store ⚡</h1>
-        <p>اختار لعبتك المفضلة، حدد الباقة، واكتب الـ ID لاطلب الآن!</p>
-
-        <!-- أزرار التنقل بين الألعاب -->
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchGame('pubg', this)">🎮 ببجي موبايل (UC)</button>
-            <button class="tab-btn" onclick="switchGame('freefire', this)">🔥 فري فاير (جواهر)</button>
-            <button class="tab-btn" onclick="switchGame('efootball', this)">⚽ بيس eFootball</button>
-            <button class="tab-btn" onclick="switchGame('fc', this)">⚽ إي إيه إف سي (FC)</button>
+        <div class="store-header">
+            <h1>⚡ متجر فلاش ستور - Flash Store ⚡</h1>
+            <p>اختر لعبتك المفضلة، حدد الباقة، واكتب الـ ID الخاص بك للطلب الفوري عبر الواتساب</p>
         </div>
 
-        <!-- قسم ببجي موبايل (مضاف 10 جنيه ربح) -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchGame('pubg', this)">
+                <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=100" alt="PUBG"> ببجي موبايل
+            </button>
+            <button class="tab-btn" onclick="switchGame('freefire', this)">
+                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=100" alt="Free Fire"> فري فاير
+            </button>
+            <button class="tab-btn" onclick="switchGame('efootball', this)">
+                <img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=100" alt="eFootball"> بيس eFootball
+            </button>
+            <button class="tab-btn" onclick="switchGame('fc', this)">
+                <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=100" alt="FC Mobile"> فيفا FC
+            </button>
+        </div>
+
+        <!-- قسم ببجي موبايل -->
         <div id="pubg" class="game-section active">
             <div class="grid">
                 <div class="card">
-                    <div class="title">UC 30 + 60</div>
-                    <div class="price">57.99 جنيه</div>
+                    <div class="card-header">
+                        <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=150" class="card-img" alt="UC">
+                        <div class="card-info">
+                            <div class="title">UC 30 + 60 هدية</div>
+                            <div class="price">57.99 جنيه</div>
+                        </div>
+                    </div>
                     <input type="text" id="id_pubg_1" placeholder="اكتب الـ ID الخاص بك">
-                    <button type="button" onclick="sendOrder('ببجي موبايل - 60 UC', '57.99 جنيه', 'id_pubg_1')">اطلب الآن 📲</button>
+                    <button class="buy-btn" onclick="sendOrder('ببجي موبايل - 60 UC', '57.99 جنيه', 'id_pubg_1')">اطلب الآن 📲</button>
                 </div>
                 <div class="card">
-                    <div class="title">UC 30</div>
-                    <div class="price">33.99 جنيه</div>
+                    <div class="card-header">
+                        <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=150" class="card-img" alt="UC">
+                        <div class="card-info">
+                            <div class="title">UC 30 أساسي</div>
+                            <div class="price">33.99 جنيه</div>
+                        </div>
+                    </div>
                     <input type="text" id="id_pubg_2" placeholder="اكتب الـ ID الخاص بك">
-                    <button type="button" onclick="sendOrder('ببجي موبايل - 30 UC', '33.99 جنيه', 'id_pubg_2')">اطلب الآن 📲</button>
+                    <button class="buy-btn" onclick="sendOrder('ببجي موبايل - 30 UC', '33.99 جنيه', 'id_pubg_2')">اطلب الآن 📲</button>
                 </div>
                 <div class="card">
-                    <div class="title">UC 300 + 1500</div>
-                    <div class="price">1209.99 جنيه</div>
+                    <div class="card-header">
+                        <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=150" class="card-img" alt="UC">
+                        <div class="card-info">
+                            <div class="title">UC 300 + 1500</div>
+                            <div class="price">1209.99 جنيه</div>
+                        </div>
+                    </div>
                     <input type="text" id="id_pubg_3" placeholder="اكتب الـ ID الخاص بك">
-                    <button type="button" onclick="sendOrder('ببجي موبايل - 1800 UC', '1209.99 جنيه', 'id_pubg_3')">اطلب الآن 📲</button>
+                    <button class="buy-btn" onclick="sendOrder('ببجي موبايل - 1800 UC', '1209.99 جنيه', 'id_pubg_3')">اطلب الآن 📲</button>
                 </div>
                 <div class="card">
-                    <div class="title">UC 3000 + 850</div>
-                    <div class="price">2409.99 جنيه</div>
+                    <div class="card-header">
+                        <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=150" class="card-img" alt="UC">
+                        <div class="card-info">
+                            <div class="title">UC 3000 + 850</div>
+                            <div class="price">2409.99 جنيه</div>
+                        </div>
+                    </div>
                     <input type="text" id="id_pubg_4" placeholder="اكتب الـ ID الخاص بك">
-                    <button type="button" onclick="sendOrder('ببجي موبايل - 3850 UC', '2409.99 جنيه', 'id_pubg_4')">اطلب الآن 📲</button>
+                    <button class="buy-btn" onclick="sendOrder('ببجي موبايل - 3850 UC', '2409.99 جنيه', 'id_pubg_4')">اطلب الآن 📲</button>
                 </div>
             </div>
         </div>
 
-        <!-- قسم فري فاير (مضاف 10 جنيه ربح) -->
+        <!-- قسم فري فاير -->
         <div id="freefire" class="game-section">
             <div class="grid">
                 <div class="card">
-                    <div class="title">💎 210 جوهرة</div>
-                    <div class="price">125 جنيه</div>
+                    <div class="card-header">
+                        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=150" class="card-img" alt="Diamonds">
+                        <div class="card-info">
+                            <div class="title">💎 210 جوهرة</div>
+                            <div class="price">125 جنيه</div>
+                        </div>
+                    </div>
                     <input type="text" id="id_ff_1" placeholder="اكتب الـ ID الخاص بك">
-                    <button type="button" onclick="sendOrder('فري فاير - 210 جوهرة', '125 جنيه', 'id_ff_1')">اطلب الآن 📲</button>
+                    <button class="buy-btn" onclick="sendOrder('فري فاير - 210 جوهرة', '125 جنيه', 'id_ff_1')">اطلب الآن 📲</button>
                 </div>
                 <div class="card">
-                    <div class="title">💎 310 جوهرة</div>
-                    <div class="price">180 جنيه</div>
+                    <div class="card-header">
+                        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=150" class="card-img" alt="Diamonds">
+                        <div class="card-info">
+                            <div class="title">💎 310 جوهرة</div>
+                            <div class="price">180 جنيه</div>
+                        </div>
+                    </div>
                     <input type="text" id="id_ff_2" placeholder="اكتب الـ ID الخاص بك">
-                    <button type="button" onclick="sendOrder('فري فاير - 310 جوهرة', '180 جنيه', 'id_ff_2')">اطلب الآن 📲</button>
+                    <button class="buy-btn" onclick="sendOrder('فري فاير - 310 جوهرة', '180 جنيه', 'id_ff_2')">اطلب الآن 📲</button>
                 </div>
                 <div class="card">
-                    <div class="title">💎 520 جوهرة</div>
-                    <div class="price">290 جنيه</div>
+                    <div class="card-header">
+                        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=150" class="card-img" alt="Diamonds">
+                        <div class="card-info">
+                            <div class="title">💎 520 جوهرة</div>
+                            <div class="price">290 جنيه</div>
+                        </div>
+                    </div>
                     <input type="text" id="id_ff_3" placeholder="اكتب الـ ID الخاص بك">
-                    <button type="button" onclick="sendOrder('فري فاير - 520 جوهرة', '290 جنيه', 'id_ff_3')">اطلب الآن 📲</button>
+                    <button class="buy-btn" onclick="sendOrder('فري فاير - 520 جوهرة', '290 جنيه', 'id_ff_3')">اطلب الآن 📲</button>
                 </div>
                 <div class="card">
-                    <div class="title">💎 1,060 جوهرة</div>
-                    <div class="price">550 جنيه</div>
+                    <div class="card-header">
+                        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=150" class="card-img" alt="Diamonds">
+                        <div class="card-info">
+                            <div class="title">💎 1,060 جوهرة</div>
+                            <div class="price">550 جنيه</div>
+                        </div>
+                    </div>
                     <input type="text" id="id_ff_4" placeholder="اكتب الـ ID الخاص بك">
-                    <button type="button" onclick="sendOrder('فري فاير - 1,060 جوهرة', '550 جنيه', 'id_ff_4')">اطلب الآن 📲</button>
+                    <button class="buy-btn" onclick="sendOrder('فري فاير - 1,060 جوهرة', '550 جنيه', 'id_ff_4')">اطلب الآن 📲</button>
                 </div>
             </div>
         </div>
 
-        <!-- قسم بيس eFootball (مضاف 10 جنيه ربح) -->
+        <!-- قسم بيس eFootball -->
         <div id="efootball" class="game-section">
             <div class="grid">
                 <div class="card">
-                    <div class="title">🪙 eFootball™ Coin 137</div>
-                    <div class="price">74.99 جنيه</div>
+                    <div class="card-header">
+                        <img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=150" class="card-img" alt="Coins">
+                        <div class="card-info">
+                            <div class="title">🪙 eFootball™ 137 Coin</div>
+                            <div class="price">74.99 جنيه</div>
+                        </div>
+                    </div>
                     <input type="text" id="id_pes_1" placeholder="اكتب الـ ID / الايميل">
-                    <button type="button" onclick="sendOrder('بيس - 137 Coin', '74.99 جنيه', 'id_pes_1')">اطلب الآن 📲</button>
+                    <button class="buy-btn" onclick="sendOrder('بيس - 137 Coin', '74.99 جنيه', 'id_pes_1')">اطلب الآن 📲</button>
                 </div>
                 <div class="card">
-                    <div class="title">🪙 eFootball™ Coin 315</div>
-                    <div class="price">159.00 جنيه</div>
+                    <div class="card-header">
+                        <img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=150" class="card-img" alt="Coins">
+                        <div class="card-info">
+                            <div class="title">🪙 eFootball™ 315 Coin</div>
+                            <div class="price">159.00 جنيه</div>
+                        </div>
+                    </div>
                     <input type="text" id="id_pes_2" placeholder="اكتب الـ ID / الايميل">
-                    <button type="button" onclick="sendOrder('بيس - 315 Coin', '159.00 جنيه', 'id_pes_2')">اطلب الآن 📲</button>
+                    <button class="buy-btn" onclick="sendOrder('بيس - 315 Coin', '159.00 جنيه', 'id_pes_2')">اطلب الآن 📲</button>
                 </div>
                 <div class="card">
-                    <div class="title">🪙 eFootball™ Coin 788</div>
-                    <div class="price">359.99 جنيه</div>
+                    <div class="card-header">
+                        <img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=150" class="card-img" alt="Coins">
+                        <div class="card-info">
+                            <div class="title">🪙 eFootball™ 788 Coin</div>
+                            <div class="price">359.99 جنيه</div>
+                        </div>
+                    </div>
                     <input type="text" id="id_pes_3" placeholder="اكتب الـ ID / الايميل">
-                    <button type="button" onclick="sendOrder('بيس - 788 Coin', '359.99 جنيه', 'id_pes_3')">اطلب الآن 📲</button>
+                    <button class="buy-btn" onclick="sendOrder('بيس - 788 Coin', '359.99 جنيه', 'id_pes_3')">اطلب الآن 📲</button>
                 </div>
                 <div class="card">
-                    <div class="title">🪙 eFootball™ Coin 2237</div>
-                    <div class="price">959.99 جنيه</div>
+                    <div class="card-header">
+                        <img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=150" class="card-img" alt="Coins">
+                        <div class="card-info">
+                            <div class="title">🪙 eFootball™ 2237 Coin</div>
+                            <div class="price">959.99 جنيه</div>
+                        </div>
+                    </div>
                     <input type="text" id="id_pes_4" placeholder="اكتب الـ ID / الايميل">
-                    <button type="button" onclick="sendOrder('بيس - 2237 Coin', '959.99 جنيه', 'id_pes_4')">اطلب الآن 📲</button>
+                    <button class="buy-btn" onclick="sendOrder('بيس - 2237 Coin', '959.99 جنيه', 'id_pes_4')">اطلب الآن 📲</button>
                 </div>
             </div>
         </div>
 
-        <!-- قسم فيفا FC Mobile (مضاف 10 جنيه ربح) -->
+        <!-- قسم فيفا FC Mobile -->
         <div id="fc" class="game-section">
             <div class="grid">
                 <div class="card">
-                    <div class="title">⚡ معزز الويب اليومي A</div>
-                    <div class="price">59.99 جنيه</div>
+                    <div class="card-header">
+                        <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=150" class="card-img" alt="FC Mobile">
+                        <div class="card-info">
+                            <div class="title">⚡ معزز الويب اليومي A</div>
+                            <div class="price">59.99 جنيه</div>
+                        </div>
+                    </div>
                     <input type="text" id="id_fc_1" placeholder="اكتب الـ ID / المعرف">
-                    <button type="button" onclick="sendOrder('فيفا - معزز A', '59.99 جنيه', 'id_fc_1')">اطلب الآن 📲</button>
+                    <button class="buy-btn" onclick="sendOrder('فيفا - معزز A', '59.99 جنيه', 'id_fc_1')">اطلب الآن 📲</button>
                 </div>
                 <div class="card">
-                    <div class="title">⚡ معزز الويب اليومي B</div>
-                    <div class="price">89.99 جنيه</div>
+                    <div class="card-header">
+                        <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=150" class="card-img" alt="FC Mobile">
+                        <div class="card-info">
+                            <div class="title">⚡ معزز الويب اليومي B</div>
+                            <div class="price">89.99 جنيه</div>
+                        </div>
+                    </div>
                     <input type="text" id="id_fc_2" placeholder="اكتب الـ ID / المعرف">
-                    <button type="button" onclick="sendOrder('فيفا - معزز B', '89.99 جنيه', 'id_fc_2')">اطلب الآن 📲</button>
+                    <button class="buy-btn" onclick="sendOrder('فيفا - معزز B', '89.99 جنيه', 'id_fc_2')">اطلب الآن 📲</button>
                 </div>
                 <div class="card">
-                    <div class="title">⚡ معزز الويب اليومي C</div>
-                    <div class="price">209.99 جنيه</div>
+                    <div class="card-header">
+                        <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=150" class="card-img" alt="FC Mobile">
+                        <div class="card-info">
+                            <div class="title">⚡ معزز الويب اليومي C</div>
+                            <div class="price">209.99 جنيه</div>
+                        </div>
+                    </div>
                     <input type="text" id="id_fc_3" placeholder="اكتب الـ ID / المعرف">
-                    <button type="button" onclick="sendOrder('فيفا - معزز C', '209.99 جنيه', 'id_fc_3')">اطلب الآن 📲</button>
+                    <button class="buy-btn" onclick="sendOrder('فيفا - معزز C', '209.99 جنيه', 'id_fc_3')">اطلب الآن 📲</button>
                 </div>
                 <div class="card">
-                    <div class="title">⚡ معزز الويب اليومي D</div>
-                    <div class="price">259.99 جنيه</div>
+                    <div class="card-header">
+                        <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=150" class="card-img" alt="FC Mobile">
+                        <div class="card-info">
+                            <div class="title">⚡ معزز الويب اليومي D</div>
+                            <div class="price">259.99 جنيه</div>
+                        </div>
+                    </div>
                     <input type="text" id="id_fc_4" placeholder="اكتب الـ ID / المعرف">
-                    <button type="button" onclick="sendOrder('فيفا - معزز D', '259.99 جنيه', 'id_fc_4')">اطلب الآن 📲</button>
+                    <button class="buy-btn" onclick="sendOrder('فيفا - معزز D', '259.99 جنيه', 'id_fc_4')">اطلب الآن 📲</button>
                 </div>
             </div>
         </div>
@@ -172,19 +329,17 @@
         }
 
         function sendOrder(packageName, packagePrice, idFieldId) {
-            let gameId = document.getElementById(idFieldId).value;
+            let gameId = document.getElementById(idFieldId).value.trim();
 
             if (!gameId) {
                 alert("من فضلك اكتب الـ ID الخاص بك أولاً!");
                 return;
             }
 
-            // رقم واتسابك ومفتاح الـ CallMeBot
             let phone = "201102464297";
             let apikey = "2586712";
 
             let message = `طلب جديد عبر Flash Store:%0A- الباقة: ${packageName}%0A- السعر: ${packagePrice}%0A- الـ ID: ${gameId}`;
-
             let url = `https://api.callmebot.com/whatsapp.php?phone=${phone}&text=${message}&apikey=${apikey}`;
 
             fetch(url)
@@ -193,7 +348,7 @@
                     document.getElementById(idFieldId).value = "";
                 })
                 .catch(error => {
-                    alert("حدث خطأ، حاول مرة أخرى.");
+                    alert("حدث خطأ أثناء الإرسال، حاول مرة أخرى.");
                 });
         }
     </script>
