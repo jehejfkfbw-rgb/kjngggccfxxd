@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سينما لايت برو | CimaLight Pro Ultimate</title>
+    <title>سينما لايت برو | CimaLight Pro Social</title>
     <style>
         :root {
             --bg-main: #0b0f19;
@@ -28,7 +28,6 @@
             background-image: radial-gradient(circle at 50% 0%, #1a0507 0%, var(--bg-main) 70%);
         }
 
-        /* رأس الصفحة الفخم */
         header {
             background: var(--bg-glass);
             backdrop-filter: blur(12px);
@@ -74,7 +73,6 @@
 
         .container { max-width: 1350px; margin: 30px auto; padding: 0 25px; }
 
-        /* بانر الترحيب السينمائي */
         .hero {
             background: linear-gradient(135deg, rgba(229,9,20,0.2) 0%, rgba(11,15,25,0.8) 100%), url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1200&q=80') center/cover;
             padding: 60px 40px;
@@ -86,18 +84,10 @@
             overflow: hidden;
         }
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(to top, var(--bg-main), transparent);
-        }
-
         .hero-content { position: relative; z-index: 2; max-width: 600px; }
         .hero h1 { font-size: 38px; font-weight: 900; margin-bottom: 12px; line-height: 1.2; }
         .hero p { font-size: 16px; color: var(--text-muted); margin-bottom: 20px; }
 
-        /* أدوات التحكم والبحث */
         .controls-bar {
             display: flex;
             justify-content: space-between;
@@ -121,13 +111,6 @@
             border-radius: 12px;
             color: white;
             font-size: 14px;
-            transition: var(--transition);
-        }
-
-        .search-box input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 10px var(--accent-glow);
-            outline: none;
         }
 
         .filter-select {
@@ -138,12 +121,8 @@
             color: white;
             font-weight: 600;
             cursor: pointer;
-            transition: var(--transition);
         }
 
-        .filter-select:focus { border-color: var(--accent); outline: none; }
-
-        /* شبكة عرض الفيديوهات */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -159,7 +138,6 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         .card:hover {
@@ -178,17 +156,13 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.5s ease;
         }
-
-        .card:hover img { transform: scale(1.05); }
 
         .card-badge {
             position: absolute;
             top: 12px;
             right: 12px;
             background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
             padding: 5px 12px;
             border-radius: 20px;
             font-size: 11px;
@@ -229,16 +203,12 @@
             box-shadow: 0 4px 15px var(--accent-glow);
         }
 
-        .btn:hover {
-            background: var(--accent-hover);
-            transform: scale(1.02);
-        }
+        .btn:hover { background: var(--accent-hover); transform: scale(1.02); }
+        .btn-danger { background: #dc2626 !important; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4) !important; }
 
-        /* الأقسام المخفية والظاهرة */
         .section { display: none; }
         .section.active { display: block; }
 
-        /* مشغل الفيديو السينمائي */
         .player-container {
             background-color: var(--bg-card);
             padding: 30px;
@@ -246,14 +216,6 @@
             margin-top: 30px;
             border: 1px solid var(--border-color);
             box-shadow: 0 15px 40px rgba(0,0,0,0.7);
-            animation: fadeIn 0.4s ease;
-        }
-
-        .player-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
         }
 
         video {
@@ -264,7 +226,27 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.8);
         }
 
-        /* لوحة التحكم الفخمة */
+        .comments-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .comment-box {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+            background: rgba(255,255,255,0.03);
+            padding: 12px;
+            border-radius: 10px;
+            align-items: flex-start;
+        }
+
+        .comment-box img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+        .comment-body { flex-grow: 1; }
+        .comment-author { font-weight: bold; font-size: 13px; margin-bottom: 3px; display: flex; justify-content: space-between; }
+        .comment-text { font-size: 13px; color: var(--text-muted); }
+
         .form-box {
             background-color: var(--bg-card);
             padding: 40px;
@@ -272,7 +254,6 @@
             max-width: 650px;
             margin: 20px auto;
             border: 1px solid var(--border-color);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .form-group { margin-bottom: 22px; }
@@ -286,13 +267,6 @@
             color: white;
             border-radius: 10px;
             font-size: 14px;
-            transition: var(--transition);
-        }
-
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 10px var(--accent-glow);
-            outline: none;
         }
 
         .alert {
@@ -302,21 +276,20 @@
             font-weight: bold;
             text-align: center;
             display: none;
-            animation: shake 0.4s ease;
         }
         .alert-error { background-color: rgba(229, 9, 20, 0.2); border: 1px solid var(--accent); color: #ff8085; }
         .alert-success { background-color: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #4ade80; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.08);
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 13px;
         }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
+        .user-pill img { width: 28px; height: 28px; border-radius: 50%; }
     </style>
 </head>
 <body>
@@ -325,20 +298,22 @@
         <div class="logo" onclick="switchSection('home')">
             <span>🎬</span> CimaLight Pro
         </div>
-        <nav>
+        <nav style="display: flex; align-items: center; gap: 15px;">
             <a onclick="switchSection('home')" id="nav-home" class="active">الرئيسية</a>
             <a onclick="switchSection('admin')" id="nav-admin">لوحة المطور</a>
+            <div id="auth-nav-container">
+                <button class="btn" style="padding: 8px 18px; font-size: 13px;" onclick="simulateGoogleLogin()">تسجيل الدخول بـ Google</button>
+            </div>
         </nav>
     </header>
 
     <div class="container">
         
-        <!-- قسم الرئيسية -->
         <div id="home-section" class="section active">
             <div class="hero">
                 <div class="hero-content">
-                    <h1>عالم السينما بين يديك</h1>
-                    <p>استمتع بمشاهدة أحدث الأفلام والمسلسلات بجودة سينمائية فائقة السرعة وبدون إعلانات مزعجة.</p>
+                    <h1>عالم السينما التفاعلي</h1>
+                    <p>شاهد، تفاعل، أعجب بالعمل، واكتب رأيك بحرية كاملة مع مجتمع عشاق السينما.</p>
                 </div>
             </div>
 
@@ -356,16 +331,32 @@
             <div id="video-grid" class="grid"></div>
 
             <div id="player-section" class="player-container" style="display: none;">
-                <div class="player-header">
+                <div class="player-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2 id="player-title" style="font-size: 22px;"></h2>
-                    <button class="btn" style="width: auto; padding: 6px 15px; background: #334155;" onclick="closePlayer()">إغلاق المشغل ✕</button>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn" id="like-btn" onclick="toggleLike()" style="background: #334155; width: auto; padding: 6px 15px;">👍 <span id="like-count">0</span></button>
+                        <button class="btn" style="width: auto; padding: 6px 15px; background: #334155;" onclick="closePlayer()">إغلاق المشغل ✕</button>
+                    </div>
                 </div>
-                <video id="main-video-player" controls autoplay></video>
+                <video id="main-video-player" controls></video>
                 <p id="player-desc" style="margin-top: 15px; color: var(--text-muted); line-height: 1.6;"></p>
+                
+                <!-- قسم التعليقات -->
+                <div class="comments-section">
+                    <h3 style="margin-bottom: 15px; font-size: 16px;">💬 تعليقات المشاهدين</h3>
+                    <div id="comments-list"></div>
+                    
+                    <div id="comment-input-area" style="margin-top: 15px; display: none;">
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="new-comment-text" placeholder="اكتب تعليقك باحترام..." style="flex-grow: 1; padding: 12px; background: var(--bg-main); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
+                            <button class="btn" style="width: auto; padding: 0 20px;" onclick="postComment()">إرسال</button>
+                        </div>
+                    </div>
+                    <p id="login-required-msg" style="color: #facc15; font-size: 13px; margin-top: 10px; display: none;">⚠️ يجب تسجيل الدخول بحساب جوجل لتتمكن من كتابة تعليق أو الإعجاب.</p>
+                </div>
             </div>
         </div>
 
-        <!-- قسم لوحة المطور -->
         <div id="admin-section" class="section">
             <div id="login-container" class="form-box">
                 <h2 style="margin-bottom: 20px; text-align: center;">تسجيل دخول المطور</h2>
@@ -383,21 +374,22 @@
 
             <div id="dashboard-container" style="display: none;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-                    <h2>🛠️ لوحة تحكم وإدارة المحتوى</h2>
+                    <h2>🛠️ لوحة تحكم وإدارة المحتوى والرقابة</h2>
                     <button class="btn" style="width: auto; background: #334155;" onclick="logoutAdmin()">تسجيل الخروج</button>
                 </div>
 
-                <div class="form-box" style="max-width: 100%;">
+                <!-- نموذج رفع فيديو جديد -->
+                <div class="form-box" style="max-width: 100%; margin-bottom: 30px;">
                     <div id="upload-alert" class="alert"></div>
-                    <h3 style="margin-bottom: 20px; color: var(--accent);">➕ إضافة فيديو جديد من جهازك</h3>
+                    <h3 style="margin-bottom: 20px; color: var(--accent);">➕ نشر فيلم أو مسلسل جديد</h3>
                     
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                         <div class="form-group">
-                            <label>عنوان الفيلم أو المسلسل:</label>
+                            <label>العنوان:</label>
                             <input type="text" id="v-title" placeholder="اكتب العنوان...">
                         </div>
                         <div class="form-group">
-                            <label>نوع المحتوى:</label>
+                            <label>النوع:</label>
                             <select id="v-type">
                                 <option value="فيلم">فيلم</option>
                                 <option value="مسلسل">مسلسل</option>
@@ -407,26 +399,32 @@
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                         <div class="form-group">
-                            <label>المدة بالدقائق (أقصى 120 دقيقة للأفلام):</label>
-                            <input type="number" id="v-duration" value="95" min="1" max="300">
+                            <label>المدة بالدقائق:</label>
+                            <input type="number" id="v-duration" value="100" min="1" max="300">
                         </div>
                         <div class="form-group">
-                            <label>اختر صورة الغلاف من جهازك:</label>
+                            <label>صورة الغلاف:</label>
                             <input type="file" id="v-thumb-file" accept="image/*">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>اختر ملف الفيديو من جهازك (MP4):</label>
+                        <label>ملف الفيديو (MP4):</label>
                         <input type="file" id="v-video-file" accept="video/mp4">
                     </div>
 
                     <div class="form-group">
-                        <label>وصف قصة العمل:</label>
-                        <textarea id="v-desc" rows="3" placeholder="تفاصيل أحداث الفيلم أو المسلسل..."></textarea>
+                        <label>وصف العمل:</label>
+                        <textarea id="v-desc" rows="3" placeholder="القصة..."></textarea>
                     </div>
                     
-                    <button class="btn" onclick="uploadNewVideo()">نشر العمل على المنصة فوراً</button>
+                    <button class="btn" onclick="uploadNewVideo()">نشر العمل فوراً</button>
+                </div>
+
+                <!-- إدارة وحظر المستخدمين والمحتوى -->
+                <div class="form-box" style="max-width: 100%;">
+                    <h3 style="margin-bottom: 20px; color: #facc15;">🛡️ إدارة المستخدمين وحظرهم والمحتوى المنشور</h3>
+                    <div id="admin-management-list"></div>
                 </div>
             </div>
         </div>
@@ -438,13 +436,18 @@
         const ADMIN_PASS = "cima2026password";
 
         let videos = JSON.parse(localStorage.getItem('cimapro_videos')) || [];
+        let bannedUsers = JSON.parse(localStorage.getItem('cimapro_banned')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('cimapro_current_user')) || null;
         let isAdminLoggedIn = localStorage.getItem('admin_logged') === 'true';
+        let currentPlayingId = null;
 
         window.onload = function() {
             renderVideos();
+            updateAuthUI();
             if (isAdminLoggedIn) {
                 document.getElementById('login-container').style.display = 'none';
                 document.getElementById('dashboard-container').style.display = 'block';
+                renderAdminManagement();
             }
         };
 
@@ -454,8 +457,65 @@
             
             document.getElementById(sectionId + '-section').classList.add('active');
             if(sectionId === 'home') document.getElementById('nav-home').classList.add('active');
-            if(sectionId === 'admin') document.getElementById('nav-admin').classList.add('active');
+            if(sectionId === 'admin') {
+                document.getElementById('nav-admin').classList.add('active');
+                if(isAdminLoggedIn) renderAdminManagement();
+            }
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // محاكاة تسجيل دخول جوجل الحقيقي للمستخدمين
+        function simulateGoogleLogin() {
+            // محاكاة اختيار حساب جوجل أو إدخال الاسم
+            let name = prompt("أدخل اسمك الكريم لتسجيل الدخول عبر Google:", "مستخدم سينما");
+            if (!name) return;
+
+            let email = name.toLowerCase().replace(/\s+/g, '') + '@gmail.com';
+
+            if (bannedUsers.includes(email)) {
+                alert("❌ عذراً، هذا الحساب محظور من الإدارة ولا يمكنه تسجيل الدخول.");
+                return;
+            }
+
+            currentUser = {
+                name: name,
+                email: email,
+                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}`
+            };
+
+            localStorage.setItem('cimapro_current_user', JSON.stringify(currentUser));
+            updateAuthUI();
+            if (currentPlayingId !== null) playVideo(currentPlayingId);
+            alert(`✅ مرحباً بك يا ${name}! تم تسجيل دخولك بنجاح.`);
+        }
+
+        function logoutUser() {
+            currentUser = null;
+            localStorage.removeItem('cimapro_current_user');
+            updateAuthUI();
+            if (currentPlayingId !== null) playVideo(currentPlayingId);
+        }
+
+        function updateAuthUI() {
+            const container = document.getElementById('auth-nav-container');
+            const commentArea = document.getElementById('comment-input-area');
+            const loginReqMsg = document.getElementById('login-required-msg');
+
+            if (currentUser) {
+                container.innerHTML = `
+                    <div class="user-pill">
+                        <img src="${currentUser.avatar}" alt="">
+                        <span>${currentUser.name}</span>
+                        <button onclick="logoutUser()" style="background:none; border:none; color:#ff8085; cursor:pointer; font-weight:bold; margin-right:5px;">خروج</button>
+                    </div>
+                `;
+                if(commentArea) commentArea.style.display = 'block';
+                if(loginReqMsg) loginReqMsg.style.display = 'none';
+            } else {
+                container.innerHTML = `<button class="btn" style="padding: 8px 18px; font-size: 13px;" onclick="simulateGoogleLogin()">تسجيل الدخول بـ Google</button>`;
+                if(commentArea) commentArea.style.display = 'none';
+                if(loginReqMsg) loginReqMsg.style.display = 'block';
+            }
         }
 
         function renderVideos() {
@@ -471,11 +531,12 @@
             });
 
             if (filtered.length === 0) {
-                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 50px; color: var(--text-muted);"><h3>لا توجد عروض مطابقة للبحث حالياً.</h3></div>`;
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 50px; color: var(--text-muted);"><h3>لا توجد عروض مطابقة حالياً.</h3></div>`;
                 return;
             }
 
             filtered.forEach(v => {
+                let likesCount = v.likes ? v.likes.length : 0;
                 grid.innerHTML += `
                     <div class="card">
                         <div class="card-img-container">
@@ -487,9 +548,9 @@
                             <p>${v.desc.substring(0, 80)}...</p>
                             <div class="card-meta">
                                 <span>⏱️ ${v.duration} دقيقة</span>
-                                <span style="color: #facc15;">⭐ 4.8 / 5</span>
+                                <span>👍 ${likesCount} إعجاب</span>
                             </div>
-                            <button class="btn" onclick="playVideo(${v.id})">مشاهدة الآن</button>
+                            <button class="btn" onclick="playVideo(${v.id})">مشاهدة وتفاعل</button>
                         </div>
                     </div>
                 `;
@@ -497,19 +558,107 @@
         }
 
         function playVideo(id) {
+            currentPlayingId = id;
             const v = videos.find(item => item.id === id);
             if (!v) return;
 
             const playerSection = document.getElementById('player-section');
             playerSection.style.display = 'block';
-            document.getElementById('player-title').innerText = `🎥 العرض الحالي: ${v.title}`;
+            document.getElementById('player-title').innerText = `🎥 ${v.title}`;
             document.getElementById('player-desc').innerText = v.desc;
             
             const player = document.getElementById('main-video-player');
             player.src = v.url;
-            player.play();
 
+            // تحديث زر الإعجاب
+            if(!v.likes) v.likes = [];
+            document.getElementById('like-count').innerText = v.likes.length;
+            if (currentUser && v.likes.includes(currentUser.email)) {
+                document.getElementById('like-btn').style.background = 'var(--accent)';
+            } else {
+                document.getElementById('like-btn').style.background = '#334155';
+            }
+
+            renderComments(v);
             playerSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function toggleLike() {
+            if (!currentUser) {
+                alert("⚠️ يرجى تسجيل الدخول بحساب جوجل أولاً لتتمكن من الإعجاب.");
+                return;
+            }
+            let v = videos.find(item => item.id === currentPlayingId);
+            if (!v) return;
+            if (!v.likes) v.likes = [];
+
+            let index = v.likes.indexOf(currentUser.email);
+            if (index > -1) {
+                v.likes.splice(index, 1);
+            } else {
+                v.likes.push(currentUser.email);
+            }
+
+            localStorage.setItem('cimapro_videos', JSON.stringify(videos));
+            playVideo(currentPlayingId);
+            renderVideos();
+        }
+
+        function renderComments(v) {
+            const list = document.getElementById('comments-list');
+            list.innerHTML = '';
+
+            if (!v.comments || v.comments.length === 0) {
+                list.innerHTML = `<p style="color: var(--text-muted); font-size: 13px;">لا توجد تعليقات بعد. كن أول من يعلق!</p>`;
+                return;
+            }
+
+            v.comments.forEach((c, idx) => {
+                let canDelete = isAdminLoggedIn || (currentUser && currentUser.email === c.userEmail);
+                list.innerHTML += `
+                    <div class="comment-box">
+                        <img src="${c.avatar}" alt="">
+                        <div class="comment-body">
+                            <div class="comment-author">
+                                <span>${c.userName}</span>
+                                ${canDelete ? `<button onclick="deleteComment(${v.id}, ${idx})" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:11px;">حذف</button>` : ''}
+                            </div>
+                            <div class="comment-text">${c.text}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function postComment() {
+            if (!currentUser) return;
+            let textInput = document.getElementById('new-comment-text');
+            let text = textInput.value.trim();
+            if (!text) return;
+
+            let v = videos.find(item => item.id === currentPlayingId);
+            if (!v) return;
+            if (!v.comments) v.comments = [];
+
+            v.comments.push({
+                userName: currentUser.name,
+                userEmail: currentUser.email,
+                avatar: currentUser.avatar,
+                text: text
+            });
+
+            localStorage.setItem('cimapro_videos', JSON.stringify(videos));
+            textInput.value = '';
+            renderComments(v);
+        }
+
+        function deleteComment(videoId, commentIndex) {
+            let v = videos.find(item => item.id === videoId);
+            if (!v || !v.comments) return;
+
+            v.comments.splice(commentIndex, 1);
+            localStorage.setItem('cimapro_videos', JSON.stringify(videos));
+            renderComments(v);
         }
 
         function closePlayer() {
@@ -517,6 +666,7 @@
             player.pause();
             player.src = '';
             document.getElementById('player-section').style.display = 'none';
+            currentPlayingId = null;
         }
 
         function loginAdmin() {
@@ -529,6 +679,7 @@
                 localStorage.setItem('admin_logged', 'true');
                 document.getElementById('login-container').style.display = 'none';
                 document.getElementById('dashboard-container').style.display = 'block';
+                renderAdminManagement();
             } else {
                 alertBox.style.display = 'block';
                 alertBox.className = 'alert alert-error';
@@ -546,66 +697,113 @@
         function uploadNewVideo() {
             const title = document.getElementById('v-title').value.trim();
             const type = document.getElementById('v-type').value;
-            const duration = parseInt(document.getElementById('v-duration').value);
+            const duration = parseInt(document.getElementById('v-duration').value) || 0;
             const thumbFile = document.getElementById('v-thumb-file').files[0];
             const videoFile = document.getElementById('v-video-file').files[0];
             const desc = document.getElementById('v-desc').value.trim();
             const alertBox = document.getElementById('upload-alert');
 
-            alertBox.style.display = 'none';
-
-            // الشرط البرمجي الصارم للأفلام (أقصى مدة 120 دقيقة)
-            if (type === 'فيلم' && duration > 120) {
-                alertBox.style.display = 'block';
-                alertBox.className = 'alert alert-error';
-                alertBox.innerText = '❌ شرط النظام يمنع نهائياً نشر أفلام تتجاوز مدتها ساعتين (120 دقيقة)!';
-                return;
-            }
-
             if (!title || !thumbFile || !videoFile) {
                 alertBox.style.display = 'block';
                 alertBox.className = 'alert alert-error';
-                alertBox.innerText = '⚠️ يرجى التأكد من كتابة العنوان واختيار صورة الغلاف وملف الفيديو من جهازك.';
+                alertBox.innerText = '⚠️ يرجى ملء كافة البيانات المطلوبة واختيار الملفات.';
                 return;
             }
+
+            alertBox.style.display = 'block';
+            alertBox.className = 'alert alert-success';
+            alertBox.innerText = '⏳ جاري رفع النشر المعالجة...';
 
             const readerThumb = new FileReader();
             const readerVideo = new FileReader();
 
             readerThumb.onload = function(e) {
                 const thumbResult = e.target.result;
-                
                 readerVideo.onload = function(ev) {
                     const videoResult = ev.target.result;
 
-                    const newVid = {
+                    videos.push({
                         id: Date.now(),
-                        title,
-                        type,
-                        duration,
+                        title, type, duration,
                         thumb: thumbResult,
                         url: videoResult,
-                        desc: desc || 'لا يوجد وصف متاح لهذا العمل حالياً.'
-                    };
+                        desc: desc || 'لا يوجد وصف.',
+                        likes: [],
+                        comments: []
+                    });
 
-                    videos.push(newVid);
                     localStorage.setItem('cimapro_videos', JSON.stringify(videos));
-
-                    alertBox.style.display = 'block';
-                    alertBox.className = 'alert alert-success';
-                    alertBox.innerText = `🎉 تم رفع ونشر "${title}" بنجاح على المنصة!`;
-
-                    // إعادة التعيين
+                    alertBox.innerText = `🎉 تم النشر بنجاح!`;
                     document.getElementById('v-title').value = '';
                     document.getElementById('v-thumb-file').value = '';
                     document.getElementById('v-video-file').value = '';
                     document.getElementById('v-desc').value = '';
-
                     renderVideos();
+                    renderAdminManagement();
                 };
                 readerVideo.readAsDataURL(videoFile);
             };
             readerThumb.readAsDataURL(thumbFile);
+        }
+
+        // لوحة التحكم الخاصة بالمدير لحذف أي فيديو أو حظر مستخدمين
+        function renderAdminManagement() {
+            const container = document.getElementById('admin-management-list');
+            container.innerHTML = '';
+
+            if (videos.length === 0) {
+                container.innerHTML = `<p style="color: var(--text-muted);">لا توجد فيديوهات منشورة حالياً للحذف.</p>`;
+                return;
+            }
+
+            let html = '<h4 style="margin-bottom: 10px;">إدارة الفيديوهات المنشورة (حذف أي فيديو):</h4><div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px;">';
+            videos.forEach(v => {
+                html += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-main); padding: 10px 15px; border-radius: 8px;">
+                        <span>🎬 ${v.title} (${v.type})</span>
+                        <button class="btn btn-danger" style="width: auto; padding: 6px 15px; font-size: 12px;" onclick="adminDeleteVideo(${v.id})">حذف نهائي</button>
+                    </div>
+                `;
+            });
+            html += '</div>';
+
+            // قسم الحظر
+            html += '<h4 style="margin-bottom: 10px;">إدارة حظر المستخدمين (بواسطة البريد):</h4>';
+            html += `
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <input type="text" id="ban-email-input" placeholder="اكتب البريد الإلكتروني للمستخدم المراد حظره..." style="flex-grow:p; padding: 10px; background: var(--bg-main); border: 1px solid var(--border-color); color:white; border-radius:8px;">
+                    <button class="btn btn-danger" style="width: auto;" onclick="banUserAction()">حظر المستخدم</button>
+                </div>
+            `;
+
+            if (bannedUsers.length > 0) {
+                html += '<p style="font-size: 13px; color: #ff8085; margin-top: 5px;">المستخدمون المحظورون حالياً: ' + bannedUsers.join(', ') + '</p>';
+            }
+
+            container.innerHTML = html;
+        }
+
+        function adminDeleteVideo(id) {
+            if (!confirm("هل أنت متأكد من حذف هذا الفيديو نهائياً من المنصة؟")) return;
+            videos = videos.filter(v => v.id !== id);
+            localStorage.setItem('cimapro_videos', JSON.stringify(videos));
+            renderVideos();
+            renderAdminManagement();
+            if (currentPlayingId === id) closePlayer();
+        }
+
+        function banUserAction() {
+            let emailInput = document.getElementById('ban-email-input');
+            let email = emailInput.value.trim().toLowerCase();
+            if (!email) return;
+
+            if (!bannedUsers.includes(email)) {
+                bannedUsers.push(email);
+                localStorage.setItem('cimapro_banned', JSON.stringify(bannedUsers));
+                alert(`🚫 تم حظر المستخدم ذو الإيميل: ${email} بنجاح.`);
+                emailInput.value = '';
+                renderAdminManagement();
+            }
         }
     </script>
 </body>
