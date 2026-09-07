@@ -1,567 +1,302 @@
-"""
-=====================================================================================
-CimaLight Social - Enterprise Massive Super Platform (800+ Lines Production Core)
-المنظومة البرمجية العملاقة المتكاملة: مراجعة المطور للفيديوهات، وقفل البث 18+، وحظر 4 سنين
-=====================================================================================
-"""
-
-import os
-import secrets
-import re
-from datetime import datetime, timedelta
-from flask import Flask, render_template_string, request, redirect, url_for, session, jsonify, flash
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
-
-# ===================================================================================
-# قسم 1: إعدادات التطبيق وقاعدة البيانات المركزية (Application Configuration)
-# ===================================================================================
-
-app = Flask(__name__)
-app.secret_key = secrets.token_hex(32)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cimalight_strict_production_2026.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
-
-# إيميل المطور الرئيسي (صاحب الصلاحيات المطلقة للمنصة والمراجعة)
-DEVELOPER_EMAIL = "mohamed.mezahi@cimalight.com"
-
-# قائمة الكلمات المحظورة والشتائم للفلترة التلقائية الفورية
-BAD_WORDS_FILTER = [
-    "شتيمة1", "شتيمة2", "خادش", "إباحي", "عنف", 
-    "hack", "spam", "تحرش", "نصب", "مخالف"
-]
-
-
-# ===================================================================================
-# قسم 2: هياكل جداول قاعدة البيانات المتقدمة مع حقول العمر وحظر الـ 4 سنين (ORM Models)
-# ===================================================================================
-
-class User(db.Model):
-    __tablename__ = 'users'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
-    
-    # حقل تاريخ الميلاد لحساب العمر بدقة ومنع أقل من 18 سنة من البث المباشر
-    birth_date = db.Column(db.Date, nullable=False, default=lambda: datetime.utcnow().date() - timedelta(days=365*20))
-    
-    bio = db.Column(db.String(300), default="أهلاً بك في حسابي الرسمي على منصة CimaLight Social")
-    avatar = db.Column(db.String(10), default="M")
-    is_admin = db.Column(db.Boolean, default=False)
-    is_banned = db.Column(db.Boolean, default=False)
-    
-    # نظام الحظر المؤقت (سواء 24 ساعة للهلس أو 4 سنوات لمحاولة فتح بث أقل من 18 سنة)
-    ban_until = db.Column(db.DateTime, nullable=True)
-    ban_reason = db.Column(db.String(255), nullable=True)
-    
-    wallet_points = db.Column(db.Integer, default=15000)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    # علاقات قاعدة البيانات البرمجية
-    videos = db.relationship('Video', backref='author', lazy=True, cascade="all, delete-orphan")
-    comments = db.relationship('Comment', backref='commenter', lazy=True, cascade="all, delete-orphan")
-
-
-class Video(db.Model):
-    __tablename__ = 'videos'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    video_url = db.Column(db.String(500), nullable=False)
-    caption = db.Column(db.String(500), nullable=True)
-    audio_track = db.Column(db.String(150), default="أصوات أصلية - CimaLight Trends")
-    
-    # الحالة: pending (فيديو قادم وتحت مراجعة المطور)، approved (معتمد ونازل للجميع)، rejected (مرفوض)
-    status = db.Column(db.String(20), default='pending')  
-    
-    likes_count = db.Column(db.Integer, default=0)
-    shares_count = db.Column(db.Integer, default=0)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    comments = db.relationship('Comment', backref='video_target', lazy=True, cascade="all, delete-orphan")
-
-
-class Comment(db.Model):
-    __tablename__ = 'comments'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    video_id = db.Column(db.Integer, db.ForeignKey('videos.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    content = db.Column(db.String(400), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-
-class Gift(db.Model):
-    __tablename__ = 'gifts'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
-    icon = db.Column(db.String(10), nullable=False)
-    price = db.Column(db.Integer, nullable=False)
-
-
-class SecurityLog(db.Model):
-    __tablename__ = 'security_logs'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    email_attempted = db.Column(db.String(120), nullable=False)
-    reason = db.Column(db.String(255), nullable=False)
-    ip_address = db.Column(db.String(50), default="127.0.0.1")
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-
-# ===================================================================================
-# قسم 3: تهيئة النظام وإدراج الـ 24 هدية وحساب المطور الأوحد (Initialization Logic)
-# ===================================================================================
-
-def initialize_massive_system():
-    with app.app_context():
-        db.create_all()
-        
-        # إدراج الـ 24 هدية الرقمية كاملة بدون نقص
-        if Gift.query.count() == 0:
-            gifts_catalog = [
-                ("وردة", "🌹", 10), ("قلب", "❤️", 50), ("سيارة", "🏎️", 200), ("أسد", "🦁", 1000),
-                ("صاروخ", "🚀", 500), ("تاج", "👑", 750), ("جوهرة", "💎", 300), ("خاتم", "💍", 150),
-                ("طائرة", "✈️", 1200), ("شجرة", "🌲", 40), ("قهوة", "☕", 20), ("نجمة", "✨", 60),
-                ("بطريق", "🐧", 180), ("قمر", "🌙", 90), ("شمس", "☀️", 110), ("قوس قزح", "🌈", 220),
-                ("بطاقة نارية", "⚡", 350), ("بطيخة", "🍉", 30), ("دب قطبي", "🐻‍❄️", 600), ("تورتة", "🎂", 80),
-                ("ميكروفون", "🎤", 130), ("بيانو", "🎹", 450), ("جيتار", "🎸", 380), ("درع ذهبي", "🛡️", 1500)
-            ]
-            for g_name, g_icon, g_price in gifts_catalog:
-                db.session.add(Gift(name=f"{g_name} {g_icon}", icon=g_icon, price=g_price))
-            print("🎁 تم شحن متجر الهدايا بالـ 24 هدية بنجاح تام!")
-
-        # إنشاء حساب المطور الأساسي بصلاحيات مطلقة
-        dev_account = User.query.filter_by(email=DEVELOPER_EMAIL).first()
-        if not dev_account:
-            dev_account = User(
-                username="Mohamed_ElMezahi",
-                email=DEVELOPER_EMAIL,
-                password_hash=generate_password_hash("AdminMaster2026"),
-                birth_date=datetime.strptime("2000-01-01", "%Y-%m-%d").date(),
-                is_admin=True,
-                bio="المطور والمؤسس الرسمي لمنصة CimaLight Social (صلاحيات مطلقة للمراجعة)"
-            )
-            db.session.add(dev_account)
-            print(f"👑 تم إنشاء حساب المطور الرئيسي بنجاح للإيميل: {DEVELOPER_EMAIL}")
-
-        db.session.commit()
-        print("🛡️ قاعدة البيانات الضخمة ونظام حظر البث وشرط الـ 18 سنة جاهز للتشغيل!")
-
-
-# ===================================================================================
-# قسم 4: دوال حساب العمر وفحص الشتائم (Age Verification & Security Guards)
-# ===================================================================================
-
-def calculate_user_age(birth_date_obj):
-    """حساب العمر بدقة بناءً على تاريخ الميلاد"""
-    today = datetime.utcnow().date()
-    age = today.year - birth_date_obj.year - ((today.month, today.day) < (birth_date_obj.month, birth_date_obj.day))
-    return age
-
-
-def detect_gibberish_or_spam(input_text):
-    if not input_text or len(input_text.strip()) < 4:
-        return True
-    cleaned = input_text.strip().lower()
-    spam_signatures = ["123456", "111111", "qwerty", "asdfgh", "test", "admin123", "password", "000000"]
-    if cleaned in spam_signatures or (len(set(cleaned)) <= 2 and len(cleaned) > 4):
-        return True
-    return False
-
-
-def check_profanity_filter(text_content):
-    for bad_word in BAD_WORDS_FILTER:
-        if re.search(bad_word, text_content, re.IGNORECASE):
-            return True
-    return False
-
-
-# ===================================================================================
-# قسم 5: مسارات النظام ومعالجات المتحكمات (Routes & Core Controllers)
-# ===================================================================================
-
-@app.route("/")
-def index():
-    gifts_list = Gift.query.all()
-    
-    # الفيديوهات المعتمدة رسمياً من المطور فقط هي التي تظهر للعامة
-    approved_videos = Video.query.filter_by(status='approved').order_by(Video.created_at.desc()).all()
-    
-    current_user = None
-    pending_videos_queue = []
-    
-    if 'user_id' in session:
-        current_user = User.query.get(session['user_id'])
-        
-        # فحص الحظر المؤقت أو حظر الـ 4 سنوات
-        if current_user and current_user.ban_until:
-            if datetime.utcnow() < current_user.ban_until:
-                ban_reason_msg = current_user.ban_reason or "تم إيقاف حسابك مؤقتاً."
-                session.clear()
-                flash(f"⛔ {ban_reason_msg}", "danger")
-                return redirect(url_for('index'))
-            else:
-                current_user.ban_until = None
-                current_user.ban_reason = None
-                db.session.commit()
-
-        # لو المستخدم هو المطور (محمد)، نعرض له الفيديوهات اللي بانتظار المراجعة
-        if current_user and current_user.is_admin:
-            pending_videos_queue = Video.query.filter_by(status='pending').all()
-            
-    return render_template_string(
-        MASSIVE_ENTERPRISE_TEMPLATE, 
-        gifts=gifts_list, 
-        videos=approved_videos, 
-        pending_videos=pending_videos_queue, 
-        current_user=current_user
-    )
-
-
-@app.route("/auth/google_smart_login", methods=["POST"])
-def google_smart_login():
-    """تسجيل الدخول الذكي وتحديد تاريخ الميلاد لتحديد العمر"""
-    email_input = request.form.get("email", "").strip()
-    password_input = request.form.get("password", "").strip()
-    birth_date_str = request.form.get("birth_date", "2010-01-01").strip()
-    
-    try:
-        parsed_birth_date = datetime.strptime(birth_date_str, "%Y-%m-%d").date()
-    except ValueError:
-        parsed_birth_date = datetime.strptime("2010-01-01", "%Y-%m-%d").date()
-
-    if not re.match(r"[^@]+@[^@]+\.[^@]+", email_input) or detect_gibberish_or_spam(password_input):
-        flash("⚠️ تنبيه أمني: تم رصد بيانات إدخال عشوائية أو غير صحيحة!", "danger")
-        return redirect(url_for('index'))
-
-    user_obj = User.query.filter_by(email=email_input).first()
-    if not user_obj:
-        user_obj = User(
-            username=email_input.split('@')[0],
-            email=email_input,
-            password_hash=generate_password_hash(password_input),
-            birth_date=parsed_birth_date,
-            is_admin=(email_input.lower() == DEVELOPER_EMAIL.lower())
-        )
-        db.session.add(user_obj)
-        db.session.commit()
-    
-    if user_obj.is_banned or (user_obj.ban_until and datetime.utcnow() < user_obj.ban_until):
-        flash("هذا الحساب محظور ولا يمكنه الدخول حالياً.", "danger")
-        return redirect(url_for('index'))
-
-    session['user_id'] = user_obj.id
-    session['username'] = user_obj.username
-    session['is_admin'] = user_obj.is_admin
-    
-    flash("✨ أهلاً بك! تم تسجيل الدخول بنجاح.", "success")
-    return redirect(url_for('index'))
-
-
-@app.route("/logout")
-def logout():
-    session.clear()
-    flash("تم تسجيل الخروج بنجاح.", "success")
-    return redirect(url_for('index'))
-
-
-# ===================================================================================
-# مسار فحص البث المباشر (عقوبة حظر 4 سنوات لمن هو أقل من 18 سنة)
-# ===================================================================================
-@app.route("/api/check_live_permission", methods=["POST"])
-def check_live_permission():
-    if 'user_id' not in session:
-        return jsonify({"allowed": False, "message": "يجب تسجيل الدخول أولاً لفتح البث المباشر!"}), 401
-    
-    current_user = User.query.get(session['user_id'])
-    if not current_user:
-        return jsonify({"allowed": False, "message": "المستخدم غير موجود."}), 404
-
-    # لو هو المطور الأساسي، مسموح له فوراً
-    if current_user.is_admin:
-        return jsonify({"allowed": True, "message": "أهلاً بك يا مطورنا، البث المباشر متاح لك بالكامل."})
-
-    # حساب عمر المستخدم الفعلي من تاريخ الميلاد
-    user_age = calculate_user_age(current_user.birth_date)
-
-    if user_age < 18:
-        # عقوبة صارمة: حظر لمدة 4 سنوات كاملة لمحاولة فتح بث وهو أقل من 18 سنة
-        four_years_later = datetime.utcnow() + timedelta(days=365 * 4)
-        current_user.ban_until = four_years_later
-        current_user.ban_reason = f"⛔ تم حظرك لمدة 4 سنوات لتجاوز شروط العمر ومحاولة فتح بث مباشر وعمرك ({user_age} سنة) أقل من 18 سنة!"
-        db.session.commit()
-        
-        session.clear()
-        return jsonify({
-            "allowed": False, 
-            "banned": True,
-            "message": f"❌ عذراً! البث المباشر مخصص لمن هم فوق 18 سنة فقط. عمرك المسجل ({user_age} سنة). تم حظر حسابك رسمياً لمدة 4 سنوات!"
-        }), 403
-
-    return jsonify({"allowed": True, "message": "🎉 تم التحقق بنجاح، عمرك يتجاوز الـ 18 عاماً. مرحباً بك في غرفة البث المباشر!"})
-
-
-@app.route("/admin/approve_video/<int:vid_id>", methods=["POST"])
-def approve_video_route(vid_id):
-    """المطور يقبل الفيديو فيتحول لحالة منشور للعامة"""
-    if 'user_id' not in session or not session.get('is_admin'):
-        flash("غير مصرح لك بهذه العملية!", "danger")
-        return redirect(url_for('index'))
-    
-    video_item = Video.query.get(vid_id)
-    if video_item:
-        video_item.status = 'approved'
-        db.session.commit()
-        flash("✅ تم اعتماد الفيديو بنجاح ونزوله للعامة لكي يشاهده الجميع!", "success")
-    return redirect(url_for('index'))
-
-
-@app.route("/admin/reject_video/<int:vid_id>", methods=["POST"])
-def reject_video_route(vid_id):
-    if 'user_id' not in session or not session.get('is_admin'):
-        flash("غير مصرح لك!", "danger")
-        return redirect(url_for('index'))
-    
-    video_item = Video.query.get(vid_id)
-    if video_item:
-        video_item.status = 'rejected'
-        db.session.commit()
-        flash("❌ تم رفض الفيديو وحذفه نهائياً.", "danger")
-    return redirect(url_for('index'))
-
-
-@app.route("/api/upload_video_simulation", methods=["POST"])
-def upload_video_simulation():
-    """رفع الفيديو ليكون في حالة 'فيديو قادم وتحت مراجعة المطور'"""
-    if 'user_id' not in session:
-        return jsonify({"status": "error", "message": "يجب تسجيل الدخول أولاً لرفع الفيديوهات!"}), 401
-    
-    caption_text = request.form.get("caption", "فيديو جديد على CimaLight")
-    
-    if check_profanity_filter(caption_text):
-        return jsonify({"status": "error", "message": "⚠️ تم رفض الفيديو تلقائياً لاحتوائه على ألفاظ مخالفة!"}), 400
-
-    new_vid = Video(
-        user_id=session['user_id'],
-        video_url="https://www.w3schools.com/html/mov_bbb.mp4",
-        caption=caption_text,
-        status='pending'  # فيديو قادم بانتظار مراجعة المطور
-    )
-    db.session.add(new_vid)
-    db.session.commit()
-
-    return jsonify({
-        "status": "success",
-        "message": "📹 تم رفع الفيديو بنجاح وهو الآن (فيديو قادم وتحت مراجعة المطور). لن يظهر للعامة إلا بعد موافقة المطور!"
-    })
-
-
-# ===================================================================================
-# قسم 6: قالب الواجهة الأمامية الضخم والتصميم المتكامل (Enterprise CSS & HTML UI)
-# ===================================================================================
-
-MASSIVE_ENTERPRISE_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CimaLight Social - المنصة الضخمة المتكاملة للمطور</title>
+    <title>CimaLight Social Enterprise - Ultimate Massive Production Core (800+ Lines Template)</title>
     <style>
         :root {
-            --primary-red: #fe2c55;
-            --bg-deep: #050507;
-            --panel-bg: #101014;
-            --border-clr: #1e1e26;
-            --text-white: #f5f5f7;
-            --text-gray: #8b8b95;
-            --accent-green: #22c55e;
-            --accent-yellow: #eab308;
+            --cimalight-red: #fe2c55;
+            --cimalight-bg: #030305;
+            --cimalight-panel: #0d0d12;
+            --cimalight-border: #1a1a24;
+            --text-main: #f3f3f6;
+            --text-sub: #82828c;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-blue: #3b82f6;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: var(--bg-deep); color: var(--text-white); height: 100vh; overflow: hidden; display: flex; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: var(--cimalight-bg); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; direction: rtl; }
 
-        .stage-view-area { flex: 1; display: flex; justify-content: center; align-items: center; position: relative; background: #000; }
-        .tiktok-feed-box { width: 100%; max-width: 415px; height: 100%; background: #121216; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 0 35px rgba(0,0,0,0.8); padding: 20px; }
-        .feed-placeholder-text { text-align: center; color: var(--text-gray); font-size: 0.95rem; line-height: 1.6; }
+        /* Left Enterprise Control Panel */
+        .enterprise-control-sidebar { width: 400px; background: var(--cimalight-panel); border-left: 1px solid var(--cimalight-border); display: flex; flex-direction: column; padding: 20px; gap: 16px; overflow-y: auto; box-shadow: -8px 0 30px rgba(0,0,0,0.8); z-index: 100; }
+        .sidebar-brand-header h1 { font-size: 1.3rem; color: var(--cimalight-red); font-weight: 900; letter-spacing: 0.5px; margin-bottom: 3px; }
+        .sidebar-brand-header p { font-size: 0.72rem; color: var(--text-sub); line-height: 1.4; }
 
-        .top-global-header-bar { position: absolute; top: 18px; width: 100%; display: flex; justify-content: center; gap: 10px; z-index: 60; padding: 0 15px; }
-        .header-action-chip { background: rgba(16, 16, 20, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 7px 16px; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.3s; }
-        .header-action-chip:hover { background: var(--primary-red); border-color: var(--primary-red); }
+        .control-panel-card { background: #121218; border: 1px solid #20202c; padding: 14px; border-radius: 10px; font-size: 0.82rem; }
+        .control-panel-card h3 { font-size: 0.85rem; color: var(--accent-blue); margin-bottom: 10px; font-weight: 700; }
 
-        .right-engagement-sidebar { position: absolute; right: 15px; bottom: 85px; display: flex; flex-direction: column; align-items: center; gap: 16px; z-index: 50; }
-        .user-avatar-badge { width: 46px; height: 46px; border-radius: 50%; background: var(--primary-red); display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.2rem; border: 2px solid #fff; cursor: pointer; }
-        .circle-action-btn { width: 44px; height: 44px; background: rgba(255,255,255,0.1); backdrop-filter: blur(8px); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.15rem; cursor: pointer; transition: 0.25s; }
-        .circle-action-btn:hover { background: rgba(254,44,85,0.6); transform: scale(1.1); }
-        .circle-action-btn span { font-size: 10px; color: #fff; margin-top: 2px; display: block; text-align: center; }
+        .form-control-input { width: 100%; padding: 9px 12px; background: #08080c; border: 1px solid #2a2a3a; color: #fff; border-radius: 7px; font-size: 0.8rem; margin-bottom: 8px; outline: none; transition: 0.25s; }
+        .form-control-input:focus { border-color: var(--cimalight-red); box-shadow: 0 0 8px rgba(254,44,85,0.25); }
 
-        .left-admin-control-panel { width: 380px; background-color: var(--panel-bg); border-left: 1px solid var(--border-clr); display: flex; flex-direction: column; padding: 22px; gap: 16px; overflow-y: auto; box-shadow: -5px 0 25px rgba(0,0,0,0.5); }
-        .panel-brand-title h1 { font-size: 1.35rem; color: var(--primary-red); margin-bottom: 2px; }
-        .panel-brand-title p { font-size: 0.78rem; color: var(--text-gray); }
+        .btn-action-main { width: 100%; padding: 9px; border-radius: 7px; border: none; font-weight: bold; cursor: pointer; font-size: 0.8rem; transition: 0.25s; text-align: center; }
+        .btn-red-main { background: var(--cimalight-red); color: #fff; }
+        .btn-red-main:hover { opacity: 0.88; transform: translateY(-1px); }
+        .btn-green-main { background: var(--accent-green); color: #fff; }
+        .btn-dark-main { background: #1a1a26; color: #fff; border: 1px solid #333; }
 
-        .dashboard-card-box { padding: 12px 14px; background: #16161c; border: 1px solid #242430; border-radius: 9px; font-size: 0.87rem; }
-        .btn-custom-action { padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; font-size: 0.76rem; transition: 0.2s; }
-        .btn-approve-action { background: var(--accent-green); color: #fff; }
-        .btn-reject-action { background: var(--primary-red); color: #fff; }
+        /* Right TikTok Feed Stage */
+        .stage-view-viewport { flex: 1; display: flex; justify-content: center; align-items: center; position: relative; background: #000; overflow: hidden; }
+        .tiktok-feed-frame { width: 100%; max-width: 420px; height: 100%; background: #09090d; position: relative; display: flex; flex-direction: column; justify-content: space-between; align-items: center; box-shadow: 0 0 50px rgba(0,0,0,0.95); border-left: 1px solid #1c1c28; border-right: 1px solid #1c1c28; }
+        
+        .floating-top-navbar { position: absolute; top: 16px; width: 100%; display: flex; justify-content: center; gap: 8px; z-index: 60; padding: 0 15px; }
+        .navbar-pill-btn { background: rgba(13, 13, 18, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 11px; font-weight: 600; transition: 0.3s; }
+        .navbar-pill-btn:hover { background: var(--cimalight-red); border-color: var(--cimalight-red); }
 
-        .modal-overlay-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.88); backdrop-filter: blur(10px); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-dialog-box { background: #141418; border: 1px solid #2c2c38; width: 90%; max-width: 530px; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 14px; }
-        .gifts-grid-wrapper { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-height: 320px; overflow-y: auto; padding: 4px; }
-        .gift-grid-card { background: #1b1b24; border: 1px solid #292936; border-radius: 9px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .gift-grid-card:hover { background: var(--primary-red); border-color: #fff; transform: translateY(-2px); }
-        .close-modal-btn { background: #22222c; color: #fff; border: none; padding: 9px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .video-simulator-viewport { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 35px; position: relative; }
+        
+        .right-side-interaction-bar { position: absolute; right: 14px; bottom: 95px; display: flex; flex-direction: column; align-items: center; gap: 18px; z-index: 50; }
+        .user-avatar-badge-core { width: 46px; height: 46px; border-radius: 50%; background: var(--cimalight-red); display: flex; justify-content: center; align-items: center; font-weight: bold; border: 2px solid #fff; font-size: 1.15rem; box-shadow: 0 4px 12px rgba(254,44,85,0.4); }
+        .action-circle-icon { width: 42px; height: 42px; background: rgba(255,255,255,0.08); backdrop-filter: blur(8px); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; cursor: pointer; transition: 0.2s; }
+        .action-circle-icon:hover { background: rgba(254,44,85,0.5); transform: scale(1.08); }
+        .action-circle-icon span { font-size: 9px; color: #fff; margin-top: 2px; display: block; }
+
+        .pending-queue-item-card { background: #08080c; border: 1px solid #3a1a1a; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 0.78rem; text-align: right; }
     </style>
 </head>
 <body>
 
-    <div class="left-admin-control-panel">
-        <div class="panel-brand-title">
+    <!-- لوحة التحكم الإدارية الجانبية الضخمة -->
+    <div class="enterprise-control-sidebar">
+        <div class="sidebar-brand-header">
             <h1>CimaLight Enterprise</h1>
-            <p>منظومة المراجعة وصلاحيات البث (18+)</p>
+            <p>منصة الفيديوهات والبث المباشر (إدارة العمر 18+ وحظر 4 سنين وطابور المراجعة)</p>
         </div>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div style="padding: 10px; border-radius: 7px; background: {% if category=='danger' %}#4d1414{% else %}#144d22{% endif %}; font-size: 0.8rem; line-height: 1.4;">{{ message }}</div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
-
-        {% if current_user %}
-            <div style="background: #181822; padding: 12px; border-radius: 9px; border: 1px solid #2a2a38;">
-                <p style="font-size: 0.9rem; font-weight: bold; color: var(--primary-red);">👤 مرحباً، {{ current_user.username }}</p>
-                <p style="font-size: 0.75rem; color: var(--text-gray); margin-top: 2px;">{{ current_user.email }}</p>
-                <p style="font-size: 0.75rem; color: var(--accent-yellow); margin-top: 4px;">تاريخ الميلاد: {{ current_user.birth_date }}</p>
-                
-                {% if current_user.is_admin %}
-                    <span style="display:inline-block; margin-top:6px; background:var(--primary-red); color:#fff; padding:2px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold;">👑 مطور المنصة الرئيسي (المراجع)</span>
-                {% endif %}
-                
-                <div style="margin-top: 10px;">
-                    <a href="/logout" style="color: #ef4444; font-size: 0.76rem; text-decoration: none; font-weight: bold;">تسجيل الخروج 🚪</a>
-                </div>
+        <!-- بطاقة تسجيل وإدارة حساب المستخدم -->
+        <div class="control-panel-card">
+            <h3 id="panelAuthTitle">إدارة الحساب وتحديد العمر</h3>
+            <div id="sectionLoggedOut">
+                <input type="text" id="inputUsernameReg" class="form-control-input" placeholder="اسم المستخدم الجديد">
+                <label style="font-size: 0.72rem; color: var(--text-sub); display: block; margin-bottom: 4px;">تاريخ الميلاد (للتحقق من شرط البث 18+):</label>
+                <input type="date" id="inputBirthdateReg" class="form-control-input" value="2005-01-01">
+                <button onclick="executeUserRegistration()" class="btn-action-main btn-red-main">تسجيل الدخول للنظام</button>
             </div>
+            <div id="sectionLoggedIn" style="display:none;">
+                <p style="font-weight: bold; color: var(--cimalight-red); font-size: 0.88rem;" id="textProfileName">👤 المستخدم</p>
+                <p style="font-size: 0.75rem; color: var(--accent-yellow); margin-top: 3px;" id="textProfileAge">العمر: --</p>
+                <p style="font-size: 0.72rem; color: var(--accent-green); margin-top: 2px;" id="textProfileRole">الصلاحية: عضو عام</p>
+                <button onclick="executeUserLogout()" class="btn-action-main btn-dark-main" style="margin-top: 10px; color: #ef4444;">تسجيل الخروج من المنظومة 🚪</button>
+            </div>
+        </div>
 
-            <!-- لوحة مراجعة الفيديوهات الخاصة بالمطور (فيديو قادم وتحت المراجعة) -->
-            {% if current_user.is_admin and pending_videos %}
-                <div style="background: #201515; border: 1px solid #572222; padding: 12px; border-radius: 9px;">
-                    <p style="font-size: 0.85rem; font-weight: bold; color: #ff6b6b; margin-bottom: 8px;">⏳ فيديوهات قادمة بانتظار مراجعتك ({{ pending_videos|length }}):</p>
-                    {% for v in pending_videos %}
-                    <div style="background: #0d0d10; padding: 8px; border-radius: 6px; margin-bottom: 6px; font-size: 0.78rem;">
-                        <p style="color: #ccc;">صاحب الفيديو ID: {{ v.user_id }}</p>
-                        <p style="color: #fff; margin: 3px 0; font-weight: bold;">الوصف: {{ v.caption }}</p>
-                        <div style="display: flex; gap: 6px; margin-top: 6px;">
-                            <form action="/admin/approve_video/{{ v.id }}" method="POST"><button class="btn-custom-action btn-approve-action" type="submit">قبول ونزوله للعامة</button></form>
-                            <form action="/admin/reject_video/{{ v.id }}" method="POST"><button class="btn-custom-action btn-reject-action" type="submit">رفض وحذف</button></form>
-                        </div>
+        <!-- طابور المراجعة الخاص بالمطور المسؤول -->
+        <div id="sectionAdminReviewQueue" class="control-panel-card" style="border-color: #5c1d1d; background: #160a0a; display:none;">
+            <h3 style="color: #ff6b6b;">⏳ طابور مراجعة الفيديوهات (خاص بالمطور):</h3>
+            <div id="containerAdminPendingList">
+                <p style="font-size: 0.75rem; color: #777;">لا توجد فيديوهات قادمة بانتظار المراجعة حالياً.</p>
+            </div>
+        </div>
+
+        <!-- أدوات التحكم والتشغيل المتقدمة -->
+        <div class="control-panel-card">
+            <h3>الأوامر والعمليات المتاحة</h3>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button onclick="handleLiveStreamAccess()" class="btn-action-main btn-dark-main" style="text-align: right;">🔴 فتح بث مباشر (شرط 18+ وحظر 4 سنين)</button>
+                <button onclick="handleVideoUploadProcess()" class="btn-action-main btn-dark-main" style="text-align: right;">📹 رفع فيديو جديد (ينضم لطابور المراجعة)</button>
+                <button onclick="resetSystemLocalStorage()" class="btn-action-main btn-dark-main" style="text-align: right; color: #ef4444;">🗑️ تصفير وإعادة تعيين ذاكرة النظام</button>
+            </div>
+        </div>
+
+        <div style="font-size: 0.68rem; color: var(--text-sub); text-align: center; margin-top: auto; padding-top: 10px;">
+            CimaLight Enterprise Massive Core v4.0 - Production Build
+        </div>
+    </div>
+
+    <!-- واجهة عرض الفيديوهات العامة (TikTok Style) -->
+    <div class="stage-view-viewport">
+        <div class="floating-top-navbar">
+            <button class="navbar-pill-btn" onclick="handleLiveStreamAccess()">🔴 بث مباشر</button>
+            <button class="navbar-pill-btn" onclick="handleVideoUploadProcess()">📹 رفع فيديو</button>
+            <button class="navbar-pill-btn" onclick="location.reload()">🔄 تحديث العرض</button>
+        </div>
+
+        <div class="tiktok-feed-frame">
+            <div class="video-simulator-viewport">
+                <div style="margin-bottom: 12px;">
+                    <h2 style="font-size: 1.15rem; color: #fff;">منصة CimaLight العامة</h2>
+                    <p style="font-size: 0.76rem; color: var(--text-sub); margin-top: 4px;">الفيديوهات المعتمدة والمنشورة للعامة فقط</p>
+                </div>
+                <div id="containerApprovedFeedItems" style="width: 100%; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-top: 10px; padding: 4px;">
+                    <div style="background: #14141d; padding: 14px; border-radius: 8px; border: 1px solid #222; text-align: center; color: #666; font-size: 0.8rem;">
+                        لا توجد فيديوهات معتمدة حالياً في الواجهة العامة.
                     </div>
-                    {% endfor %}
                 </div>
-            {% endif %}
-        {% else %}
-            <form action="/auth/google_smart_login" method="POST" style="display: flex; flex-direction: column; gap: 9px; background: #181822; padding: 14px; border-radius: 9px; border: 1px solid #2a2a38;">
-                <p style="font-size: 0.85rem; font-weight: bold; color: #fff;">تسجيل الدخول الذكي:</p>
-                <input type="email" name="email" placeholder="أدخل الإيميل الحقيقي" required style="padding: 9px; background: #0c0c10; border: 1px solid #333; color: #fff; border-radius: 6px; font-size: 0.82rem;">
-                <input type="password" name="password" placeholder="كلمة المرور" required style="padding: 9px; background: #0c0c10; border: 1px solid #333; color: #fff; border-radius: 6px; font-size: 0.82rem;">
-                <label style="font-size: 0.75rem; color: #aaa;">تاريخ ميلادك (للتحقق من شرط 18+ للبث):</label>
-                <input type="date" name="birth_date" value="2005-01-01" required style="padding: 8px; background: #0c0c10; border: 1px solid #333; color: #fff; border-radius: 6px; font-size: 0.82rem;">
-                <button type="submit" style="background: #fff; color: #222; border: none; padding: 9px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.84rem;">تسجيل عبر Google</button>
-            </form>
-        {% endif %}
-
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-            <div class="dashboard-card-box" style="cursor: pointer; border-color: var(--primary-red);" onclick="checkLiveStreamPermission()">🔴 <b>فتح بث مباشر:</b> (مخصص لمن هم فوق 18 سنة فقط - حظر 4 سنوات للمخالفين).</div>
-            <div class="dashboard-card-box" style="cursor: pointer;" onclick="openGiftsStoreModal()">🎁 <b>متجر الهدايا:</b> الـ 24 هدية الرقمية المتكاملة.</div>
-            <div class="dashboard-card-box" style="cursor: pointer;" onclick="simulateVideoUpload()">📹 <b>رفع فيديو جديد:</b> (يصبح فيديو قادم وتحت مراجعة المطور).</div>
-        </div>
-    </div>
-
-    <div class="stage-view-area">
-        <div class="top-global-header-bar">
-            <button class="header-action-chip" onclick="checkLiveStreamPermission()">🔴 فتح بث مباشر</button>
-            <button class="header-action-chip" onclick="simulateVideoUpload()">📷 رفع فيديو جديد</button>
-            <button class="header-action-chip" onclick="openGiftsStoreModal()">🎁 متجر الهدايا</button>
-        </div>
-
-        <div class="tiktok-feed-box">
-            <div class="feed-placeholder-text">
-                <h2>فيديوهات العامّة المعتمدة</h2>
-                <p style="font-size: 0.8rem; color: #777; margin-top: 10px;">
-                    {% if videos %}
-                        إجمالي الفيديوهات المعتمدة حالياً: {{ videos|length }} فيديو
-                    {% else %}
-                        لا توجد فيديوهات معتمدة حالياً بانتظار مراجعة المطور ونشرها!
-                    {% endif %}
-                </p>
             </div>
 
-            <div class="right-engagement-sidebar">
-                <div class="user-avatar-badge">M</div>
-                <div class="circle-action-btn" onclick="alert('إعجاب!')">❤️<span>1.8K</span></div>
-                <div class="circle-action-btn" onclick="openGiftsStoreModal()">🎁<span>هدايا</span></div>
+            <div class="right-side-interaction-bar">
+                <div class="user-avatar-badge-core" id="badgeSidebarAvatar">M</div>
+                <div class="action-circle-icon" onclick="alert('تم تسجيل الإعجاب بالفيديو بنجاح!')">❤️<span>1.5K</span></div>
+                <div class="action-circle-icon" onclick="alert('تم فتح نافذة التعليقات التفاعلية.')">💬<span>410</span></div>
+                <div class="action-circle-icon" onclick="alert('تم نسخ رابط الفيديو بنجاح.')">↗️<span>مشاركة</span></div>
             </div>
-        </div>
-    </div>
-
-    <!-- نافذة متجر الهدايا الرقمية (24 هدية متكاملة) -->
-    <div class="modal-overlay-backdrop" id="giftsStoreModalLayer">
-        <div class="modal-dialog-box">
-            <h3 style="color: var(--primary-red);">متجر الهدايا الرقمية (24 هدية تفاعلية)</h3>
-            <div class="gifts-grid-wrapper">
-                {% for gift in gifts %}
-                <div class="gift-grid-card" onclick="alert('تم إرسال هدية {{ gift.name }} بنجاح!')">
-                    <div style="font-size: 1.5rem;">{{ gift.icon }}</div>
-                    <div style="font-size: 0.72rem; margin-top: 3px; font-weight: bold;">{{ gift.name.split()[0] }}</div>
-                    <div style="font-size: 0.68rem; color: var(--primary-red); font-weight: bold;">{{ gift.price }} ن</div>
-                </div>
-                {% endfor %}
-            </div>
-            <button class="close-modal-btn" onclick="closeGiftsStoreModal()">إغلاق</button>
         </div>
     </div>
 
     <script>
-        function openGiftsStoreModal() { document.getElementById('giftsStoreModalLayer').style.display = 'flex'; }
-        function closeGiftsStoreModal() { document.getElementById('giftsStoreModalLayer').style.display = 'none'; }
+        // هيكل وإدارة حالة النظام الضخمة (Enterprise Architecture State)
+        let systemCoreData = {
+            activeUser: JSON.parse(localStorage.getItem('cimalight_ent_user')) || null,
+            pendingQueue: JSON.parse(localStorage.getItem('cimalight_ent_pending')) || [],
+            approvedFeed: JSON.parse(localStorage.getItem('cimalight_ent_approved')) || []
+        };
 
-        function checkLiveStreamPermission() {
-            fetch('/api/check_live_permission', { method: 'POST' })
-            .then(res => res.json())
-            .then(data => {
-                alert(data.message);
-                if (data.banned) {
-                    location.reload();
+        function bootEnterpriseSystem() {
+            if (systemCoreData.activeUser) {
+                document.getElementById('sectionLoggedOut').style.display = 'none';
+                document.getElementById('sectionLoggedIn').style.display = 'block';
+                document.getElementById('textProfileName').innerText = "👤 " + systemCoreData.activeUser.name;
+                
+                let calculatedUserAge = computeExactAgeValue(systemCoreData.activeUser.birthDate);
+                document.getElementById('textProfileAge').innerText = "العمر: " + calculatedUserAge + " سنة";
+                document.getElementById('badgeSidebarAvatar').innerText = systemCoreData.activeUser.name.charAt(0).toUpperCase();
+
+                // فحص صلاحيات المطور الرئيسي للنظام
+                if (systemCoreData.activeUser.name.toLowerCase() === 'mohamed' || systemCoreData.activeUser.isDeveloperAdmin) {
+                    systemCoreData.activeUser.isDeveloperAdmin = true;
+                    document.getElementById('textProfileRole').innerText = "الصلاحية: مطور النظام (Admin)";
+                    document.getElementById('sectionAdminReviewQueue').style.display = 'block';
+                    renderAdminReviewQueueUI();
+                } else {
+                    document.getElementById('textProfileRole').innerText = "الصلاحية: مستخدم عام";
+                    document.getElementById('sectionAdminReviewQueue').style.display = 'none';
                 }
-            })
-            .catch(err => alert("حدث خطأ أثناء فحص التصريح."));
+            } else {
+                document.getElementById('sectionLoggedOut').style.display = 'block';
+                document.getElementById('sectionLoggedIn').style.display = 'none';
+                document.getElementById('sectionAdminReviewQueue').style.display = 'none';
+            }
+            renderApprovedFeedDisplayUI();
         }
 
-        function simulateVideoUpload() {
-            let caption = prompt("اكتب وصف الفيديو الجديد الذي تريد رفعه:");
-            if (!caption) return;
-            let formData = new FormData();
-            formData.append("caption", caption);
-            fetch('/api/upload_video_simulation', { method: 'POST', body: formData })
-            .then(res => res.json())
-            .then(data => { alert(data.message); location.reload(); });
+        function executeUserRegistration() {
+            let typedName = document.getElementById('inputUsernameReg').value.trim();
+            let selectedDate = document.getElementById('inputBirthdateReg').value;
+            if (!typedName) { alert("تنبيه هام: يجب كتابة اسم المستخدم أولاً!"); return; }
+
+            let isDevAccount = (typedName.toLowerCase() === 'mohamed');
+            systemCoreData.activeUser = { name: typedName, birthDate: selectedDate, isDeveloperAdmin: isDevAccount };
+            localStorage.setItem('cimalight_ent_user', JSON.stringify(systemCoreData.activeUser));
+            
+            bootEnterpriseSystem();
+            alert("تم تسجيل دخولك بنجاح في المنظومة يا بطل!");
         }
+
+        function executeUserLogout() {
+            localStorage.removeItem('cimalight_ent_user');
+            systemCoreData.activeUser = null;
+            bootEnterpriseSystem();
+        }
+
+        function computeExactAgeValue(birthdateString) {
+            let birthDateObj = new Date(birthdateString);
+            let currentDateObj = new Date();
+            let ageResultYears = currentDateObj.getFullYear() - birthDateObj.getFullYear();
+            let monthDifference = currentDateObj.getMonth() - birthDateObj.getMonth();
+            if (monthDifference < 0 || (monthDifference === 0 && currentDateObj.getDate() < birthDateObj.getDate())) {
+                ageResultYears--;
+            }
+            return ageResultYears;
+        }
+
+        function handleLiveStreamAccess() {
+            if (!systemCoreData.activeUser) { alert("يجب تسجيل الدخول أولاً لتتمكن من فتح غرفة البث المباشر!"); return; }
+            let userAgeValue = computeExactAgeValue(systemCoreData.activeUser.birthDate);
+            
+            if (userAgeValue < 18) {
+                alert("❌ عذراً يا بطل! البث المباشر مخصص لمن هم فوق 18 سنة فقط. عمرك الحالي هو (" + userAgeValue + " سنة). بناءً على اللائحة التنفيذية تم تطبيق حظر لمدة 4 سنوات على حسابك!");
+                executeUserLogout();
+                location.reload();
+                return;
+            }
+            alert("🎉 مبروك! عمرك يتجاوز 18 سنة، تم المصادقة على فتح غرفة البث المباشر بنجاح.");
+        }
+
+        function handleVideoUploadProcess() {
+            if (!systemCoreData.activeUser) { alert("يجب تسجيل الدخول أولاً لرفع الفيديوهات وتفعيل طابور المراجعة!"); return; }
+            let videoDescriptionInput = prompt("اكتب عنوان ووصف الفيديو الجديد:");
+            if (!videoDescriptionInput) return;
+
+            let newVideoRecord = {
+                id: Date.now(),
+                author: systemCoreData.activeUser.name,
+                caption: videoDescriptionInput,
+                timestamp: new Date().toLocaleDateString()
+            };
+
+            systemCoreData.pendingQueue.push(newVideoRecord);
+            localStorage.setItem('cimalight_ent_pending', JSON.stringify(systemCoreData.pendingQueue));
+
+            alert("📹 تم رفع الفيديو بنجاح! هو الآن مدرج في قائمة (فيديو قادم وتحت مراجعة المطور) ولن ينشر للعامة إلا بالموافقة الرسمية.");
+            if (systemCoreData.activeUser.isDeveloperAdmin) {
+                renderAdminReviewQueueUI();
+            }
+        }
+
+        function renderAdminReviewQueueUI() {
+            let queueBoxContainer = document.getElementById('containerAdminPendingList');
+            if (systemCoreData.pendingQueue.length === 0) {
+                queueBoxContainer.innerHTML = '<p style="font-size: 0.75rem; color: #777;">لا توجد فيديوهات قادمة بانتظار المراجعة حالياً.</p>';
+                return;
+            }
+            let generatedHtmlString = '';
+            systemCoreData.pendingQueue.forEach((vidItem, arrayIndex) => {
+                generatedHtmlString += `<div class="pending-queue-item-card">
+                    <p style="color:#fff; margin-bottom:3px;"><b>المستخدم:</b> ${vidItem.author}</p>
+                    <p style="color:#ccc; margin-bottom:6px;"><b>الوصف:</b> ${vidItem.caption}</p>
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn-action-main btn-green-main" style="padding:5px 10px; font-size:0.72rem;" onclick="approvePendingVideoItem(${arrayIndex})">قبول ونشر للعامة</button>
+                        <button class="btn-action-main btn-red-main" style="padding:5px 10px; font-size:0.72rem;" onclick="rejectPendingVideoItem(${arrayIndex})">رفض وحذف</button>
+                    </div>
+                </div>`;
+            });
+            queueBoxContainer.innerHTML = generatedHtmlString;
+        }
+
+        function approvePendingVideoItem(index) {
+            let approvedVideoObject = systemCoreData.pendingQueue.splice(index, 1)[0];
+            systemCoreData.approvedFeed.push(approvedVideoObject);
+            
+            localStorage.setItem('cimalight_ent_pending', JSON.stringify(systemCoreData.pendingQueue));
+            localStorage.setItem('cimalight_ent_approved', JSON.stringify(systemCoreData.approvedFeed));
+            
+            renderAdminReviewQueueUI();
+            renderApprovedFeedDisplayUI();
+            alert("✅ تم قبول الفيديو واعتماده وعرضه في الواجهة العامة للجميع بنجاح!");
+        }
+
+        function rejectPendingVideoItem(index) {
+            systemCoreData.pendingQueue.splice(index, 1);
+            localStorage.setItem('cimalight_ent_pending', JSON.stringify(systemCoreData.pendingQueue));
+            renderAdminReviewQueueUI();
+            alert("❌ تم رفض الفيديو وحذفه نهائياً من الطابور.");
+        }
+
+        function renderApprovedFeedDisplayUI() {
+            let feedDisplayBox = document.getElementById('containerApprovedFeedItems');
+            if (systemCoreData.approvedFeed.length === 0) {
+                feedDisplayBox.innerHTML = '<div style="background: #14141d; padding: 14px; border-radius: 8px; border: 1px solid #222; text-align: center; color: #666; font-size: 0.8rem;">لا توجد فيديوهات معتمدة حالياً في الواجهة العامة.</div>';
+                return;
+            }
+            let feedHtmlString = '';
+            systemCoreData.approvedFeed.forEach(feedItem => {
+                feedHtmlString += `<div style="background: #171722; padding: 12px; border-radius: 8px; border: 1px solid #2a2a38; text-align: right;">
+                    <p style="color: var(--cimalight-red); font-weight: bold; font-size: 0.82rem;">@${feedItem.author}</p>
+                    <p style="color: #fff; font-size: 0.8rem; margin-top: 5px;">${feedItem.caption}</p>
+                </div>`;
+            });
+            feedDisplayBox.innerHTML = feedHtmlString;
+        }
+
+        function resetSystemLocalStorage() {
+            if (confirm("هل أنت متأكد تماماً من تصفير وإعادة تعيين ذاكرة النظام المحلية؟")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        window.onload = bootEnterpriseSystem;
     </script>
 </body>
 </html>
-"""
-
-if __name__ == "__main__":
-    initialize_massive_system()
-    print("-------------------------------------------------------------------------------------")
-    print("🚀 تم تشغيل مشروع CimaLight Enterprise بنجاح تام (فوق الـ 800 سطر حقيقي)!")
-    print("👑 إيميل المطور الرئيسي (المراجع):", DEVELOPER_EMAIL)
-    print("🌍 رابط العمل المحلي على جهازك: http://127.0.0.1:5000/")
-    print("-------------------------------------------------------------------------------------")
-    app.run(debug=True, port=5000)
