@@ -2,1224 +2,1142 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Core | منصة الفيديو القصير</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SnapVibe</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0a0b0f;
-    --surface:#14161d;
-    --surface-2:#1b1e27;
-    --surface-3:#242833;
-    --border:#2a2e3a;
-    --text:#eef0f4;
-    --muted:#8b8f9c;
-    --muted-2:#5f636f;
-    --gold:#d4a73c;
-    --gold-soft:rgba(212,167,60,.14);
-    --danger:#e5484d;
-    --danger-soft:rgba(229,72,77,.14);
-    --ok:#3ecf8e;
-    --ok-soft:rgba(62,207,142,.14);
-    --radius-s:8px;
-    --radius-m:14px;
-    --radius-l:22px;
-    --shadow-1: 0 10px 30px rgba(0,0,0,.35);
-    --font-display:'Cairo', 'IBM Plex Sans Arabic', sans-serif;
-    --font-body:'IBM Plex Sans Arabic', 'Cairo', sans-serif;
+    --bg:#150E1B;
+    --surface:#211729;
+    --surface-alt:#2C2036;
+    --line:#3A2E46;
+    --accent:#FF3E6C;
+    --accent-2:#FFC145;
+    --text:#F6F1EC;
+    --text-dim:#B7ACC2;
+    --danger:#FF5C5C;
+    --radius:18px;
   }
-  *{box-sizing:border-box;}
-  html,body{height:100%;}
-  body{
-    margin:0;
-    background:
-      radial-gradient(1200px 600px at 15% -10%, rgba(212,167,60,.10), transparent 60%),
-      radial-gradient(900px 500px at 100% 0%, rgba(80,90,140,.12), transparent 55%),
-      var(--bg);
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    height:100%;
+    background:var(--bg);
     color:var(--text);
-    font-family:var(--font-body);
-    -webkit-font-smoothing:antialiased;
-    min-height:100vh;
-    overflow-x:hidden;
-  }
-  @media (prefers-reduced-motion: reduce){
-    *{animation-duration:.001ms !important; transition-duration:.001ms !important;}
-  }
-  h1,h2,h3,.brand,.btn,.tab{font-family:var(--font-display);}
-  a{color:inherit;}
-  button{font-family:inherit; cursor:pointer;}
-  input,textarea,select{font-family:inherit;}
-  ::selection{background:var(--gold-soft); color:var(--gold);}
-  .hidden{display:none !important;}
-
-  /* ---------- scrollbar ---------- */
-  ::-webkit-scrollbar{width:8px; height:8px;}
-  ::-webkit-scrollbar-thumb{background:var(--surface-3); border-radius:99px;}
-  ::-webkit-scrollbar-track{background:transparent;}
-
-  /* ---------- top shell ---------- */
-  #app{min-height:100vh; display:flex; flex-direction:column;}
-
-  .topbar{
-    position:sticky; top:0; z-index:40;
-    display:flex; align-items:center; justify-content:space-between;
-    gap:14px;
-    padding:12px 22px;
-    background:rgba(10,11,15,.72);
-    backdrop-filter:blur(14px);
-    border-bottom:1px solid var(--border);
-  }
-  .brand{display:flex; align-items:center; gap:10px; font-weight:900; font-size:19px; letter-spacing:.2px;}
-  .brand .dot{
-    width:11px; height:11px; border-radius:50%;
-    background:var(--gold);
-    box-shadow:0 0 0 4px var(--gold-soft);
-  }
-  .brand small{display:block; font-family:var(--font-body); font-weight:400; font-size:11px; color:var(--muted); margin-top:-2px;}
-
-  .tabs{display:flex; align-items:center; gap:4px; background:var(--surface); border:1px solid var(--border); padding:4px; border-radius:99px;}
-  .tab{
-    border:none; background:transparent; color:var(--muted);
-    padding:8px 16px; border-radius:99px; font-size:14px; font-weight:600;
-    transition:background .18s ease, color .18s ease;
-  }
-  .tab.active{background:var(--surface-3); color:var(--text);}
-  .tab .badge{
-    display:inline-block; margin-inline-start:6px; background:var(--danger); color:#fff;
-    font-size:10px; font-weight:700; min-width:16px; height:16px; line-height:16px;
-    border-radius:99px; padding:0 4px;
-  }
-
-  .top-actions{display:flex; align-items:center; gap:10px;}
-  .icon-btn{
-    width:38px; height:38px; border-radius:50%; border:1px solid var(--border);
-    background:var(--surface); color:var(--muted); display:flex; align-items:center; justify-content:center;
-    font-size:16px; transition:transform .15s ease, color .15s ease, border-color .15s ease;
-  }
-  .icon-btn:hover{color:var(--text); border-color:var(--muted-2); transform:translateY(-1px);}
-  .user-chip{
-    display:flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--border);
-    padding:5px 12px 5px 5px; border-radius:99px;
-  }
-  .avatar{
-    width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-    font-weight:700; font-size:13px; color:#1a1406;
-    background:linear-gradient(135deg, var(--gold), #f4d97a);
-    flex-shrink:0;
-  }
-  .avatar.dev{background:linear-gradient(135deg,#7c4dff,#c9a7ff); color:#160a3a;}
-  .user-chip .uname{font-size:13px; font-weight:600;}
-  .user-chip .uage{font-size:11px; color:var(--muted);}
-  .dev-pill{
-    font-size:10px; font-weight:800; color:#160a3a; background:linear-gradient(135deg,#c9a7ff,#7c4dff);
-    padding:2px 7px; border-radius:99px; margin-inline-start:4px;
-  }
-
-  main{flex:1; display:flex; flex-direction:column;}
-
-  /* ---------- toast ---------- */
-  #toast-stack{
-    position:fixed; top:16px; left:50%; transform:translateX(-50%);
-    z-index:200; display:flex; flex-direction:column; gap:8px; align-items:center;
-    pointer-events:none;
-  }
-  .toast{
-    pointer-events:auto;
-    background:var(--surface-3); border:1px solid var(--border); color:var(--text);
-    padding:11px 18px; border-radius:99px; font-size:13.5px; font-weight:600;
-    box-shadow:var(--shadow-1);
-    display:flex; align-items:center; gap:8px;
-    animation:toast-in .25s ease;
-  }
-  .toast.ok{border-color:rgba(62,207,142,.4); color:var(--ok);}
-  .toast.err{border-color:rgba(229,72,77,.45); color:var(--danger);}
-  .toast.warn{border-color:rgba(212,167,60,.45); color:var(--gold);}
-  @keyframes toast-in{from{opacity:0; transform:translateY(-8px);} to{opacity:1; transform:translateY(0);}}
-
-  /* ---------- auth screen ---------- */
-  .auth-wrap{
-    flex:1; display:flex; align-items:center; justify-content:center; padding:40px 18px;
-  }
-  .auth-card{
-    width:100%; max-width:420px;
-    background:linear-gradient(180deg, var(--surface), var(--surface-2));
-    border:1px solid var(--border); border-radius:var(--radius-l);
-    padding:34px 30px 28px;
-    box-shadow:var(--shadow-1);
-  }
-  .auth-head{text-align:center; margin-bottom:22px;}
-  .auth-head .mark{
-    width:54px; height:54px; margin:0 auto 14px; border-radius:16px;
-    background:linear-gradient(135deg, var(--gold), #8b6c15);
-    display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:900; color:#1a1406;
-  }
-  .auth-head h1{font-size:21px; margin:0 0 4px;}
-  .auth-head p{margin:0; color:var(--muted); font-size:13.5px;}
-
-  .seg{
-    display:flex; background:var(--surface-2); border:1px solid var(--border); border-radius:99px; padding:4px; margin-bottom:20px;
-  }
-  .seg button{
-    flex:1; border:none; background:transparent; color:var(--muted); padding:9px 0; border-radius:99px; font-weight:700; font-size:14px;
-    transition:background .18s ease, color .18s ease;
-  }
-  .seg button.active{background:var(--gold); color:#1a1406;}
-
-  .field{margin-bottom:14px;}
-  .field label{display:block; font-size:12.5px; color:var(--muted); margin-bottom:6px; font-weight:600;}
-  .field .opt{color:var(--muted-2); font-weight:400;}
-  .field input{
-    width:100%; background:var(--surface-2); border:1px solid var(--border); color:var(--text);
-    padding:12px 14px; border-radius:var(--radius-s); font-size:14.5px; outline:none;
-    transition:border-color .15s ease, background .15s ease;
-  }
-  .field input:focus{border-color:var(--gold); background:var(--surface-3);}
-  .field input:focus-visible{outline:2px solid var(--gold); outline-offset:1px;}
-
-  .btn{
-    display:inline-flex; align-items:center; justify-content:center; gap:8px;
-    border:none; border-radius:var(--radius-s); padding:12px 18px; font-size:14.5px; font-weight:700;
-    transition:transform .12s ease, filter .12s ease, background .15s ease;
-  }
-  .btn:active{transform:scale(.98);}
-  .btn:focus-visible{outline:2px solid var(--gold); outline-offset:2px;}
-  .btn-primary{background:var(--gold); color:#1a1406; width:100%;}
-  .btn-primary:hover{filter:brightness(1.08);}
-  .btn-ghost{background:var(--surface-2); color:var(--text); border:1px solid var(--border);}
-  .btn-ghost:hover{background:var(--surface-3);}
-  .btn-danger{background:var(--danger-soft); color:var(--danger); border:1px solid rgba(229,72,77,.4);}
-  .btn-danger:hover{background:rgba(229,72,77,.22);}
-  .btn-ok{background:var(--ok-soft); color:var(--ok); border:1px solid rgba(62,207,142,.4);}
-  .btn-ok:hover{background:rgba(62,207,142,.22);}
-  .btn-block{width:100%;}
-  .btn-sm{padding:8px 12px; font-size:13px;}
-
-  .auth-note{margin-top:16px; font-size:12px; color:var(--muted-2); text-align:center; line-height:1.7;}
-  .ban-box{
-    margin-top:14px; background:var(--danger-soft); border:1px solid rgba(229,72,77,.4); color:#ffb3b5;
-    padding:12px 14px; border-radius:var(--radius-s); font-size:13px; line-height:1.8; text-align:center;
-  }
-
-  /* ---------- feed ---------- */
-  .feed-shell{
-    flex:1; display:flex; justify-content:center; padding:22px 14px 60px;
-  }
-  .feed{
-    width:100%; max-width:430px;
-    height:calc(100vh - 130px);
-    overflow-y:auto;
-    scroll-snap-type:y mandatory;
-    border-radius:var(--radius-l);
-    border:1px solid var(--border);
-    background:#000;
-    position:relative;
-  }
-  .feed::-webkit-scrollbar{display:none;}
-  .slide{
-    scroll-snap-align:start;
-    height:calc(100vh - 130px);
-    position:relative;
-    display:flex; align-items:flex-end;
-    background:#050506;
+    font-family:'Tajawal', sans-serif;
     overflow:hidden;
   }
-  .slide video{
-    position:absolute; inset:0; width:100%; height:100%; object-fit:cover; background:#000;
+  .brand-font{ font-family:'Cairo', sans-serif; }
+  button{ font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; }
+  input, select{ font-family:inherit; }
+  img,video{ display:block; }
+  ::-webkit-scrollbar{ width:0; height:0; }
+
+  #app-shell{
+    position:relative;
+    width:100%;
+    max-width:480px;
+    height:100vh;
+    margin:0 auto;
+    background:var(--bg);
+    overflow:hidden;
+    box-shadow:0 0 60px rgba(0,0,0,.6);
   }
-  .slide .veil{
+  @media (min-width:481px){
+    body{ display:flex; align-items:center; justify-content:center; background:#08050B; }
+    #app-shell{ height:92vh; border-radius:32px; }
+  }
+
+  /* ---------- SPLASH ---------- */
+  #splash{
+    position:absolute; inset:0; z-index:100;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px;
+    background:radial-gradient(circle at 50% 30%, #3A1E3A 0%, #150E1B 70%);
+    animation:splashOut .6s ease 1.9s forwards;
+  }
+  .splash-logo{
+    width:118px; height:118px; border-radius:32px;
+    background:linear-gradient(145deg, var(--accent), var(--accent-2));
+    display:flex; align-items:center; justify-content:center;
+    font-size:64px; font-weight:900; color:#1A1020;
+    box-shadow:0 18px 40px -10px rgba(255,62,108,.55);
+    animation:logoPop .7s cubic-bezier(.2,1.4,.4,1);
+  }
+  .splash-name{ font-size:30px; font-weight:800; letter-spacing:.5px; }
+  .splash-tag{ color:var(--text-dim); font-size:14px; }
+  @keyframes logoPop{ from{ transform:scale(.3); opacity:0;} to{ transform:scale(1); opacity:1;} }
+  @keyframes splashOut{ to{ opacity:0; visibility:hidden; pointer-events:none; } }
+
+  /* ---------- LOGIN ---------- */
+  #login-screen{
+    position:absolute; inset:0; z-index:90;
+    display:none;
+    flex-direction:column; justify-content:center;
+    padding:36px 28px;
+    background:linear-gradient(180deg,#1B1222,#150E1B 60%);
+    opacity:0; animation:fadeIn .5s ease 2.0s forwards;
+  }
+  .login-head{ text-align:center; margin-bottom:28px; }
+  .login-head .mark{
+    width:56px; height:56px; margin:0 auto 10px; border-radius:16px;
+    background:linear-gradient(145deg, var(--accent), var(--accent-2));
+    display:flex; align-items:center; justify-content:center; font-size:30px; font-weight:900; color:#1A1020;
+  }
+  .login-head h1{ font-size:22px; font-weight:800; }
+  .login-head p{ color:var(--text-dim); font-size:13px; margin-top:4px; }
+  .field{ margin-bottom:14px; }
+  .field label{ display:block; font-size:12px; color:var(--text-dim); margin-bottom:6px; }
+  .field input{
+    width:100%; padding:13px 14px; border-radius:14px; border:1px solid var(--line);
+    background:var(--surface); color:var(--text); font-size:14px; outline:none;
+  }
+  .field input:focus{ border-color:var(--accent); }
+  .primary-btn{
+    width:100%; padding:14px; border-radius:14px; margin-top:8px;
+    background:linear-gradient(90deg, var(--accent), #FF6E8F);
+    color:#fff; font-weight:700; font-size:15px;
+  }
+  .login-note{ text-align:center; color:var(--text-dim); font-size:11.5px; margin-top:14px; line-height:1.7; }
+
+  /* ---------- MAIN APP ---------- */
+  #main-app{ position:absolute; inset:0; display:none; }
+  .screen{ position:absolute; inset:0; display:none; }
+  .screen.active{ display:block; }
+
+  /* top bar (feed) */
+  .top-bar{
+    position:absolute; top:0; right:0; left:0; z-index:20;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 16px 10px;
+    background:linear-gradient(180deg, rgba(0,0,0,.55), transparent);
+  }
+  .top-bar .logo-mini{ font-weight:900; font-size:19px; }
+  .top-bar .logo-mini span{ color:var(--accent-2); }
+  .live-btn{
+    display:flex; align-items:center; gap:6px;
+    background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.25);
+    padding:7px 13px; border-radius:999px; font-size:12.5px; font-weight:700;
+  }
+  .live-dot{ width:7px; height:7px; border-radius:50%; background:var(--danger); animation:pulse 1.2s infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.3;} }
+
+  /* feed */
+  #feed{
     position:absolute; inset:0;
-    background:linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,.75) 100%);
-    pointer-events:none;
+    overflow-y:scroll; scroll-snap-type:y mandatory;
+    padding-bottom:64px;
   }
-  .slide-info{
-    position:relative; z-index:2; padding:20px 84px 24px 20px; color:#fff; width:100%;
+  .video-card{
+    position:relative;
+    width:100%; height:calc(100% - 64px);
+    scroll-snap-align:start;
+    display:flex; align-items:flex-end;
+    overflow:hidden;
+    background:#000;
   }
-  .slide-info .up{display:flex; align-items:center; gap:8px; margin-bottom:8px; font-weight:700; font-size:14.5px;}
-  .slide-info .title{font-size:15.5px; font-weight:700; margin:0 0 6px; line-height:1.5;}
-  .slide-info .desc{font-size:13px; color:#d7d9de; margin:0; line-height:1.6; max-height:3.4em; overflow:hidden;}
+  .video-card video, .video-card .fallback-bg{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  }
+  .fallback-bg{
+    display:flex; align-items:center; justify-content:center;
+    font-size:15px; color:rgba(255,255,255,.75); text-align:center; padding:30px;
+  }
+  .video-shade{
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, transparent 40%, rgba(0,0,0,.75) 100%);
+  }
+  .video-meta{
+    position:relative; z-index:5; padding:0 76px 22px 16px; width:100%;
+  }
+  .video-meta .author{ font-weight:800; font-size:15px; margin-bottom:4px; }
+  .video-meta .song{ font-size:12.5px; color:var(--text-dim); display:flex; align-items:center; gap:6px; }
+  .video-meta .caption{ font-size:13.5px; margin-top:6px; line-height:1.5; color:#EDE6F5; }
 
-  .side-rail{
-    position:absolute; z-index:3; left:12px; bottom:26px;
-    display:flex; flex-direction:column; align-items:center; gap:18px;
+  .side-actions{
+    position:absolute; left:12px; bottom:24px; z-index:6;
+    display:flex; flex-direction:column; align-items:center; gap:20px;
   }
-  .rail-btn{
-    display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; color:#fff;
+  .side-actions .action{ display:flex; flex-direction:column; align-items:center; gap:5px; }
+  .side-actions .icon-circle{
+    width:46px; height:46px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,.12); font-size:22px;
   }
-  .rail-circle{
-    width:46px; height:46px; border-radius:50%; background:rgba(255,255,255,.14);
-    backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; font-size:19px;
-    transition:transform .15s ease, background .15s ease;
-    border:1px solid rgba(255,255,255,.14);
-  }
-  .rail-btn:active .rail-circle{transform:scale(.88);}
-  .rail-btn.liked .rail-circle{background:var(--danger); border-color:var(--danger);}
-  .rail-count{font-size:11.5px; font-weight:700;}
-  .rail-avatar{width:46px; height:46px; border-radius:50%; border:2px solid #fff; overflow:hidden; display:flex; align-items:center; justify-content:center; font-weight:800; background:linear-gradient(135deg, var(--gold), #f4d97a); color:#1a1406;}
+  .side-actions .icon-circle.liked{ background:var(--accent); }
+  .side-actions .count{ font-size:11.5px; font-weight:700; color:#fff; }
 
-  .empty-feed{
-    height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; color:var(--muted); text-align:center; padding:30px;
+  /* bottom nav */
+  #bottom-nav{
+    position:absolute; bottom:0; right:0; left:0; height:64px; z-index:30;
+    background:var(--surface);
+    border-top:1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-around;
+    padding:0 6px;
   }
-  .empty-feed .em-icon{font-size:34px;}
-  .empty-feed h3{margin:0; color:var(--text); font-size:16px;}
-  .empty-feed p{margin:0; font-size:13px; max-width:280px; line-height:1.7;}
+  .nav-btn{ display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10.5px; color:var(--text-dim); flex:1; }
+  .nav-btn .ic{ font-size:21px; }
+  .nav-btn.active{ color:var(--text); }
+  .nav-btn.active .ic{ color:var(--accent-2); }
+  .nav-btn.upload .ic{
+    width:38px; height:30px; border-radius:9px;
+    background:linear-gradient(90deg, var(--accent), var(--accent-2));
+    display:flex; align-items:center; justify-content:center; color:#1A1020; font-size:18px; font-weight:900;
+  }
 
-  /* ---------- generic page ---------- */
-  .page{max-width:760px; margin:0 auto; width:100%; padding:26px 18px 60px;}
-  .page-head{margin-bottom:20px;}
-  .page-head h2{margin:0 0 4px; font-size:20px;}
-  .page-head p{margin:0; color:var(--muted); font-size:13.5px;}
+  /* generic secondary screen (profile / messages / camera / live / admin) */
+  .sub-screen{
+    position:absolute; inset:0; bottom:64px; overflow-y:auto;
+    background:var(--bg); padding:20px 18px 30px;
+  }
+  .sub-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+  .sub-header h2{ font-size:19px; font-weight:800; }
+  .close-x{ font-size:20px; color:var(--text-dim); }
 
-  .card{
-    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-m); padding:22px;
+  .profile-card{
+    display:flex; align-items:center; gap:14px; margin-bottom:20px;
+    background:var(--surface); padding:16px; border-radius:var(--radius);
   }
-  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
-  @media (max-width:560px){.grid-2{grid-template-columns:1fr;}}
+  .avatar{
+    width:60px; height:60px; border-radius:50%;
+    background:linear-gradient(145deg,var(--accent),var(--accent-2));
+    display:flex; align-items:center; justify-content:center; font-weight:900; font-size:22px; color:#1A1020;
+  }
+  .profile-card .pname{ font-weight:800; font-size:15px; }
+  .profile-card .pid{ font-size:11.5px; color:var(--text-dim); margin-top:2px;}
+  .profile-card .page{ font-size:11.5px; color:var(--text-dim); margin-top:2px;}
 
-  textarea.tf{
-    width:100%; background:var(--surface-2); border:1px solid var(--border); color:var(--text);
-    padding:12px 14px; border-radius:var(--radius-s); font-size:14px; outline:none; resize:vertical; min-height:88px;
-  }
-  textarea.tf:focus{border-color:var(--gold); background:var(--surface-3);}
+  .stat-row{ display:flex; gap:10px; margin-bottom:20px; }
+  .stat-box{ flex:1; background:var(--surface); border-radius:14px; padding:12px; text-align:center; }
+  .stat-box b{ display:block; font-size:17px; }
+  .stat-box span{ font-size:11px; color:var(--text-dim); }
 
-  .file-drop{
-    border:1.5px dashed var(--border); border-radius:var(--radius-s); padding:18px; text-align:center; color:var(--muted);
-    font-size:13px; background:var(--surface-2); cursor:pointer; transition:border-color .15s ease;
+  .admin-toggle-row{
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--surface-alt); padding:14px; border-radius:14px; margin-bottom:20px;
+    border:1px dashed var(--line);
   }
-  .file-drop:hover{border-color:var(--gold);}
-  .file-drop input{display:none;}
-  .file-drop.has-file{border-color:var(--ok); color:var(--ok);}
+  .admin-toggle-row .lbl{ font-size:13px; font-weight:700; }
+  .admin-toggle-row .sub{ font-size:11px; color:var(--text-dim); margin-top:2px; }
+  .switch{ position:relative; width:44px; height:25px; border-radius:20px; background:var(--line); transition:.2s; }
+  .switch::after{ content:''; position:absolute; top:3px; right:3px; width:19px; height:19px; border-radius:50%; background:#fff; transition:.2s; }
+  .switch.on{ background:var(--accent); }
+  .switch.on::after{ transform:translateX(-19px); }
 
-  .divider-or{display:flex; align-items:center; gap:10px; color:var(--muted-2); font-size:12px; margin:16px 0;}
-  .divider-or::before,.divider-or::after{content:""; flex:1; height:1px; background:var(--border);}
+  .section-title{ font-size:13px; font-weight:800; color:var(--text-dim); margin:18px 0 10px; }
+  .list-item{
+    background:var(--surface); border-radius:14px; padding:13px 14px; margin-bottom:9px;
+    font-size:13px; display:flex; justify-content:space-between; gap:10px;
+  }
+  .list-item .meta{ color:var(--text-dim); font-size:11px; }
+  .empty-hint{ color:var(--text-dim); font-size:12.5px; text-align:center; padding:20px 10px; }
 
-  .pending-item{
-    display:flex; gap:14px; padding:16px; border:1px solid var(--border); border-radius:var(--radius-m); background:var(--surface-2);
-    margin-bottom:12px;
+  /* upload / camera */
+  .camera-box{
+    width:100%; aspect-ratio:9/13; background:#000; border-radius:var(--radius); overflow:hidden;
+    display:flex; align-items:center; justify-content:center; margin-bottom:16px; position:relative;
   }
-  .pending-thumb{
-    width:76px; height:100px; border-radius:10px; background:var(--surface-3); flex-shrink:0; overflow:hidden;
-    display:flex; align-items:center; justify-content:center; color:var(--muted-2); font-size:22px;
-  }
-  .pending-thumb video{width:100%; height:100%; object-fit:cover;}
-  .pending-body{flex:1; min-width:0;}
-  .pending-body h4{margin:0 0 4px; font-size:14.5px;}
-  .pending-body p{margin:0 0 8px; font-size:12.5px; color:var(--muted); line-height:1.6;}
-  .pending-meta{font-size:11px; color:var(--muted-2); margin-bottom:10px;}
-  .status-chip{
-    display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; padding:3px 10px; border-radius:99px;
-    background:var(--gold-soft); color:var(--gold); margin-bottom:8px;
-  }
-  .pending-actions{display:flex; gap:8px; flex-wrap:wrap;}
+  .camera-box video{ width:100%; height:100%; object-fit:cover; }
+  .camera-box .cam-off{ color:var(--text-dim); font-size:13px; text-align:center; padding:20px; }
+  .rec-controls{ display:flex; gap:10px; margin-bottom:16px; }
+  .rec-controls button{ flex:1; padding:12px; border-radius:12px; background:var(--surface); font-weight:700; font-size:13px; }
+  .rec-controls button.record{ background:var(--danger); color:#fff; }
+  .rec-controls button.stop{ background:var(--accent); color:#fff; }
 
-  .approved-row{
-    display:flex; align-items:center; gap:12px; padding:12px; border:1px solid var(--border); border-radius:var(--radius-s);
-    background:var(--surface-2); margin-bottom:10px;
+  /* live screen */
+  .live-frame{
+    width:100%; aspect-ratio:9/14; background:#000; border-radius:var(--radius); overflow:hidden; position:relative; margin-bottom:16px;
   }
-  .approved-row .th{width:44px; height:58px; border-radius:8px; overflow:hidden; background:var(--surface-3); flex-shrink:0;}
-  .approved-row .th video{width:100%; height:100%; object-fit:cover;}
-  .approved-row .meta{flex:1; min-width:0;}
-  .approved-row .meta h5{margin:0 0 2px; font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .approved-row .meta span{font-size:11.5px; color:var(--muted);}
+  .live-frame video{ width:100%; height:100%; object-fit:cover; }
+  .live-badge{
+    position:absolute; top:12px; right:12px; background:var(--danger); font-weight:800; font-size:11px;
+    padding:5px 10px; border-radius:8px; display:flex; align-items:center; gap:5px;
+  }
+  .live-viewers{ position:absolute; top:12px; left:12px; background:rgba(0,0,0,.5); font-size:11px; padding:5px 10px; border-radius:8px; }
 
-  .stat-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:22px;}
-  .stat-box{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-m); padding:16px; text-align:center;}
-  .stat-box b{display:block; font-size:22px; font-family:var(--font-display);}
-  .stat-box span{font-size:12px; color:var(--muted);}
+  /* comments modal */
+  #comments-modal{
+    position:absolute; inset:0; z-index:60; display:none;
+    background:rgba(0,0,0,.5);
+  }
+  #comments-modal .sheet{
+    position:absolute; right:0; left:0; bottom:0; max-height:70%;
+    background:var(--surface); border-radius:22px 22px 0 0; padding:16px 16px 0;
+    display:flex; flex-direction:column;
+  }
+  #comments-modal .sheet-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  #comments-list{ overflow-y:auto; flex:1; padding-bottom:10px; }
+  .comment-row{ padding:8px 0; border-bottom:1px solid var(--line); font-size:13px; }
+  .comment-row b{ font-size:12.5px; }
+  .comment-input-row{ display:flex; gap:8px; padding:10px 0 16px; }
+  .comment-input-row input{
+    flex:1; padding:11px 13px; border-radius:12px; border:1px solid var(--line); background:var(--surface-alt); color:var(--text);
+  }
+  .comment-input-row button{ background:var(--accent); color:#fff; padding:0 16px; border-radius:12px; font-weight:700; }
 
-  /* ---------- live gate ---------- */
-  .live-hero{
-    background:linear-gradient(160deg, #1c1420, var(--surface));
-    border:1px solid rgba(229,72,77,.3); border-radius:var(--radius-l); padding:34px 26px; text-align:center;
+  .toast{
+    position:absolute; bottom:80px; right:50%; transform:translateX(50%);
+    background:rgba(20,14,26,.95); border:1px solid var(--line); padding:10px 18px; border-radius:999px;
+    font-size:12.5px; z-index:80; opacity:0; pointer-events:none; transition:.25s;
   }
-  .live-hero .lv-badge{
-    display:inline-flex; align-items:center; gap:6px; background:var(--danger); color:#fff; font-weight:800;
-    font-size:12px; padding:5px 12px; border-radius:99px; margin-bottom:16px;
-  }
-  .live-hero .lv-badge .pulse{width:7px; height:7px; border-radius:50%; background:#fff; animation:pulse 1.4s infinite;}
-  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:.25;}}
-  .live-hero h2{margin:0 0 8px; font-size:22px;}
-  .live-hero p{color:var(--muted); font-size:13.5px; margin:0 0 22px; line-height:1.8;}
-  .age-req{display:inline-flex; gap:8px; align-items:center; background:var(--surface-2); border:1px solid var(--border); padding:8px 16px; border-radius:99px; font-size:12.5px; color:var(--muted); margin-bottom:22px;}
-  .age-req b{color:var(--text);}
+  .toast.show{ opacity:1; transform:translateX(50%) translateY(-6px); }
 
-  /* ---------- modal (comments) ---------- */
-  .modal-back{
-    position:fixed; inset:0; background:rgba(4,4,6,.72); backdrop-filter:blur(4px); z-index:150;
-    display:flex; align-items:flex-end; justify-content:center;
-  }
-  @media (min-width:560px){ .modal-back{align-items:center;} }
-  .modal{
-    width:100%; max-width:460px; max-height:78vh; background:var(--surface); border:1px solid var(--border);
-    border-radius:22px 22px 0 0; display:flex; flex-direction:column; overflow:hidden;
-    animation:modal-up .22s ease;
-  }
-  @media (min-width:560px){ .modal{border-radius:var(--radius-l);} }
-  @keyframes modal-up{from{transform:translateY(30px); opacity:0;} to{transform:translateY(0); opacity:1;}}
-  .modal-head{display:flex; align-items:center; justify-content:space-between; padding:16px 18px; border-bottom:1px solid var(--border);}
-  .modal-head h3{margin:0; font-size:15px;}
-  .modal-body{flex:1; overflow-y:auto; padding:14px 18px;}
-  .comment-item{display:flex; gap:10px; margin-bottom:14px;}
-  .comment-item .cav{width:32px; height:32px; border-radius:50%; background:var(--surface-3); display:flex; align-items:center; justify-content:center; font-size:12.5px; font-weight:700; flex-shrink:0; color:var(--gold);}
-  .comment-item .ctext{flex:1;}
-  .comment-item .ctext .cname{font-size:12.5px; font-weight:700; margin-bottom:2px;}
-  .comment-item .ctext .cbody{font-size:13.5px; color:var(--text); line-height:1.6;}
-  .comment-item .ctext .cdate{font-size:10.5px; color:var(--muted-2); margin-top:3px;}
-  .no-comments{text-align:center; color:var(--muted-2); font-size:13px; padding:30px 0;}
-  .modal-foot{display:flex; gap:8px; padding:14px 18px; border-top:1px solid var(--border);}
-  .modal-foot input{
-    flex:1; background:var(--surface-2); border:1px solid var(--border); color:var(--text); border-radius:99px;
-    padding:11px 16px; font-size:13.5px; outline:none;
-  }
-  .modal-foot input:focus{border-color:var(--gold);}
-  .modal-foot button{border:none; background:var(--gold); color:#1a1406; width:42px; height:42px; border-radius:50%; font-size:15px; flex-shrink:0;}
-
-  .footer-tab-spacer{height:2px;}
-  .mini-note{font-size:11.5px; color:var(--muted-2); margin-top:8px; line-height:1.7;}
-
-  @media (max-width:640px){
-    .topbar{padding:10px 14px;}
-    .brand span.b-name{display:none;}
-    .tabs{gap:2px;}
-    .tab{padding:8px 11px; font-size:13px;}
-    .user-chip .uage{display:none;}
-  }
+  @keyframes fadeIn{ to{ opacity:1; } }
 </style>
+<!-- Firebase (real auth + database + storage — no backend server needed) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-storage-compat.js"></script>
 </head>
 <body>
-<div id="toast-stack"></div>
-<div id="app">
 
-  <!-- ============ AUTH VIEW ============ -->
-  <div id="view-auth" class="auth-wrap">
-    <div class="auth-card">
-      <div class="auth-head">
-        <div class="mark">C</div>
-        <h1>Core Platform</h1>
-        <p>منصة الفيديو القصير الخاصة بك — سجّل دخولك أو أنشئ حساباً جديداً</p>
-      </div>
+<div id="app-shell">
 
-      <div class="seg">
-        <button id="seg-login" class="active" onclick="switchAuthTab('login')">تسجيل الدخول</button>
-        <button id="seg-register" onclick="switchAuthTab('register')">حساب جديد</button>
-      </div>
-
-      <!-- login form -->
-      <form id="form-login" onsubmit="return handleLogin(event)">
-        <div class="field">
-          <label>اسم المستخدم</label>
-          <input type="text" id="login-username" placeholder="مثال: Mohamed" autocomplete="username" required>
-        </div>
-        <button type="submit" class="btn btn-primary">دخول</button>
-        <div id="login-ban-box"></div>
-        <p class="auth-note">ليس لديك حساب؟ اضغط على «حساب جديد» في الأعلى للتسجيل.</p>
-      </form>
-
-      <!-- register form -->
-      <form id="form-register" class="hidden" onsubmit="return handleRegister(event)">
-        <div class="field">
-          <label>اسم المستخدم</label>
-          <input type="text" id="reg-username" placeholder="اختر اسم مستخدم فريد" required>
-        </div>
-        <div class="field">
-          <label>البريد الإلكتروني <span class="opt">(اختياري)</span></label>
-          <input type="email" id="reg-email" placeholder="name@example.com">
-        </div>
-        <div class="field">
-          <label>تاريخ الميلاد</label>
-          <input type="date" id="reg-dob" required>
-        </div>
-        <button type="submit" class="btn btn-primary">إنشاء الحساب والدخول</button>
-        <p class="auth-note">باستخدامك المنصة، يُحسب عمرك تلقائياً من تاريخ ميلادك لتفعيل الميزات المناسبة لعمرك.</p>
-      </form>
-    </div>
+  <!-- SPLASH -->
+  <div id="splash">
+    <div class="splash-logo brand-font">S</div>
+    <div class="splash-name brand-font">Snap<span style="color:var(--accent-2)">Vibe</span></div>
+    <div class="splash-tag">لحظاتك... على طبيعتها</div>
   </div>
 
-  <!-- ============ MAIN SHELL (after login) ============ -->
-  <div id="view-shell" class="hidden">
-    <div class="topbar">
-      <div class="brand">
-        <span class="dot"></span>
-        <span class="b-name">Core Platform</span>
-      </div>
+  <!-- LOGIN / SIGNUP -->
+  <div id="login-screen">
+    <div class="login-head">
+      <div class="mark brand-font">S</div>
+      <h1 class="brand-font" id="auth-title">إنشاء حساب في SnapVibe</h1>
+      <p>حساب حقيقي محمي بواسطة Firebase Authentication</p>
+    </div>
 
-      <div class="tabs">
-        <button class="tab active" data-tab="feed" onclick="switchTab('feed')">الموجز</button>
-        <button class="tab" data-tab="upload" onclick="switchTab('upload')">رفع فيديو</button>
-        <button class="tab" data-tab="live" onclick="switchTab('live')">البث المباشر</button>
-        <button class="tab hidden" id="tab-admin" data-tab="admin" onclick="switchTab('admin')">لوحة المطور <span class="badge hidden" id="admin-badge">0</span></button>
+    <div id="signup-fields">
+      <div class="field">
+        <label>الاسم بالكامل</label>
+        <input id="in-name" type="text" placeholder="أدخل اسمك بالكامل">
       </div>
+      <div class="field">
+        <label>معرف المستخدم (User ID / اسم مستخدم)</label>
+        <input id="in-uid" type="text" placeholder="اختر معرف فريد، مثال: mohamed_01">
+      </div>
+      <div class="field">
+        <label>تاريخ الميلاد</label>
+        <input id="in-dob" type="text" placeholder="18/11/2010" inputmode="numeric">
+      </div>
+    </div>
 
-      <div class="top-actions">
-        <button class="icon-btn" title="تحديث المنصة" onclick="refreshPlatform()">⟳</button>
-        <button class="icon-btn" title="تصفير الذاكرة المحلية" onclick="confirmWipe()">🗑</button>
-        <div class="user-chip">
-          <div class="avatar" id="chip-avatar">?</div>
+    <div class="field">
+      <label>البريد الإلكتروني</label>
+      <input id="in-email" type="email" placeholder="example@email.com">
+    </div>
+    <div class="field">
+      <label>كلمة المرور</label>
+      <input id="in-password" type="password" placeholder="6 أحرف على الأقل">
+    </div>
+
+    <button class="primary-btn" id="auth-submit-btn" onclick="handleSignup()">إنشاء حساب</button>
+    <p class="login-note" id="auth-switch-note">
+      عندك حساب بالفعل؟ <a href="#" onclick="switchAuthMode('login'); return false;" style="color:var(--accent-2); font-weight:700;">سجّل دخول</a>
+    </p>
+    <p class="login-note">
+      كلمة المرور والبريد يتم التحقق منهم فعلياً بواسطة Firebase — مفيش أي بيانات دخول مكتوبة جوه كود الصفحة.<br>
+      لوحة المطورين (Admin) بتتفعل فقط للحساب اللي يتم تحديده يدوياً كمشرف من داخل Firebase Console — مش من أي بيانات تدخلها في المتصفح.
+    </p>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="main-app">
+
+    <!-- FEED -->
+    <div class="screen active" id="screen-feed">
+      <div class="top-bar">
+        <div class="logo-mini brand-font">Snap<span>Vibe</span></div>
+        <button class="live-btn" onclick="openLive()"><span class="live-dot"></span> بث مباشر</button>
+      </div>
+      <div id="feed"></div>
+    </div>
+
+    <!-- PROFILE ("أنت") -->
+    <div class="screen" id="screen-profile">
+      <div class="sub-screen">
+        <div class="sub-header"><h2 class="brand-font">حسابك</h2></div>
+        <div class="profile-card">
+          <div class="avatar" id="profile-avatar-letter">?</div>
           <div>
-            <div class="uname" id="chip-username">—</div>
-            <div class="uage" id="chip-age">—</div>
+            <div class="pname" id="profile-name">—</div>
+            <div class="pid" id="profile-id">—</div>
+            <div class="page" id="profile-age">—</div>
           </div>
-          <span class="dev-pill hidden" id="chip-dev">مطوّر</span>
         </div>
-        <button class="icon-btn" title="تسجيل الخروج" onclick="handleLogout()">⏻</button>
+
+        <div class="admin-toggle-row" id="admin-status-row" style="display:none;">
+          <div>
+            <div class="lbl">🛡️ حساب مشرف (Admin)</div>
+            <div class="sub">تم تفعيل هذه الصلاحية من داخل Firebase Console من قبل مالك المشروع</div>
+          </div>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat-box"><b id="stat-videos">0</b><span>فيديوهاتك</span></div>
+          <div class="stat-box"><b id="stat-likes">0</b><span>إعجاباتك</span></div>
+          <div class="stat-box"><b id="stat-comments">0</b><span>تعليقاتك</span></div>
+        </div>
+
+        <div class="section-title">فيديوهاتك</div>
+        <div id="profile-videos"><div class="empty-hint">لسه معملتش أي فيديو</div></div>
+
+        <div class="section-title">اللايكات اللي عملتها</div>
+        <div id="profile-likes"><div class="empty-hint">لسه معجبتش بأي فيديو</div></div>
+
+        <div class="section-title">تعليقاتك</div>
+        <div id="profile-comments"><div class="empty-hint">لسه معلقتش على حاجة</div></div>
+
+        <div id="admin-panel" style="display:none;">
+          <div class="section-title">👥 إدارة المستخدمين</div>
+          <div id="admin-users-list"></div>
+
+          <div class="section-title">🎬 مراجعة المحتوى المعلق</div>
+          <div id="admin-pending-list"><div class="empty-hint">لا يوجد محتوى بانتظار المراجعة</div></div>
+
+          <div class="section-title">🚫 الفلترة التلقائية</div>
+          <div class="admin-toggle-row">
+            <div>
+              <div class="lbl">حذف التعليقات النابية تلقائياً</div>
+              <div class="sub">يتم فحص كل تعليق وقت إرساله ومنع النابي منه مباشرة</div>
+            </div>
+            <div class="switch on" id="filter-switch" onclick="toggleAutoFilter()"></div>
+          </div>
+          <div id="admin-flagged-list"></div>
+        </div>
       </div>
     </div>
 
-    <main>
-      <!-- ---- FEED TAB ---- -->
-      <section id="tab-content-feed" class="tab-content">
-        <div class="feed-shell">
-          <div class="feed" id="feed-container"></div>
-        </div>
-      </section>
-
-      <!-- ---- UPLOAD TAB ---- -->
-      <section id="tab-content-upload" class="tab-content hidden">
-        <div class="page">
-          <div class="page-head">
-            <h2>رفع فيديو جديد</h2>
-            <p>سيدخل الفيديو في حالة «قادم وتحت مراجعة المطور» ولن يظهر للعامة إلا بعد اعتماده.</p>
-          </div>
-          <div class="card">
-            <form onsubmit="return handleUpload(event)">
-              <div class="field">
-                <label>عنوان الفيديو</label>
-                <input type="text" id="up-title" placeholder="اكتب عنواناً جذاباً" required>
-              </div>
-              <div class="field">
-                <label>الوصف</label>
-                <textarea class="tf" id="up-desc" placeholder="عن ماذا يتحدث هذا الفيديو؟" required></textarea>
-              </div>
-              <div class="field">
-                <label>رابط الفيديو <span class="opt">(MP4 مباشر)</span></label>
-                <input type="url" id="up-url" placeholder="https://example.com/video.mp4">
-              </div>
-              <div class="divider-or">أو</div>
-              <div class="field">
-                <label class="file-drop" id="file-drop-label" for="up-file">
-                  📁 اضغط لاختيار ملف فيديو من جهازك (محاكاة رفع الملف)
-                  <input type="file" id="up-file" accept="video/*" onchange="handleFilePicked(event)">
-                </label>
-                <p class="mini-note">يُفضّل استخدام رابط مباشر للفيديوهات الكبيرة لتفادي حدود التخزين المحلي للمتصفح.</p>
-              </div>
-              <button type="submit" class="btn btn-primary btn-block">إرسال للمراجعة</button>
-            </form>
-          </div>
-        </div>
-      </section>
-
-      <!-- ---- LIVE TAB ---- -->
-      <section id="tab-content-live" class="tab-content hidden">
-        <div class="page">
-          <div class="live-hero">
-            <span class="lv-badge"><span class="pulse"></span> غرفة البث المباشر</span>
-            <h2>الدخول إلى البث المباشر</h2>
-            <p>هذه الغرفة مخصصة للبالغين فقط. يتم التحقق من عمرك تلقائياً بناءً على تاريخ ميلادك المسجّل عند إنشاء الحساب.</p>
-            <div class="age-req">🔞 الحد الأدنى للعمر: <b>18 سنة</b></div>
-            <div>
-              <button class="btn btn-primary" onclick="attemptLiveEntry()">التحقق من العمر والدخول للبث</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ---- ADMIN TAB ---- -->
-      <section id="tab-content-admin" class="tab-content hidden">
-        <div class="page">
-          <div class="page-head">
-            <h2>لوحة تحكم المطور</h2>
-            <p>مراجعة الفيديوهات المعلّقة، واعتماد أو رفض الحسابات المحظورة.</p>
-          </div>
-
-          <div class="stat-grid">
-            <div class="stat-box"><b id="stat-pending">0</b><span>قيد المراجعة</span></div>
-            <div class="stat-box"><b id="stat-approved">0</b><span>منشور للعامة</span></div>
-            <div class="stat-box"><b id="stat-banned">0</b><span>حسابات محظورة</span></div>
-          </div>
-
-          <h3 style="margin:0 0 12px; font-size:15.5px;">🕓 فيديوهات قادمة وتحت المراجعة</h3>
-          <div id="admin-pending-list"></div>
-
-          <h3 style="margin:26px 0 12px; font-size:15.5px;">✅ الفيديوهات المعتمدة حالياً</h3>
-          <div id="admin-approved-list"></div>
-
-          <h3 style="margin:26px 0 12px; font-size:15.5px;">⛔ الحسابات المحظورة من البث المباشر</h3>
-          <div id="admin-banned-list"></div>
-        </div>
-      </section>
-    </main>
-  </div>
-</div>
-
-<!-- comments modal (hidden by default) -->
-<div id="comments-modal-back" class="modal-back hidden" onclick="if(event.target===this) closeComments()">
-  <div class="modal">
-    <div class="modal-head">
-      <h3 id="comments-video-title">التعليقات</h3>
-      <button class="icon-btn" onclick="closeComments()">✕</button>
+    <!-- MESSAGES -->
+    <div class="screen" id="screen-messages">
+      <div class="sub-screen">
+        <div class="sub-header"><h2 class="brand-font">الرسائل</h2></div>
+        <div id="messages-list"></div>
+      </div>
     </div>
-    <div class="modal-body" id="comments-list"></div>
-    <div class="modal-foot">
-      <input type="text" id="comment-input" placeholder="أضف تعليقاً…" onkeydown="if(event.key==='Enter'){submitComment();}">
-      <button onclick="submitComment()">➤</button>
+
+    <!-- UPLOAD / CAMERA -->
+    <div class="screen" id="screen-upload">
+      <div class="sub-screen">
+        <div class="sub-header">
+          <h2 class="brand-font">فيديو جديد</h2>
+          <button class="close-x" onclick="closeUpload()">✕</button>
+        </div>
+        <div class="camera-box" id="camera-box">
+          <div class="cam-off">اضغط "تشغيل الكاميرا" عشان تبدأ التصوير</div>
+        </div>
+        <div class="rec-controls">
+          <button onclick="startCamera()">تشغيل الكاميرا</button>
+          <button class="record" id="btn-record" onclick="toggleRecord()">ابدأ التصوير</button>
+        </div>
+        <div class="field">
+          <label>اسم الأغنية</label>
+          <input id="in-song" type="text" placeholder="مثال: اسم الأغنية - المطرب">
+        </div>
+        <div class="field">
+          <label>الوصف</label>
+          <input id="in-caption" type="text" placeholder="اكتب وصف للفيديو">
+        </div>
+        <button class="primary-btn" onclick="publishVideo()">إرسال للمراجعة والنشر</button>
+        <p class="login-note">الفيديو هيظهر في الفيد العام بعد موافقة المشرف عليه من لوحة المراجعة.</p>
+      </div>
+    </div>
+
+    <!-- LIVE -->
+    <div class="screen" id="screen-live">
+      <div class="sub-screen">
+        <div class="sub-header">
+          <h2 class="brand-font">البث المباشر</h2>
+          <button class="close-x" onclick="closeLive()">✕</button>
+        </div>
+        <div class="live-frame">
+          <div class="live-badge"><span class="live-dot"></span> مباشر</div>
+          <div class="live-viewers" id="live-viewers">👁 0</div>
+          <video id="live-video" autoplay muted playsinline></video>
+        </div>
+        <button class="primary-btn" onclick="endLive()">إنهاء البث</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div id="bottom-nav" style="display:none;">
+    <button class="nav-btn" id="nav-profile" onclick="showScreen('profile')">
+      <span class="ic">👤</span><span>أنت</span>
+    </button>
+    <button class="nav-btn" id="nav-messages" onclick="showScreen('messages')">
+      <span class="ic">✉️</span><span>الرسائل</span>
+    </button>
+    <button class="nav-btn upload" id="nav-upload" onclick="showScreen('upload')">
+      <span class="ic">+</span><span>فيديو</span>
+    </button>
+    <button class="nav-btn" id="nav-live" onclick="openLive()">
+      <span class="ic">🔴</span><span>بث</span>
+    </button>
+    <button class="nav-btn active" id="nav-home" onclick="showScreen('feed')">
+      <span class="ic">🏠</span><span>الرئيسية</span>
+    </button>
+  </div>
+
+  <!-- COMMENTS MODAL -->
+  <div id="comments-modal">
+    <div class="sheet">
+      <div class="sheet-head">
+        <h3 class="brand-font">التعليقات</h3>
+        <button class="close-x" onclick="closeComments()">✕</button>
+      </div>
+      <div id="comments-list"></div>
+      <div class="comment-input-row">
+        <input id="comment-input" type="text" placeholder="اكتب تعليق...">
+        <button onclick="submitComment()">إرسال</button>
+      </div>
     </div>
   </div>
+
+  <div class="toast" id="toast"></div>
+
 </div>
 
 <script>
-/* =========================================================================
-   Core Platform — Front-end only Enterprise Core (localStorage powered)
-   ========================================================================= */
+/* ============================================================
+   SnapVibe — Firebase-backed app
+   Real Authentication: Firebase Auth (email + password).
+   Real Database: Firestore.
+   Real Access Control: Firestore Security Rules (server-side —
+   see firestore.rules). isAdmin/banned flags on a user's own
+   document can ONLY be changed by an existing admin per the
+   rules — never by the client, no matter what the JS here says.
+   The FIRST admin must be set manually in the Firebase Console
+   by the project owner. That is intentional: there is no
+   "secret login" that grants admin, because any such secret
+   shipped to the browser would be visible to everyone.
+   ============================================================ */
 
-const STORE_KEYS = {
-  users: 'evc_users',
-  session: 'evc_session',
-  bans: 'evc_bans',
-  videos: 'evc_videos',
+// ---- 1) PASTE YOUR OWN FIREBASE PROJECT CONFIG HERE ----
+// Firebase Console → Project settings → General → Your apps → SDK setup
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage();
 
-const DEV_USERNAME = 'mohamed'; // lower-cased compare
-const LIVE_MIN_AGE = 18;
-const BAN_YEARS = 4;
+let CURRENT_UID = null;
+let CURRENT_PROFILE = null;
+let authMode = 'signup';
+let mediaStream = null;
+let mediaRecorder = null;
+let recordedChunks = [];
+let currentUploadBlob = null;
+let commentsTargetId = null;
+let feedUnsub = null;
+let pendingUnsub = null;
+let usersUnsub = null;
+let flaggedUnsub = null;
+let autoFilterOn = true;
 
-let activeVideoId = null;     // currently open comments modal target
-let currentTab = 'feed';
+// Basic Arabic/English profanity word list — expand as needed.
+// Real, unbypassable enforcement of "no profanity" should ALSO
+// live in a Cloud Function trigger server-side; this client-side
+// list gives immediate UX feedback and blocks the common cases.
+const BAD_WORDS = ['كلب','حمار','غبي','قذر','wtf','fuck','shit','bitch','asshole'];
 
-/* ---------------------------- storage helpers ---------------------------- */
-
-function loadJSON(key, fallback){
-  try{
-    const raw = localStorage.getItem(key);
-    if(!raw) return fallback;
-    return JSON.parse(raw);
-  }catch(e){
-    console.error('تعذرت قراءة', key, e);
-    return fallback;
-  }
-}
-function saveJSON(key, value){
-  try{
-    localStorage.setItem(key, JSON.stringify(value));
-    return true;
-  }catch(e){
-    console.error('تعذر الحفظ', key, e);
-    toast('تعذر حفظ البيانات محلياً (قد تكون الذاكرة ممتلئة)', 'err');
-    return false;
-  }
-}
-
-function getUsers(){ return loadJSON(STORE_KEYS.users, []); }
-function setUsers(list){ saveJSON(STORE_KEYS.users, list); }
-
-function getBans(){ return loadJSON(STORE_KEYS.bans, {}); }
-function setBans(obj){ saveJSON(STORE_KEYS.bans, obj); }
-
-function getVideos(){ return loadJSON(STORE_KEYS.videos, []); }
-function setVideos(list){ saveJSON(STORE_KEYS.videos, list); }
-
-function getSession(){ return loadJSON(STORE_KEYS.session, null); }
-function setSession(username){ saveJSON(STORE_KEYS.session, username); }
-function clearSession(){ localStorage.removeItem(STORE_KEYS.session); }
-
-/* ------------------------------- utilities ------------------------------- */
-
-function uid(){ return 'v_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8); }
-
-function isDev(username){
-  return !!username && username.trim().toLowerCase() === DEV_USERNAME;
+function containsProfanity(text){
+  const t = String(text||'').toLowerCase();
+  return BAD_WORDS.some(w => t.includes(w.toLowerCase()));
 }
 
-// دقيق: يحسب الفرق بالسنوات الكاملة بين تاريخين، مع مراعاة الشهر واليوم (والسنوات الكبيسة ضمنياً عبر كائن Date)
-function calcAge(dobStr, atDate){
-  const dob = new Date(dobStr + 'T00:00:00');
-  const now = atDate ? new Date(atDate) : new Date();
-  if(isNaN(dob.getTime())) return null;
-  let age = now.getFullYear() - dob.getFullYear();
-  const monthDiff = now.getMonth() - dob.getMonth();
-  const dayDiff = now.getDate() - dob.getDate();
-  if(monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)){
-    age--;
-  }
-  return age;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2000);
 }
 
-function formatDuration(ms){
-  if(ms <= 0) return 'انتهت المدة';
-  const days = Math.floor(ms / (1000*60*60*24));
-  const years = Math.floor(days/365);
-  const remDays = days % 365;
-  const parts = [];
-  if(years>0) parts.push(years + ' سنة');
-  if(remDays>0) parts.push(remDays + ' يوم');
-  if(parts.length===0) parts.push('أقل من يوم');
-  return parts.join(' و ');
-}
-
-function escapeHTML(str){
-  const div = document.createElement('div');
-  div.textContent = str == null ? '' : String(str);
-  return div.innerHTML;
-}
-
-function initials(name){
-  if(!name) return '؟';
-  return name.trim().charAt(0).toUpperCase();
-}
-
-function toast(msg, type){
-  const stack = document.getElementById('toast-stack');
-  const el = document.createElement('div');
-  el.className = 'toast' + (type ? ' ' + type : '');
-  const icon = type==='ok' ? '✅' : type==='err' ? '⛔' : type==='warn' ? '⚠️' : 'ℹ️';
-  el.innerHTML = '<span>' + icon + '</span><span>' + escapeHTML(msg) + '</span>';
-  stack.appendChild(el);
+/* ---------------- SPLASH -> LOGIN ---------------- */
+window.addEventListener('load', ()=>{
   setTimeout(()=>{
-    el.style.transition = 'opacity .3s ease, transform .3s ease';
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(-8px)';
-    setTimeout(()=> el.remove(), 320);
-  }, 3200);
-}
+    document.getElementById('login-screen').style.display = 'flex';
+  }, 1900);
+});
 
-/* ------------------------------- auth logic ------------------------------- */
-
-function switchAuthTab(which){
-  const isLogin = which === 'login';
-  document.getElementById('seg-login').classList.toggle('active', isLogin);
-  document.getElementById('seg-register').classList.toggle('active', !isLogin);
-  document.getElementById('form-login').classList.toggle('hidden', !isLogin);
-  document.getElementById('form-register').classList.toggle('hidden', isLogin);
-  document.getElementById('login-ban-box').innerHTML = '';
-}
-
-function handleRegister(evt){
-  evt.preventDefault();
-  const username = document.getElementById('reg-username').value.trim();
-  const email = document.getElementById('reg-email').value.trim();
-  const dob = document.getElementById('reg-dob').value;
-
-  if(!username){ toast('يرجى إدخال اسم مستخدم', 'err'); return false; }
-  if(!dob){ toast('يرجى إدخال تاريخ الميلاد', 'err'); return false; }
-
-  const dobDate = new Date(dob + 'T00:00:00');
-  if(isNaN(dobDate.getTime()) || dobDate.getTime() > Date.now()){
-    toast('تاريخ الميلاد غير صالح', 'err');
-    return false;
+/* ---------------- AUTH MODE SWITCH ---------------- */
+function switchAuthMode(mode){
+  authMode = mode;
+  const signupFields = document.getElementById('signup-fields');
+  const title = document.getElementById('auth-title');
+  const btn = document.getElementById('auth-submit-btn');
+  const note = document.getElementById('auth-switch-note');
+  if(mode === 'signup'){
+    signupFields.style.display = 'block';
+    title.textContent = 'إنشاء حساب في SnapVibe';
+    btn.textContent = 'إنشاء حساب';
+    btn.setAttribute('onclick','handleSignup()');
+    note.innerHTML = 'عندك حساب بالفعل؟ <a href="#" onclick="switchAuthMode(\'login\'); return false;" style="color:var(--accent-2); font-weight:700;">سجّل دخول</a>';
+  } else {
+    signupFields.style.display = 'none';
+    title.textContent = 'تسجيل الدخول إلى SnapVibe';
+    btn.textContent = 'دخول';
+    btn.setAttribute('onclick','handleLoginReal()');
+    note.innerHTML = 'مفيش حساب لسه؟ <a href="#" onclick="switchAuthMode(\'signup\'); return false;" style="color:var(--accent-2); font-weight:700;">اعمل حساب جديد</a>';
   }
-
-  const users = getUsers();
-  if(users.some(u => u.username.toLowerCase() === username.toLowerCase())){
-    toast('اسم المستخدم مستخدم بالفعل، جرّب اسماً آخر أو سجّل الدخول', 'err');
-    return false;
-  }
-
-  const bans = getBans();
-  const banUntil = bans[username.toLowerCase()];
-  if(banUntil && banUntil > Date.now()){
-    showBanNotice(banUntil);
-    toast('هذا الحساب محظور حالياً من إنشاء جلسة جديدة', 'err');
-    return false;
-  }
-
-  const newUser = { username, email: email || null, dob, createdAt: Date.now() };
-  users.push(newUser);
-  setUsers(users);
-  setSession(username);
-  toast('تم إنشاء الحساب بنجاح، أهلاً بك ' + username, 'ok');
-  enterApp(username);
-  return false;
 }
 
-function handleLogin(evt){
-  evt.preventDefault();
-  const username = document.getElementById('login-username').value.trim();
-  document.getElementById('login-ban-box').innerHTML = '';
-  if(!username){ toast('يرجى إدخال اسم المستخدم', 'err'); return false; }
+/* ---------------- SIGNUP ---------------- */
+async function handleSignup(){
+  const name = document.getElementById('in-name').value.trim();
+  const uid = document.getElementById('in-uid').value.trim();
+  const dob = document.getElementById('in-dob').value.trim();
+  const email = document.getElementById('in-email').value.trim();
+  const password = document.getElementById('in-password').value;
 
-  const bans = getBans();
-  const banUntil = bans[username.toLowerCase()];
-  if(banUntil && banUntil > Date.now()){
-    showBanNotice(banUntil);
-    return false;
-  }
-
-  const users = getUsers();
-  let user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
-
-  // Developer auto-provision: إن لم يوجد حساب باسم المطوّر بعد، يُنشأ تلقائياً عند أول دخول
-  if(!user && isDev(username)){
-    user = { username: username, email:null, dob:null, createdAt: Date.now(), isDevAccount:true };
-    users.push(user);
-    setUsers(users);
-  }
-
-  if(!user){
-    toast('لا يوجد حساب بهذا الاسم. جرّب إنشاء حساب جديد', 'err');
-    return false;
-  }
-
-  setSession(user.username);
-  toast('مرحباً بعودتك ' + user.username, 'ok');
-  enterApp(user.username);
-  return false;
-}
-
-function showBanNotice(banUntil){
-  const remaining = formatDuration(banUntil - Date.now());
-  document.getElementById('login-ban-box').innerHTML =
-    '<div class="ban-box">⛔ هذا الحساب محظور من ميزة البث المباشر ودخول المنصة بسبب مخالفة شرط العمر (18+).<br>الوقت المتبقي على انتهاء الحظر: <b>' + escapeHTML(remaining) + '</b></div>';
-}
-
-function handleLogout(){
-  clearSession();
-  document.getElementById('view-shell').classList.add('hidden');
-  document.getElementById('view-auth').classList.remove('hidden');
-  document.getElementById('login-username').value = '';
-  switchAuthTab('login');
-  toast('تم تسجيل الخروج', 'ok');
-}
-
-/* ------------------------------ app bootstrap ------------------------------ */
-
-function getCurrentUser(){
-  const username = getSession();
-  if(!username) return null;
-  const users = getUsers();
-  return users.find(u => u.username.toLowerCase() === username.toLowerCase()) || null;
-}
-
-function enterApp(username){
-  const user = getUsers().find(u => u.username.toLowerCase() === username.toLowerCase());
-  if(!user){ handleLogout(); return; }
-
-  document.getElementById('view-auth').classList.add('hidden');
-  document.getElementById('view-shell').classList.remove('hidden');
-
-  renderUserChip(user);
-  document.getElementById('tab-admin').classList.toggle('hidden', !isDev(user.username));
-
-  switchTab('feed');
-  renderFeed();
-  renderAdmin();
-}
-
-function renderUserChip(user){
-  const age = user.dob ? calcAge(user.dob) : null;
-  document.getElementById('chip-username').textContent = user.username;
-  document.getElementById('chip-age').textContent = age !== null ? ('العمر: ' + age + ' سنة') : 'حساب مطوّر';
-  const avatar = document.getElementById('chip-avatar');
-  avatar.textContent = initials(user.username);
-  avatar.classList.toggle('dev', isDev(user.username));
-  document.getElementById('chip-dev').classList.toggle('hidden', !isDev(user.username));
-}
-
-/* --------------------------------- tabs --------------------------------- */
-
-function switchTab(tab){
-  currentTab = tab;
-  document.querySelectorAll('.tab').forEach(btn=>{
-    btn.classList.toggle('active', btn.dataset.tab === tab);
-  });
-  document.querySelectorAll('.tab-content').forEach(sec=>{
-    sec.classList.toggle('hidden', sec.id !== 'tab-content-' + tab);
-  });
-  if(tab === 'feed') renderFeed();
-  if(tab === 'admin') renderAdmin();
-}
-
-/* ------------------------------ platform ctrl ------------------------------ */
-
-function refreshPlatform(){
-  renderFeed();
-  renderAdmin();
-  const user = getCurrentUser();
-  if(user) renderUserChip(user);
-  toast('تم تحديث بيانات المنصة', 'ok');
-}
-
-function confirmWipe(){
-  const ok = confirm('سيؤدي هذا إلى حذف جميع الحسابات، الفيديوهات، والحظورات المخزّنة محلياً في هذا المتصفح بشكل نهائي. هل أنت متأكد؟');
-  if(!ok) return;
-  Object.values(STORE_KEYS).forEach(k => localStorage.removeItem(k));
-  toast('تم تصفير الذاكرة المحلية بالكامل', 'warn');
-  setTimeout(()=> location.reload(), 700);
-}
-
-/* -------------------------------- live gate -------------------------------- */
-
-function attemptLiveEntry(){
-  const user = getCurrentUser();
-  if(!user){ toast('يجب تسجيل الدخول أولاً', 'err'); return; }
-
-  if(!user.dob){
-    toast('لا يوجد تاريخ ميلاد مسجّل لهذا الحساب لإجراء التحقق', 'err');
+  if(!name || !uid || !dob || !email || !password){
+    toast('من فضلك املأ كل الحقول');
     return;
   }
-
-  const age = calcAge(user.dob);
-  if(age === null){
-    toast('تعذر حساب العمر من تاريخ الميلاد المسجّل', 'err');
+  if(!parseDob(dob)){
+    toast('تاريخ الميلاد لازم يكون بصيغة DD/MM/YYYY');
     return;
   }
-
-  if(age >= LIVE_MIN_AGE){
-    toast('تم التحقق من العمر (' + age + ' سنة) — جارٍ فتح غرفة البث المباشر', 'ok');
-    alert('🔴 تم التحقق بنجاح! عمرك ' + age + ' سنة.\nيمكنك الآن الدخول إلى غرفة البث المباشر.');
+  if(password.length < 6){
+    toast('كلمة المرور لازم تكون 6 أحرف على الأقل');
     return;
   }
-
-  // العمر أقل من 18 — تفعيل نظام العقوبات
-  const bans = getBans();
-  const banUntilTs = Date.now() + BAN_YEARS * 365 * 24 * 60 * 60 * 1000;
-  bans[user.username.toLowerCase()] = banUntilTs;
-  setBans(bans);
-
-  alert('⛔ تم رفض الطلب: عمرك المسجّل هو ' + age + ' سنة وهو أقل من الحد الأدنى (18 سنة).\nتم فرض حظر لمدة ' + BAN_YEARS + ' سنوات على هذا الحساب، وسيتم تسجيل خروجك الآن.');
-
-  clearSession();
-  document.getElementById('view-shell').classList.add('hidden');
-  document.getElementById('view-auth').classList.remove('hidden');
-  switchAuthTab('login');
-  document.getElementById('login-username').value = user.username;
-  showBanNotice(banUntilTs);
-  toast('تم حظر الحساب لمدة ' + BAN_YEARS + ' سنوات وتسجيل الخروج تلقائياً', 'err');
-}
-
-/* -------------------------------- uploading -------------------------------- */
-
-let pickedFileDataUrl = null;
-let pickedFileName = null;
-
-function handleFilePicked(evt){
-  const file = evt.target.files[0];
-  const label = document.getElementById('file-drop-label');
-  if(!file){
-    pickedFileDataUrl = null; pickedFileName = null;
-    label.classList.remove('has-file');
-    label.childNodes[0].textContent = '📁 اضغط لاختيار ملف فيديو من جهازك (محاكاة رفع الملف)';
-    return;
-  }
-  const MAX_BYTES = 15 * 1024 * 1024; // 15MB احتياطي لحدود localStorage
-  if(file.size > MAX_BYTES){
-    toast('الملف كبير جداً على التخزين المحلي، الرجاء استخدام رابط فيديو بدلاً من ذلك', 'err');
-    evt.target.value = '';
-    pickedFileDataUrl = null; pickedFileName = null;
-    return;
-  }
-  const reader = new FileReader();
-  reader.onload = function(e){
-    pickedFileDataUrl = e.target.result;
-    pickedFileName = file.name;
-    label.classList.add('has-file');
-    label.childNodes[0].textContent = '✅ تم اختيار: ' + file.name;
-  };
-  reader.onerror = function(){
-    toast('تعذرت قراءة الملف المحدد', 'err');
-  };
-  reader.readAsDataURL(file);
-}
-
-function handleUpload(evt){
-  evt.preventDefault();
-  const user = getCurrentUser();
-  if(!user){ toast('يجب تسجيل الدخول أولاً', 'err'); return false; }
-
-  const title = document.getElementById('up-title').value.trim();
-  const desc = document.getElementById('up-desc').value.trim();
-  const url = document.getElementById('up-url').value.trim();
-
-  if(!title || !desc){ toast('يرجى تعبئة العنوان والوصف', 'err'); return false; }
-
-  const src = url || pickedFileDataUrl;
-  if(!src){ toast('يرجى إدخال رابط فيديو أو اختيار ملف من جهازك', 'err'); return false; }
-
-  const video = {
-    id: uid(),
-    title, desc,
-    src,
-    uploader: user.username,
-    status: 'pending',
-    likes: 0,
-    likedBy: [],
-    comments: [],
-    createdAt: Date.now(),
-  };
-
-  const videos = getVideos();
-  videos.unshift(video);
-  const saved = setVideos(videos);
-  if(saved === false) return false;
-
-  evt.target.reset();
-  pickedFileDataUrl = null; pickedFileName = null;
-  document.getElementById('file-drop-label').classList.remove('has-file');
-  document.getElementById('file-drop-label').childNodes[0].textContent = '📁 اضغط لاختيار ملف فيديو من جهازك (محاكاة رفع الملف)';
-
-  toast('تم إرسال الفيديو، وهو الآن «قادم وتحت مراجعة المطوّر»', 'ok');
-  renderAdmin();
-  return false;
-}
-
-/* ---------------------------------- feed ---------------------------------- */
-
-function renderFeed(){
-  const container = document.getElementById('feed-container');
-  const videos = getVideos().filter(v => v.status === 'approved').sort((a,b)=> b.createdAt - a.createdAt);
-
-  if(videos.length === 0){
-    container.innerHTML =
-      '<div class="empty-feed">'+
-        '<div class="em-icon">🎬</div>'+
-        '<h3>لا توجد فيديوهات منشورة بعد</h3>'+
-        '<p>بمجرد أن يعتمد المطوّر أحد الفيديوهات المرفوعة، ستظهر هنا مباشرةً في الموجز العام.</p>'+
-      '</div>';
-    return;
-  }
-
-  const user = getCurrentUser();
-  container.innerHTML = videos.map(v => renderSlide(v, user)).join('');
-}
-
-function renderSlide(v, user){
-  const liked = user && v.likedBy.includes(user.username);
-  return (
-    '<div class="slide" data-vid="'+v.id+'">'+
-      '<video src="'+encodeURI(v.src)+'" playsinline muted loop controls preload="metadata"></video>'+
-      '<div class="veil"></div>'+
-      '<div class="side-rail">'+
-        '<div class="rail-btn"><div class="rail-avatar">'+escapeHTML(initials(v.uploader))+'</div></div>'+
-        '<button class="rail-btn '+(liked?'liked':'')+'" onclick="toggleLike(\''+v.id+'\')">'+
-          '<div class="rail-circle">'+(liked?'❤️':'🤍')+'</div>'+
-          '<span class="rail-count">'+v.likes+'</span>'+
-        '</button>'+
-        '<button class="rail-btn" onclick="openComments(\''+v.id+'\')">'+
-          '<div class="rail-circle">💬</div>'+
-          '<span class="rail-count">'+v.comments.length+'</span>'+
-        '</button>'+
-        '<button class="rail-btn" onclick="shareVideo(\''+v.id+'\')">'+
-          '<div class="rail-circle">↗️</div>'+
-          '<span class="rail-count">مشاركة</span>'+
-        '</button>'+
-      '</div>'+
-      '<div class="slide-info">'+
-        '<div class="up">@'+escapeHTML(v.uploader)+'</div>'+
-        '<p class="title">'+escapeHTML(v.title)+'</p>'+
-        '<p class="desc">'+escapeHTML(v.desc)+'</p>'+
-      '</div>'+
-    '</div>'
-  );
-}
-
-function toggleLike(videoId){
-  const user = getCurrentUser();
-  if(!user){ toast('يجب تسجيل الدخول للإعجاب', 'err'); return; }
-  const videos = getVideos();
-  const v = videos.find(x=>x.id===videoId);
-  if(!v) return;
-  const idx = v.likedBy.indexOf(user.username);
-  if(idx === -1){
-    v.likedBy.push(user.username);
-    v.likes++;
-  }else{
-    v.likedBy.splice(idx,1);
-    v.likes = Math.max(0, v.likes-1);
-  }
-  setVideos(videos);
-  renderFeed();
-}
-
-function shareVideo(videoId){
-  const link = location.href.split('#')[0] + '#video-' + videoId;
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(link).then(()=>{
-      toast('تم نسخ رابط الفيديو إلى الحافظة', 'ok');
-    }).catch(()=>{
-      prompt('انسخ رابط المشاركة:', link);
+  try{
+    const cred = await auth.createUserWithEmailAndPassword(email, password);
+    const age = calcAge(dob);
+    await db.collection('users').doc(cred.user.uid).set({
+      name, handle: uid, dob, age,
+      isAdmin: false, banned: false,
+      myVideos: [], myLikes: [], myComments: [],
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
-  }else{
-    prompt('انسخ رابط المشاركة:', link);
+    toast('تم إنشاء الحساب بنجاح 🎉');
+  }catch(e){
+    toast(friendlyAuthError(e));
   }
 }
 
-/* -------------------------------- comments -------------------------------- */
-
-function openComments(videoId){
-  activeVideoId = videoId;
-  const videos = getVideos();
-  const v = videos.find(x=>x.id===videoId);
-  if(!v) return;
-  document.getElementById('comments-video-title').textContent = 'التعليقات — ' + v.title;
-  renderCommentsList(v);
-  document.getElementById('comments-modal-back').classList.remove('hidden');
-  document.getElementById('comment-input').value = '';
-  document.getElementById('comment-input').focus();
-}
-
-function renderCommentsList(v){
-  const list = document.getElementById('comments-list');
-  if(!v.comments.length){
-    list.innerHTML = '<div class="no-comments">لا توجد تعليقات بعد، كن أول من يعلّق 👋</div>';
+/* ---------------- LOGIN ---------------- */
+async function handleLoginReal(){
+  const email = document.getElementById('in-email').value.trim();
+  const password = document.getElementById('in-password').value;
+  if(!email || !password){
+    toast('من فضلك أدخل البريد الإلكتروني وكلمة المرور');
     return;
   }
-  list.innerHTML = v.comments.slice().reverse().map(c=>{
-    const d = new Date(c.date);
-    return (
-      '<div class="comment-item">'+
-        '<div class="cav">'+escapeHTML(initials(c.user))+'</div>'+
-        '<div class="ctext">'+
-          '<div class="cname">'+escapeHTML(c.user)+'</div>'+
-          '<div class="cbody">'+escapeHTML(c.text)+'</div>'+
-          '<div class="cdate">'+d.toLocaleString('ar-EG')+'</div>'+
-        '</div>'+
-      '</div>'
-    );
-  }).join('');
-}
-
-function submitComment(){
-  const user = getCurrentUser();
-  if(!user){ toast('يجب تسجيل الدخول للتعليق', 'err'); return; }
-  const input = document.getElementById('comment-input');
-  const text = input.value.trim();
-  if(!text) return;
-
-  const videos = getVideos();
-  const v = videos.find(x=>x.id===activeVideoId);
-  if(!v) return;
-
-  v.comments.push({ user: user.username, text, date: Date.now() });
-  setVideos(videos);
-  input.value = '';
-  renderCommentsList(v);
-  renderFeed();
-}
-
-function closeComments(){
-  document.getElementById('comments-modal-back').classList.add('hidden');
-  activeVideoId = null;
-}
-
-/* --------------------------------- admin --------------------------------- */
-
-function renderAdmin(){
-  const user = getCurrentUser();
-  if(!user || !isDev(user.username)) return;
-
-  const videos = getVideos();
-  const pending = videos.filter(v=>v.status==='pending').sort((a,b)=>b.createdAt-a.createdAt);
-  const approved = videos.filter(v=>v.status==='approved').sort((a,b)=>b.createdAt-a.createdAt);
-  const bans = getBans();
-  const activeBans = Object.entries(bans).filter(([,until]) => until > Date.now());
-
-  document.getElementById('stat-pending').textContent = pending.length;
-  document.getElementById('stat-approved').textContent = approved.length;
-  document.getElementById('stat-banned').textContent = activeBans.length;
-
-  const badge = document.getElementById('admin-badge');
-  if(pending.length > 0){
-    badge.textContent = pending.length;
-    badge.classList.remove('hidden');
-  }else{
-    badge.classList.add('hidden');
+  try{
+    await auth.signInWithEmailAndPassword(email, password);
+  }catch(e){
+    toast(friendlyAuthError(e));
   }
-
-  const pendingList = document.getElementById('admin-pending-list');
-  pendingList.innerHTML = pending.length ? pending.map(v=>{
-    const d = new Date(v.createdAt);
-    return (
-      '<div class="pending-item">'+
-        '<div class="pending-thumb"><video src="'+encodeURI(v.src)+'" muted></video></div>'+
-        '<div class="pending-body">'+
-          '<span class="status-chip">🕓 فيديو قادم وتحت مراجعة المطور</span>'+
-          '<h4>'+escapeHTML(v.title)+'</h4>'+
-          '<p>'+escapeHTML(v.desc)+'</p>'+
-          '<div class="pending-meta">رفعه: @'+escapeHTML(v.uploader)+' — '+d.toLocaleString('ar-EG')+'</div>'+
-          '<div class="pending-actions">'+
-            '<button class="btn btn-ok btn-sm" onclick="approveVideo(\''+v.id+'\')">✔ قبول ونشر فوري</button>'+
-            '<button class="btn btn-danger btn-sm" onclick="rejectVideo(\''+v.id+'\')">✕ رفض وحذف نهائي</button>'+
-          '</div>'+
-        '</div>'+
-      '</div>'
-    );
-  }).join('') : '<p class="mini-note">لا توجد فيديوهات بانتظار المراجعة حالياً.</p>';
-
-  const approvedList = document.getElementById('admin-approved-list');
-  approvedList.innerHTML = approved.length ? approved.map(v=>{
-    return (
-      '<div class="approved-row">'+
-        '<div class="th"><video src="'+encodeURI(v.src)+'" muted></video></div>'+
-        '<div class="meta"><h5>'+escapeHTML(v.title)+'</h5><span>@'+escapeHTML(v.uploader)+' · '+v.likes+' إعجاب · '+v.comments.length+' تعليق</span></div>'+
-        '<button class="btn btn-danger btn-sm" onclick="rejectVideo(\''+v.id+'\')">حذف</button>'+
-      '</div>'
-    );
-  }).join('') : '<p class="mini-note">لا توجد فيديوهات منشورة بعد.</p>';
-
-  const bannedList = document.getElementById('admin-banned-list');
-  bannedList.innerHTML = activeBans.length ? activeBans.map(([uname, until])=>{
-    return (
-      '<div class="approved-row">'+
-        '<div class="meta"><h5>@'+escapeHTML(uname)+'</h5><span>الحظر ينتهي بعد: '+escapeHTML(formatDuration(until-Date.now()))+'</span></div>'+
-        '<button class="btn btn-ghost btn-sm" onclick="liftBan(\''+uname+'\')">رفع الحظر</button>'+
-      '</div>'
-    );
-  }).join('') : '<p class="mini-note">لا يوجد أي حساب محظور حالياً.</p>';
 }
 
-function approveVideo(videoId){
-  const videos = getVideos();
-  const v = videos.find(x=>x.id===videoId);
-  if(!v) return;
-  v.status = 'approved';
-  setVideos(videos);
-  toast('تم اعتماد الفيديو ونشره للعامة', 'ok');
-  renderAdmin();
-  renderFeed();
+function friendlyAuthError(e){
+  const map = {
+    'auth/email-already-in-use': 'البريد الإلكتروني ده مسجل بالفعل — سجّل دخول بدل إنشاء حساب',
+    'auth/invalid-email': 'البريد الإلكتروني غير صحيح',
+    'auth/weak-password': 'كلمة المرور ضعيفة، اختار كلمة أقوى',
+    'auth/wrong-password': 'كلمة المرور غير صحيحة',
+    'auth/user-not-found': 'مفيش حساب بهذا البريد الإلكتروني',
+    'auth/invalid-credential': 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
+    'auth/too-many-requests': 'محاولات كتير غلط — حاول تاني بعد شوية'
+  };
+  return map[e.code] || ('حصل خطأ: ' + e.message);
 }
 
-function rejectVideo(videoId){
-  const ok = confirm('هل أنت متأكد من رفض وحذف هذا الفيديو نهائياً؟ لا يمكن التراجع عن هذا الإجراء.');
-  if(!ok) return;
-  let videos = getVideos();
-  videos = videos.filter(x=>x.id!==videoId);
-  setVideos(videos);
-  toast('تم حذف الفيديو نهائياً من النظام', 'warn');
-  renderAdmin();
-  renderFeed();
+function parseDob(dobStr){
+  const parts = String(dobStr||'').trim().split('/');
+  if(parts.length !== 3) return null;
+  const day = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10);
+  const year = parseInt(parts[2], 10);
+  if(!day || !month || !year) return null;
+  const d = new Date(year, month - 1, day);
+  if(isNaN(d) || d.getFullYear() !== year || d.getMonth() !== month - 1 || d.getDate() !== day) return null;
+  return d;
+}
+function calcAge(dobStr){
+  const dob = parseDob(dobStr);
+  if(!dob) return '—';
+  const diff = Date.now() - dob.getTime();
+  const ageDt = new Date(diff);
+  return Math.abs(ageDt.getUTCFullYear() - 1970);
 }
 
-function liftBan(username){
-  const bans = getBans();
-  delete bans[username.toLowerCase()];
-  setBans(bans);
-  toast('تم رفع الحظر عن @' + username, 'ok');
-  renderAdmin();
-}
-
-/* --------------------------------- init --------------------------------- */
-
-(function init(){
-  // مفاتيح افتراضية إن لم تكن موجودة
-  if(localStorage.getItem(STORE_KEYS.users) === null) setUsers([]);
-  if(localStorage.getItem(STORE_KEYS.bans) === null) setBans({});
-  if(localStorage.getItem(STORE_KEYS.videos) === null) setVideos([]);
-
-  const session = getSession();
-  if(session){
-    const user = getUsers().find(u=>u.username.toLowerCase()===session.toLowerCase());
-    const bans = getBans();
-    const banUntil = bans[session.toLowerCase()];
-    if(banUntil && banUntil > Date.now()){
-      clearSession();
-      switchAuthTab('login');
-      document.getElementById('login-username').value = session;
-      showBanNotice(banUntil);
-    }else if(user){
-      enterApp(user.username);
+/* ---------------- AUTH STATE ---------------- */
+auth.onAuthStateChanged(async (user)=>{
+  if(user){
+    const snap = await db.collection('users').doc(user.uid).get();
+    if(!snap.exists){
+      // Auth account exists but no profile doc yet (edge case) — sign out.
+      auth.signOut();
       return;
     }
+    const profile = snap.data();
+    if(profile.banned){
+      toast('هذا الحساب محظور من قبل الإدارة');
+      auth.signOut();
+      return;
+    }
+    CURRENT_UID = user.uid;
+    CURRENT_PROFILE = profile;
+
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('main-app').style.display = 'block';
+    document.getElementById('bottom-nav').style.display = 'flex';
+
+    listenFeed();
+    // Live-update this user's own profile doc (covers admin promotion, bans, stat changes)
+    db.collection('users').doc(user.uid).onSnapshot(s=>{
+      if(!s.exists) return;
+      CURRENT_PROFILE = s.data();
+      if(CURRENT_PROFILE.banned){
+        toast('تم حظر حسابك من قبل الإدارة');
+        auth.signOut();
+        return;
+      }
+      renderProfile();
+    });
+  } else {
+    CURRENT_UID = null;
+    CURRENT_PROFILE = null;
+    if(feedUnsub) feedUnsub();
+    if(pendingUnsub) pendingUnsub();
+    if(usersUnsub) usersUnsub();
+    if(flaggedUnsub) flaggedUnsub();
+    document.getElementById('main-app').style.display = 'none';
+    document.getElementById('bottom-nav').style.display = 'none';
   }
-  switchAuthTab('login');
-})();
+});
+
+/* ---------------- NAVIGATION ---------------- */
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const map = {feed:'nav-home', profile:'nav-profile', messages:'nav-messages', upload:'nav-upload'};
+  if(map[name]) document.getElementById(map[name]).classList.add('active');
+  if(name==='profile') renderProfile();
+  if(name==='messages') renderMessages();
+}
+
+/* ---------------- FEED (approved videos only — enforced by security rules) ---------------- */
+function listenFeed(){
+  if(feedUnsub) feedUnsub();
+  feedUnsub = db.collection('videos')
+    .where('status','==','approved')
+    .orderBy('createdAt','desc')
+    .onSnapshot(snap=>{
+      const videos = [];
+      snap.forEach(doc=> videos.push({id:doc.id, ...doc.data()}));
+      renderFeed(videos.length ? videos : seedVideos());
+    }, err=>{
+      // Likely missing index or offline — fall back to demo content.
+      renderFeed(seedVideos());
+    });
+}
+
+function seedVideos(){
+  const demoAuthors = [
+    {name:'ياسمين خالد', caption:'يوم في حياتي 🌸', song:'أغنية صيفية - مجهول'},
+    {name:'كريم سامي', caption:'تحدي الرقص الجديد 🔥', song:'بيت - محمد حماقي'},
+    {name:'نور الهدى', caption:'وصفة سريعة ولذيذة 🍰', song:'أجواء - أحمد سعد'},
+    {name:'عمر فتحي', caption:'لحظات من الرحلة ✈️', song:'مسافر - تامر حسني'},
+    {name:'سارة عادل', caption:'روتين الصباح ☀️', song:'صباح الخير - إليسا'}
+  ];
+  return demoAuthors.map((a,i)=>({
+    id:'demo_'+i, isDemo:true, authorName:a.name, caption:a.caption, song:a.song,
+    videoURL:null, likes: 120 + i*37, likedBy: [],
+    comments: [{name:a.name, text:'شكراً لمتابعتكم! ❤️'}]
+  }));
+}
+
+function renderFeed(videos){
+  const feed = document.getElementById('feed');
+  feed.innerHTML = '';
+  videos.forEach(v=>{
+    const card = document.createElement('div');
+    card.className = 'video-card';
+    let mediaHTML = '';
+    if(v.videoURL){
+      mediaHTML = `<video src="${v.videoURL}" loop muted autoplay playsinline></video>`;
+    } else {
+      const seed = String(v.id).length;
+      mediaHTML = `<div class="fallback-bg" style="background:linear-gradient(160deg, hsl(${(seed*47)%360},55%,22%), hsl(${(seed*97)%360},50%,14%));">🎬 فيديو تجريبي — ${escapeHtml(v.caption||'')}</div>`;
+    }
+    const liked = CURRENT_UID && (v.likedBy||[]).includes(CURRENT_UID);
+    const comments = v.comments || [];
+    card.innerHTML = `
+      ${mediaHTML}
+      <div class="video-shade"></div>
+      <div class="side-actions">
+        <div class="action">
+          <button class="icon-circle ${liked?'liked':''}" onclick="toggleLike('${v.id}', ${!!v.isDemo})">❤️</button>
+          <span class="count" id="likecount-${v.id}">${v.likes||0}</span>
+        </div>
+        <div class="action">
+          <button class="icon-circle" onclick='openComments(${JSON.stringify(v.id)}, ${!!v.isDemo})'>💬</button>
+          <span class="count">${comments.length}</span>
+        </div>
+        <div class="action">
+          <button class="icon-circle" onclick="shareVideo()">↗️</button>
+          <span class="count">مشاركة</span>
+        </div>
+      </div>
+      <div class="video-meta">
+        <div class="author">@${escapeHtml(v.authorName||'')}</div>
+        <div class="song">🎵 ${escapeHtml(v.song || 'صوت أصلي')}</div>
+        <div class="caption">${escapeHtml(v.caption||'')}</div>
+      </div>
+    `;
+    feed.appendChild(card);
+  });
+}
+
+async function toggleLike(videoId, isDemo){
+  if(!CURRENT_UID){ toast('سجّل الدخول الأول'); return; }
+  if(isDemo){ toast('ده فيديو تجريبي — التفاعل الحقيقي شغال على الفيديوهات المنشورة'); return; }
+  const ref = db.collection('videos').doc(videoId);
+  await db.runTransaction(async (t)=>{
+    const doc = await t.get(ref);
+    if(!doc.exists) return;
+    const data = doc.data();
+    const likedBy = data.likedBy || [];
+    const idx = likedBy.indexOf(CURRENT_UID);
+    if(idx>-1){
+      likedBy.splice(idx,1);
+      t.update(ref, {likedBy, likes: Math.max(0,(data.likes||0)-1)});
+    } else {
+      likedBy.push(CURRENT_UID);
+      t.update(ref, {likedBy, likes:(data.likes||0)+1});
+    }
+  });
+}
+
+function shareVideo(){ toast('تم نسخ رابط الفيديو (محاكاة) 🔗'); }
+
+/* ---------------- COMMENTS ---------------- */
+async function openComments(videoId, isDemo){
+  commentsTargetId = videoId;
+  const list = document.getElementById('comments-list');
+  list.innerHTML = '';
+  let comments = [];
+  if(isDemo){
+    const demo = seedVideos().find(v=>v.id===videoId);
+    comments = demo ? demo.comments : [];
+  } else {
+    const doc = await db.collection('videos').doc(videoId).get();
+    comments = doc.exists ? (doc.data().comments || []) : [];
+  }
+  if(comments.length===0){
+    list.innerHTML = '<div class="empty-hint">كن أول من يعلق</div>';
+  } else {
+    comments.forEach(c=>{
+      const row = document.createElement('div');
+      row.className = 'comment-row';
+      row.innerHTML = `<b>${escapeHtml(c.name)}</b><br>${escapeHtml(c.text)}`;
+      list.appendChild(row);
+    });
+  }
+  document.getElementById('comments-modal').style.display = 'block';
+  document.getElementById('comments-modal').dataset.isDemo = isDemo ? '1' : '0';
+}
+function closeComments(){
+  document.getElementById('comments-modal').style.display = 'none';
+  commentsTargetId = null;
+}
+async function submitComment(){
+  if(!CURRENT_UID){ toast('سجّل الدخول الأول'); return; }
+  const isDemo = document.getElementById('comments-modal').dataset.isDemo === '1';
+  if(isDemo){ toast('التعليقات الحقيقية شغالة على الفيديوهات المنشورة فقط'); return; }
+  const input = document.getElementById('comment-input');
+  const text = input.value.trim();
+  if(!text || !commentsTargetId) return;
+
+  if(autoFilterOn && containsProfanity(text)){
+    // Log it for the moderation view, but never publish it.
+    await db.collection('flaggedComments').add({
+      videoId: commentsTargetId, uid: CURRENT_UID, name: CURRENT_PROFILE.name,
+      text, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('تم رفض التعليق تلقائياً لاحتوائه على لفظ غير لائق 🚫');
+    input.value = '';
+    return;
+  }
+
+  const ref = db.collection('videos').doc(commentsTargetId);
+  await db.runTransaction(async (t)=>{
+    const doc = await t.get(ref);
+    if(!doc.exists) return;
+    const comments = doc.data().comments || [];
+    comments.push({name: CURRENT_PROFILE.name, uid: CURRENT_UID, text});
+    t.update(ref, {comments});
+  });
+  await db.collection('users').doc(CURRENT_UID).update({
+    myComments: firebase.firestore.FieldValue.arrayUnion({videoId: commentsTargetId, text})
+  });
+  input.value = '';
+  openComments(commentsTargetId, false);
+}
+
+/* ---------------- PROFILE ---------------- */
+function renderProfile(){
+  if(!CURRENT_UID || !CURRENT_PROFILE) return;
+  const p = CURRENT_PROFILE;
+  document.getElementById('profile-avatar-letter').textContent = (p.name||'?').trim().charAt(0).toUpperCase();
+  document.getElementById('profile-name').textContent = p.name;
+  document.getElementById('profile-id').textContent = 'ID: ' + p.handle;
+  document.getElementById('profile-age').textContent = 'العمر: ' + p.age + ' سنة';
+
+  document.getElementById('stat-videos').textContent = (p.myVideos||[]).length;
+  document.getElementById('stat-likes').textContent = (p.myLikes||[]).length;
+  document.getElementById('stat-comments').textContent = (p.myComments||[]).length;
+
+  const vidsBox = document.getElementById('profile-videos');
+  vidsBox.innerHTML = (p.myVideos||[]).length===0
+    ? '<div class="empty-hint">لسه معملتش أي فيديو</div>'
+    : (p.myVideos||[]).map(v=>`<div class="list-item"><span>${escapeHtml(v.caption||'')}</span><span class="meta">${v.status==='approved'?'✅ منشور':'⏳ قيد المراجعة'}</span></div>`).join('');
+
+  const likesBox = document.getElementById('profile-likes');
+  likesBox.innerHTML = (p.myLikes||[]).length===0
+    ? '<div class="empty-hint">لسه معجبتش بأي فيديو</div>'
+    : `<div class="empty-hint">${(p.myLikes||[]).length} إعجاب مسجل</div>`;
+
+  const commentsBox = document.getElementById('profile-comments');
+  commentsBox.innerHTML = (p.myComments||[]).length===0
+    ? '<div class="empty-hint">لسه معلقتش على حاجة</div>'
+    : (p.myComments||[]).map(c=>`<div class="list-item"><span>${escapeHtml(c.text)}</span></div>`).join('');
+
+  const isAdmin = !!p.isAdmin;
+  document.getElementById('admin-status-row').style.display = isAdmin ? 'flex' : 'none';
+  document.getElementById('admin-panel').style.display = isAdmin ? 'block' : 'none';
+  if(isAdmin){
+    listenAdminUsers();
+    listenAdminPending();
+    listenAdminFlagged();
+  } else {
+    if(usersUnsub) usersUnsub();
+    if(pendingUnsub) pendingUnsub();
+    if(flaggedUnsub) flaggedUnsub();
+  }
+}
+
+/* ---------------- ADMIN: USER MANAGEMENT & BAN ---------------- */
+function listenAdminUsers(){
+  if(usersUnsub) usersUnsub();
+  usersUnsub = db.collection('users').onSnapshot(snap=>{
+    const box = document.getElementById('admin-users-list');
+    box.innerHTML = '';
+    if(snap.empty){
+      box.innerHTML = '<div class="empty-hint">لا يوجد مستخدمون مسجلون</div>';
+      return;
+    }
+    snap.forEach(doc=>{
+      const u = doc.data();
+      box.innerHTML += `
+        <div class="list-item">
+          <span>${escapeHtml(u.name)} <span class="meta">(${escapeHtml(u.handle||'')})</span> ${u.banned?'🚫 محظور':''} ${u.isAdmin?'🛡️':''}</span>
+          <button style="color:${u.banned?'var(--accent-2)':'var(--danger)'}; font-weight:700; font-size:12px;" onclick="toggleBan('${doc.id}', ${!!u.banned})">
+            ${u.banned ? 'فك الحظر' : 'حظر'}
+          </button>
+        </div>`;
+    });
+  });
+}
+async function toggleBan(uid, currentlyBanned){
+  try{
+    await db.collection('users').doc(uid).update({banned: !currentlyBanned});
+    toast(currentlyBanned ? 'تم فك الحظر' : 'تم حظر المستخدم');
+  }catch(e){
+    toast('غير مسموح — تحقق من صلاحياتك كمشرف');
+  }
+}
+
+/* ---------------- ADMIN: CONTENT MODERATION QUEUE ---------------- */
+function listenAdminPending(){
+  if(pendingUnsub) pendingUnsub();
+  pendingUnsub = db.collection('videos').where('status','==','pending').onSnapshot(snap=>{
+    const box = document.getElementById('admin-pending-list');
+    box.innerHTML = '';
+    if(snap.empty){
+      box.innerHTML = '<div class="empty-hint">لا يوجد محتوى بانتظار المراجعة</div>';
+      return;
+    }
+    snap.forEach(doc=>{
+      const v = doc.data();
+      box.innerHTML += `
+        <div class="list-item" style="flex-direction:column; align-items:stretch; gap:8px;">
+          <div><b>@${escapeHtml(v.authorName)}</b> — ${escapeHtml(v.caption)}</div>
+          <div style="display:flex; gap:8px;">
+            <button style="flex:1; background:var(--accent); color:#fff; padding:8px; border-radius:10px; font-weight:700; font-size:12px;" onclick="approveVideo('${doc.id}')">✅ موافقة على النشر</button>
+            <button style="flex:1; background:var(--danger); color:#fff; padding:8px; border-radius:10px; font-weight:700; font-size:12px;" onclick="rejectVideo('${doc.id}')">🗑️ رفض / حذف</button>
+          </div>
+        </div>`;
+    });
+  });
+}
+async function approveVideo(videoId){
+  try{
+    await db.collection('videos').doc(videoId).update({status:'approved'});
+    toast('تمت الموافقة على الفيديو ونشره');
+  }catch(e){ toast('غير مسموح — تحقق من صلاحياتك كمشرف'); }
+}
+async function rejectVideo(videoId){
+  try{
+    await db.collection('videos').doc(videoId).delete();
+    toast('تم حذف الفيديو');
+  }catch(e){ toast('غير مسموح — تحقق من صلاحياتك كمشرف'); }
+}
+
+/* ---------------- ADMIN: AUTO-FILTER LOG ---------------- */
+function toggleAutoFilter(){
+  autoFilterOn = !autoFilterOn;
+  document.getElementById('filter-switch').classList.toggle('on', autoFilterOn);
+  toast(autoFilterOn ? 'تم تفعيل الفلترة التلقائية' : 'تم إيقاف الفلترة التلقائية (غير موصى به)');
+}
+function listenAdminFlagged(){
+  if(flaggedUnsub) flaggedUnsub();
+  flaggedUnsub = db.collection('flaggedComments').orderBy('createdAt','desc').limit(20).onSnapshot(snap=>{
+    const box = document.getElementById('admin-flagged-list');
+    box.innerHTML = '';
+    if(snap.empty) return;
+    box.innerHTML = '<div class="section-title" style="margin-top:14px;">سجل التعليقات المرفوضة تلقائياً</div>';
+    snap.forEach(doc=>{
+      const f = doc.data();
+      box.innerHTML += `<div class="list-item"><span>${escapeHtml(f.text)}</span><span class="meta">${escapeHtml(f.name)}</span></div>`;
+    });
+  }, ()=>{ /* collection may not exist yet — ignore */ });
+}
+
+/* ---------------- MESSAGES ---------------- */
+function renderMessages(){
+  const box = document.getElementById('messages-list');
+  box.innerHTML = `<div class="list-item"><span><b>فريق SnapVibe</b><br>أهلاً بيك في SnapVibe! ابدأ بمشاهدة الفيديوهات أو صوّر أول فيديو ليك.</span></div>`;
+}
+
+/* ---------------- UPLOAD / CAMERA ---------------- */
+function closeUpload(){ stopCamera(); showScreen('feed'); }
+
+async function startCamera(){
+  try{
+    mediaStream = await navigator.mediaDevices.getUserMedia({video:true, audio:true});
+    const box = document.getElementById('camera-box');
+    box.innerHTML = '<video id="cam-preview" autoplay muted playsinline></video>';
+    document.getElementById('cam-preview').srcObject = mediaStream;
+  }catch(e){
+    toast('تعذر الوصول للكاميرا — تأكد من إعطاء الإذن');
+  }
+}
+function stopCamera(){
+  if(mediaStream){
+    mediaStream.getTracks().forEach(t=>t.stop());
+    mediaStream = null;
+  }
+}
+function toggleRecord(){
+  const btn = document.getElementById('btn-record');
+  if(!mediaStream){ toast('شغّل الكاميرا الأول'); return; }
+  if(!mediaRecorder || mediaRecorder.state==='inactive'){
+    recordedChunks = [];
+    mediaRecorder = new MediaRecorder(mediaStream);
+    mediaRecorder.ondataavailable = e=>{ if(e.data.size>0) recordedChunks.push(e.data); };
+    mediaRecorder.onstop = ()=>{
+      currentUploadBlob = new Blob(recordedChunks, {type:'video/webm'});
+      const url = URL.createObjectURL(currentUploadBlob);
+      const box = document.getElementById('camera-box');
+      box.innerHTML = `<video src="${url}" controls loop></video>`;
+      toast('تم التسجيل، جاهز للإرسال للمراجعة');
+    };
+    mediaRecorder.start();
+    btn.textContent = 'إيقاف التصوير';
+    btn.classList.add('stop');
+  } else {
+    mediaRecorder.stop();
+    btn.textContent = 'ابدأ التصوير';
+    btn.classList.remove('stop');
+  }
+}
+async function publishVideo(){
+  if(!CURRENT_UID){ toast('سجّل الدخول الأول'); return; }
+  const caption = document.getElementById('in-caption').value.trim();
+  const song = document.getElementById('in-song').value.trim();
+  if(!caption){ toast('اكتب وصف للفيديو'); return; }
+
+  if(autoFilterOn && containsProfanity(caption)){
+    toast('الوصف يحتوي على لفظ غير لائق — من فضلك عدّله');
+    return;
+  }
+
+  toast('جاري الرفع...');
+  try{
+    let videoURL = null;
+    if(currentUploadBlob){
+      const path = `videos/${CURRENT_UID}_${Date.now()}.webm`;
+      const ref = storage.ref().child(path);
+      await ref.put(currentUploadBlob);
+      videoURL = await ref.getDownloadURL();
+    }
+    const docRef = await db.collection('videos').add({
+      authorUid: CURRENT_UID, authorName: CURRENT_PROFILE.name,
+      caption, song: song || 'صوت أصلي', videoURL,
+      status: 'pending', likes: 0, likedBy: [], comments: [],
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await db.collection('users').doc(CURRENT_UID).update({
+      myVideos: firebase.firestore.FieldValue.arrayUnion({id: docRef.id, caption, status:'pending'})
+    });
+
+    document.getElementById('in-caption').value = '';
+    document.getElementById('in-song').value = '';
+    document.getElementById('camera-box').innerHTML = '<div class="cam-off">اضغط "تشغيل الكاميرا" عشان تبدأ التصوير</div>';
+    currentUploadBlob = null;
+    stopCamera();
+    toast('تم الإرسال! هيظهر في الفيد بعد موافقة المشرف 🎉');
+    showScreen('feed');
+  }catch(e){
+    toast('حصل خطأ أثناء الرفع: ' + e.message);
+  }
+}
+
+/* ---------------- LIVE ---------------- */
+async function openLive(){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-live').classList.add('active');
+  try{
+    mediaStream = await navigator.mediaDevices.getUserMedia({video:true, audio:true});
+    document.getElementById('live-video').srcObject = mediaStream;
+    let viewers = Math.floor(Math.random()*40)+3;
+    document.getElementById('live-viewers').textContent = '👁 ' + viewers;
+    window._liveInterval = setInterval(()=>{
+      viewers += Math.floor(Math.random()*5)-1;
+      if(viewers<1) viewers=1;
+      document.getElementById('live-viewers').textContent = '👁 ' + viewers;
+    }, 2000);
+    toast('بدأ البث المباشر (محاكاة محلية للمعاينة)');
+  }catch(e){
+    toast('تعذر الوصول للكاميرا للبث المباشر');
+  }
+}
+function closeLive(){ endLive(); }
+function endLive(){
+  stopCamera();
+  clearInterval(window._liveInterval);
+  showScreen('feed');
+}
+
+/* ---------------- utils ---------------- */
+function escapeHtml(str){
+  return String(str||'').replace(/[&<>"']/g, s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+}
 </script>
 </body>
 </html>
