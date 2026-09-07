@@ -3,353 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متجر فلاش ستور - Flash Store للشحن الفوري</title>
+    <title>سينما لايت | CimaLight Pro</title>
     <style>
-        * { box-sizing: border-box; }
-        body { 
-            background-color: #0f172a; 
-            color: #fff; 
-            font-family: Tahoma, sans-serif; 
-            text-align: center; 
-            padding: 10px; 
-            margin: 0; 
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #1f242d;
+            --accent-color: #e50914;
+            --accent-hover: #b20710;
+            --text-color: #ffffff;
+            --text-secondary: #8b949e;
         }
-        .container { max-width: 850px; margin: auto; padding: 15px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; }
         
-        .store-header {
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            border: 1px solid #334155;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
-        h1 { color: #f59e0b; margin: 0 0 10px 0; font-size: 26px; }
-        p { color: #94a3b8; margin: 0; font-size: 14px; }
-
-        .tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-        .tab-btn { 
-            background: #334155; 
-            color: white; 
-            border: none; 
-            padding: 10px 18px; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            font-size: 14px; 
-            transition: 0.3s; 
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .tab-btn img { width: 22px; height: 22px; border-radius: 4px; object-fit: cover; }
-        .tab-btn.active, .tab-btn:hover { background: #f59e0b; color: #0f172a; }
+        /* الهيدر وشريط التنقل */
+        header { background-color: #161b22; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; }
+        .logo { font-size: 24px; font-weight: bold; color: var(--accent-color); cursor: pointer; }
+        nav a { color: var(--text-color); text-decoration: none; margin-left: 20px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        nav a:hover { color: var(--accent-color); }
         
-        .game-section { display: none; }
-        .game-section.active { display: block; }
+        /* المحتوى العام */
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .hero { background: linear-gradient(45deg, #e50914, #b20710); padding: 40px; border-radius: 12px; text-align: center; margin-bottom: 30px; }
+        .hero h1 { font-size: 32px; margin-bottom: 10px; }
+        .hero p { font-size: 16px; opacity: 0.9; }
         
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .card { 
-            background: #1e293b; 
-            padding: 15px; 
-            border-radius: 12px; 
-            border: 1px solid #334155; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3); 
-            text-align: right; 
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-        .card-img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; border: 1px solid #475569; background: #000; }
-        .card-info { flex-grow: 1; }
-        .title { color: #38bdf8; font-size: 16px; font-weight: bold; margin: 0; }
-        .price { color: #22c55e; font-size: 18px; font-weight: bold; margin: 2px 0 0 0; }
+        /* شبكة عرض الأفلام */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .card { background-color: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid #30363d; transition: transform 0.3s; display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-5px); }
+        .card img { width: 100%; height: 180px; object-fit: cover; }
+        .card-content { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
+        .card-content h3 { font-size: 18px; margin-bottom: 8px; }
+        .card-content p { font-size: 13px; color: var(--text-secondary); margin-bottom: 15px; flex-grow: 1; }
+        .btn { background-color: var(--accent-color); color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
+        .btn:hover { background-color: var(--accent-hover); }
         
-        input { 
-            padding: 10px; 
-            margin: 8px 0; 
-            width: 100%; 
-            border-radius: 8px; 
-            border: 1px solid #475569; 
-            background: #0f172a; 
-            color: #fff; 
-            font-size: 14px; 
-        }
-        input:focus { border-color: #22c55e; outline: none; }
+        /* أقسام النظام */
+        .section { display: none; }
+        .section.active { display: block; }
         
-        button.buy-btn { 
-            background: #22c55e; 
-            color: white; 
-            border: none; 
-            padding: 10px; 
-            font-size: 15px; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            width: 100%; 
-            transition: 0.3s; 
-        }
-        button.buy-btn:hover { background: #16a34a; }
+        /* لوحة التحكم ونماذج الإدخال */
+        .form-box { background-color: var(--card-bg); padding: 30px; border-radius: 12px; max-width: 600px; margin: 0 auto; border: 1px solid #30363d; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background-color: var(--bg-color); border: 1px solid #30363d; color: white; border-radius: 6px; }
         
-        @media(max-width: 600px) {
-            .grid { grid-template-columns: 1fr; }
-        }
+        /* مشغل الفيديو */
+        .player-container { background-color: var(--card-bg); padding: 20px; border-radius: 12px; margin-top: 20px; border: 1px solid #30363d; }
+        video { width: 100%; max-height: 500px; border-radius: 8px; background: black; }
+        
+        /* رسائل الخطأ والنجاح */
+        .alert { padding: 12px; border-radius: 6px; margin-bottom: 15px; font-weight: bold; text-align: center; display: none; }
+        .alert-error { background-color: #891e2b; color: white; }
+        .alert-success { background-color: #1f6feb; color: white; }
     </style>
 </head>
 <body>
+
+    <header>
+        <div class="logo" onclick="switchSection('home')">🎬 CimaLight Pro</div>
+        <nav>
+            <a onclick="switchSection('home')">🏠 الرئيسية</a>
+            <a onclick="switchSection('admin')">🛠️ لوحة تحكم المطور</a>
+        </nav>
+    </header>
+
     <div class="container">
-        <div class="store-header">
-            <h1>⚡ متجر فلاش ستور - Flash Store ⚡</h1>
-            <p>اختر لعبتك المفضلة، حدد الباقة، واكتب الـ ID الخاص بك للطلب الفوري عبر الواتساب</p>
+        
+        <!-- قسم الرئيسية -->
+        <div id="home-section" class="section active">
+            <div class="hero">
+                <h1>أضخم منصة مشاهدة أفلام ومسلسلات</h1>
+                <p>استمتع بأحدث الإنتاجات السينمائية بجودة عالية وبدون إعلانات مزعجة.</p>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <select id="filter-type" onchange="renderVideos()" style="padding: 10px; background: var(--card-bg); color: white; border: 1px solid #30363d; border-radius: 6px;">
+                    <option value="الكل">عرض الكل</option>
+                    <option value="فيلم">أفلام فقط</option>
+                    <option value="مسلسل">مسلسلات فقط</option>
+                </select>
+            </div>
+
+            <div id="video-grid" class="grid">
+                <!-- يتم تعبئة الفيديوهات تلقائياً عبر JavaScript -->
+            </div>
+
+            <div id="player-section" class="player-container" style="display: none;">
+                <h2 id="player-title" style="margin-bottom: 15px;"></h2>
+                <video id="main-video-player" controls></video>
+                <p id="player-desc" style="margin-top: 15px; color: var(--text-secondary);"></p>
+            </div>
         </div>
 
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchGame('pubg', this)">
-                <img src="https://upload.wikimedia.org/wikipedia5/en/thumb/5/5e/PUBG_Mobile_Logo.png/220px-PUBG_Mobile_Logo.png" alt="PUBG" onerror="this.src='https://cdn-icons-png.flaticon.com/512/808/808436.png'"> ببجي موبايل
-            </button>
-            <button class="tab-btn" onclick="switchGame('freefire', this)">
-                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/0/03/Free_Fire_Logo.png/220px-Free_Fire_Logo.png" alt="Free Fire" onerror="this.src='https://cdn-icons-png.flaticon.com/512/808/808436.png'"> فري فاير
-            </button>
-            <button class="tab-btn" onclick="switchGame('efootball', this)">
-                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/d/d4/EFootball_logo.png/220px-EFootball_logo.png" alt="eFootball" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1195/1195595.png'"> بيس eFootball
-            </button>
-            <button class="tab-btn" onclick="switchGame('fc', this)">
-                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/3/37/EA_Sports_FC_24_logo.png/220px-EA_Sports_FC_24_logo.png" alt="FC Mobile" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1195/1195595.png'"> فيفا FC
-            </button>
-        </div>
+        <!-- قسم لوحة تحكم المطور -->
+        <div id="admin-section" class="section">
+            <div id="login-container" class="form-box">
+                <h2 style="margin-bottom: 20px; text-align: center;">تسجيل دخول المطور</h2>
+                <div id="login-alert" class="alert"></div>
+                <div class="form-group">
+                    <label>البريد الإلكتروني للمطور:</label>
+                    <input type="email" id="admin-email" placeholder="أدخل إيميلك...">
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور:</label>
+                    <input type="password" id="admin-pass" placeholder="كلمة المرور...">
+                </div>
+                <button class="btn" onclick="loginAdmin()">دخول لوحة التحكم</button>
+            </div>
 
-        <!-- قسم ببجي موبايل -->
-        <div id="pubg" class="game-section active">
-            <div class="grid">
-                <div class="card">
-                    <div class="card-header">
-                        <img src="https://cdn-icons-png.flaticon.com/512/808/808436.png" class="card-img" alt="UC">
-                        <div class="card-info">
-                            <div class="title">UC 30 + 60 هدية</div>
-                            <div class="price">57.99 جنيه</div>
-                        </div>
-                    </div>
-                    <input type="text" id="id_pubg_1" placeholder="اكتب الـ ID الخاص بك">
-                    <button class="buy-btn" onclick="sendOrder('ببجي موبايل - 60 UC', '57.99 جنيه', 'id_pubg_1')">اطلب الآن 📲</button>
+            <div id="dashboard-container" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>🛠️ لوحة التحكم والإدارة (مرحباً يا مطورنا)</h2>
+                    <button class="btn" style="width: auto; background: #30363d;" onclick="logoutAdmin()">تسجيل الخروج</button>
                 </div>
-                <div class="card">
-                    <div class="card-header">
-                        <img src="https://cdn-icons-png.flaticon.com/512/808/808436.png" class="card-img" alt="UC">
-                        <div class="card-info">
-                            <div class="title">UC 30 أساسي</div>
-                            <div class="price">33.99 جنيه</div>
-                        </div>
+
+                <div class="form-box">
+                    <div id="upload-alert" class="alert"></div>
+                    <h3 style="margin-bottom: 15px;">➕ إضافة محتوى جديد</h3>
+                    <div class="form-group">
+                        <label>عنوان الفيلم أو المسلسل:</label>
+                        <input type="text" id="v-title" placeholder="أدخل العنوان...">
                     </div>
-                    <input type="text" id="id_pubg_2" placeholder="اكتب الـ ID الخاص بك">
-                    <button class="buy-btn" onclick="sendOrder('ببجي موبايل - 30 UC', '33.99 جنيه', 'id_pubg_2')">اطلب الآن 📲</button>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <img src="https://cdn-icons-png.flaticon.com/512/808/808436.png" class="card-img" alt="UC">
-                        <div class="card-info">
-                            <div class="title">UC 300 + 1500</div>
-                            <div class="price">1209.99 جنيه</div>
-                        </div>
+                    <div class="form-group">
+                        <label>نوع المحتوى:</label>
+                        <select id="v-type" onchange="checkContentType()">
+                            <option value="فيلم">فيلم</option>
+                            <option value="مسلسل">مسلسل</option>
+                        </select>
                     </div>
-                    <input type="text" id="id_pubg_3" placeholder="اكتب الـ ID الخاص بك">
-                    <button class="buy-btn" onclick="sendOrder('ببجي موبايل - 1800 UC', '1209.99 جنيه', 'id_pubg_3')">اطلب الآن 📲</button>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <img src="https://cdn-icons-png.flaticon.com/512/808/808436.png" class="card-img" alt="UC">
-                        <div class="card-info">
-                            <div class="title">UC 3000 + 850</div>
-                            <div class="price">2409.99 جنيه</div>
-                        </div>
+                    <div class="form-group">
+                        <label>المدة (بالدقائق):</label>
+                        <input type="number" id="v-duration" value="90" min="1" max="300">
                     </div>
-                    <input type="text" id="id_pubg_4" placeholder="اكتب الـ ID الخاص بك">
-                    <button class="buy-btn" onclick="sendOrder('ببجي موبايل - 3850 UC', '2409.99 جنيه', 'id_pubg_4')">اطلب الآن 📲</button>
+                    <div class="form-group">
+                        <label>رابط صورة الغلاف (Thumbnail URL):</label>
+                        <input type="text" id="v-thumb" placeholder="https://example.com/image.jpg">
+                    </div>
+                    <div class="form-group">
+                        <label>رابط ملف الفيديو المباشر (Video URL):</label>
+                        <input type="text" id="v-url" placeholder="https://www.w3schools.com/html/mov_bbb.mp4">
+                    </div>
+                    <div class="form-group">
+                        <label>وصف قصير:</label>
+                        <textarea id="v-desc" rows="3" placeholder="تفاصيل القصة..."></textarea>
+                    </div>
+                    <button class="btn" onclick="addNewVideo()">نشر المحتوى رسمياً</button>
                 </div>
             </div>
         </div>
 
-        <!-- قسم فري فاير -->
-        <div id="freefire" class="game-section">
-            <div class="grid">
-                <div class="card">
-                    <div class="card-header">
-                        <img src="https://cdn-icons-png.flaticon.com/512/2906/2906240.png" class="card-img" alt="Diamonds">
-                        <div class="card-info">
-                            <div class="title">💎 210 جوهرة</div>
-                            <div class="price">125 جنيه</div>
-                        </div>
-                    </div>
-                    <input type="text" id="id_ff_1" placeholder="اكتب الـ ID الخاص بك">
-                    <button class="buy-btn" onclick="sendOrder('فري فاير - 210 جوهرة', '125 جنيه', 'id_ff_1')">اطلب الآن 📲</button>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <img src="https://cdn-icons-png.flaticon.com/512/2906/2906240.png" class="card-img" alt="Diamonds">
-                        <div class="card-info">
-                            <div class="title">💎 310 جوهرة</div>
-                            <div class="price">180 جنيه</div>
-                        </div>
-                    </div>
-                    <input type="text" id="id_ff_2" placeholder="اكتب الـ ID الخاص بك">
-                    <button class="buy-btn" onclick="sendOrder('فري فاير - 310 جوهرة', '180 جنيه', 'id_ff_2')">اطلب الآن 📲</button>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <img src="https://cdn-icons-png.flaticon.com/512/2906/2906240.png" class="card-img" alt="Diamonds">
-                        <div class="card-info">
-                            <div class="title">💎 520 جوهرة</div>
-                            <div class="price">290 جنيه</div>
-                        </div>
-                    </div>
-                    <input type="text" id="id_ff_3" placeholder="اكتب الـ ID الخاص بك">
-                    <button class="buy-btn" onclick="sendOrder('فري فاير - 520 جوهرة', '290 جنيه', 'id_ff_3')">اطلب الآن 📲</button>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <img src="https://cdn-icons-png.flaticon.com/512/2906/2906240.png" class="card-img" alt="Diamonds">
-                        <div class="card-info">
-                            <div class="title">💎 1,060 جوهرة</div>
-                            <div class="price">550 جنيه</div>
-                        </div>
-                    </div>
-                    <input type="text" id="id_ff_4" placeholder="اكتب الـ ID الخاص بك">
-                    <button class="buy-btn" onclick="sendOrder('فري فاير - 1,060 جوهرة', '550 جنيه', 'id_ff_4')">اطلب الآن 📲</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- قسم بيس eFootball -->
-        <div id="efootball" class="game-section">
-            <div class="grid">
-                <div class="card">
-                    <div class="card-header">
-                        <img src="https://cdn-icons-png.flaticon.com/512/1195/1195595.png" class="card-img" alt="Coins">
-                        <div class="card-info">
-                            <div class="title">🪙 eFootball™ 137 Coin</div>
-                            <div class="price">74.99 جنيه</div>
-                        </div>
-                    </div>
-                    <input type="text" id="id_pes_1" placeholder="اكتب الـ ID / الايميل">
-                    <button class="buy-btn" onclick="sendOrder('بيس - 137 Coin', '74.99 جنيه', 'id_pes_1')">اطلب الآن 📲</button>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <img src="https://cdn-icons-png.flaticon.com/512/1195/1195595.png" class="card-img" alt="Coins">
-                        <div class="card-info">
-                            <div class="title">🪙 eFootball™ 315 Coin</div>
-                            <div class="price">159.00 جنيه</div>
-                        </div>
-                    </div>
-                    <input type="text" id="id_pes_2" placeholder="اكتب الـ ID / الايميل">
-                    <button class="buy-btn" onclick="sendOrder('بيس - 315 Coin', '159.00 جنيه', 'id_pes_2')">اطلب الآن 📲</button>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <img src="https://cdn-icons-png.flaticon.com/512/1195/1195595.png" class="card-img" alt="Coins">
-                        <div class="card-info">
-                            <div class="title">🪙 eFootball™ 788 Coin</div>
-                            <div class="price">359.99 جنيه</div>
-                        </div>
-                    </div>
-                    <input type="text" id="id_pes_3" placeholder="اكتب الـ ID / الايميل">
-                    <button class="buy-btn" onclick="sendOrder('بيس - 788 Coin', '359.99 جنيه', 'id_pes_3')">اطلب الآن 📲</button>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <img src="https://cdn-icons-png.flaticon.com/512/1195/1195595.png" class="card-img" alt="Coins">
-                        <div class="card-info">
-                            <div class="title">🪙 eFootball™ 2237 Coin</div>
-                            <div class="price">959.99 جنيه</div>
-                        </div>
-                    </div>
-                    <input type="text" id="id_pes_4" placeholder="اكتب الـ ID / الايميل">
-                    <button class="buy-btn" onclick="sendOrder('بيس - 2237 Coin', '959.99 جنيه', 'id_pes_4')">اطلب الآن 📲</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- قسم فيفا FC Mobile -->
-        <div id="fc" class="game-section">
-            <div class="grid">
-                <div class="card">
-                    <div class="card-header">
-                        <img src="https://cdn-icons-png.flaticon.com/512/5329/5329990.png" class="card-img" alt="FC Mobile">
-                        <div class="card-info">
-                            <div class="title">⚡ معزز الويب اليومي A</div>
-                            <div class="price">59.99 جنيه</div>
-                        </div>
-                    </div>
-                    <input type="text" id="id_fc_1" placeholder="اكتب الـ ID / المعرف">
-                    <button class="buy-btn" onclick="sendOrder('فيفا - معزز A', '59.99 جنيه', 'id_fc_1')">اطلب الآن 📲</button>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <img src="https://cdn-icons-png.flaticon.com/512/5329/5329990.png" class="card-img" alt="FC Mobile">
-                        <div class="card-info">
-                            <div class="title">⚡ معزز الويب اليومي B</div>
-                            <div class="price">89.99 جنيه</div>
-                        </div>
-                    </div>
-                    <input type="text" id="id_fc_2" placeholder="اكتب الـ ID / المعرف">
-                    <button class="buy-btn" onclick="sendOrder('فيفا - معزز B', '89.99 جنيه', 'id_fc_2')">اطلب الآن 📲</button>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <img src="https://cdn-icons-png.flaticon.com/512/5329/5329990.png" class="card-img" alt="FC Mobile">
-                        <div class="card-info">
-                            <div class="title">⚡ معزز الويب اليومي C</div>
-                            <div class="price">209.99 جنيه</div>
-                        </div>
-                    </div>
-                    <input type="text" id="id_fc_3" placeholder="اكتب الـ ID / المعرف">
-                    <button class="buy-btn" onclick="sendOrder('فيفا - معزز C', '209.99 جنيه', 'id_fc_3')">اطلب الآن 📲</button>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <img src="https://cdn-icons-png.flaticon.com/512/5329/5329990.png" class="card-img" alt="FC Mobile">
-                        <div class="card-info">
-                            <div class="title">⚡ معزز الويب اليومي D</div>
-                            <div class="price">259.99 جنيه</div>
-                        </div>
-                    </div>
-                    <input type="text" id="id_fc_4" placeholder="اكتب الـ ID / المعرف">
-                    <button class="buy-btn" onclick="sendOrder('فيفا - معزز D', '259.99 جنيه', 'id_fc_4')">اطلب الآن 📲</button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script>
-        function switchGame(gameId, btn) {
-            document.querySelectorAll('.game-section').forEach(sec => sec.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(gameId).classList.add('active');
-            btn.classList.add('active');
+        // إعدادات بيانات المطور
+        const ADMIN_EMAIL = "mohamedadel@gmail.com";
+        const ADMIN_PASS = "cima2026password";
+
+        // قاعدة بيانات أولية في المتصفح
+        let videos = JSON.parse(localStorage.getItem('cimain_videos')) || [
+            {
+                id: 1,
+                title: "رحلة الفضاء المجهولة",
+                type: "فيلم",
+                duration: 110,
+                thumb: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=600",
+                url: "https://www.w3schools.com/html/mov_bbb.mp4",
+                desc: "فيلم خيال علمي شيق يستكشف أسرار الكون."
+            },
+            {
+                id: 2,
+                title: "مملكة الأساطير - الحلقة 1",
+                type: "مسلسل",
+                duration: 45,
+                thumb: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600",
+                url: "https://www.w3schools.com/html/mov_bbb.mp4",
+                desc: "الحلقة الأولى من المسلسل التاريخي الضخم."
+            }
+        ];
+
+        let isAdminLoggedIn = localStorage.getItem('admin_logged') === 'true';
+
+        window.onload = function() {
+            renderVideos();
+            if (isAdminLoggedIn) {
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('dashboard-container').style.display = 'block';
+            }
+        };
+
+        function switchSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            if (sectionId === 'home') document.getElementById('home-section').classList.add('active');
+            if (sectionId === 'admin') document.getElementById('admin-section').classList.add('active');
         }
 
-        function sendOrder(packageName, packagePrice, idFieldId) {
-            let gameId = document.getElementById(idFieldId).value.trim();
+        function renderVideos() {
+            const grid = document.getElementById('video-grid');
+            const filter = document.getElementById('filter-type').value;
+            grid.innerHTML = '';
 
-            if (!gameId) {
-                alert("من فضلك اكتب الـ ID الخاص بك أولاً!");
+            let filtered = videos;
+            if (filter !== 'الكل') {
+                filtered = videos.filter(v => v.type === filter);
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<p style="color:var(--text-secondary);">لا توجد عروض متاحة حالياً.</p>';
                 return;
             }
 
-            let phone = "201102464297";
-            let apikey = "2586712";
+            filtered.forEach(v => {
+                grid.innerHTML += `
+                    <div class="card">
+                        <img src="${v.thumb}" alt="${v.title}">
+                        <div class="card-content">
+                            <h3>${v.title}</h3>
+                            <p>${v.desc.substring(0, 70)}...</p>
+                            <p style="font-size: 11px; color: var(--accent-color); margin-bottom: 10px;">${v.type} | ${v.duration} دقيقة</p>
+                            <button class="btn" onclick="playVideo(${v.id})">مشاهدة الآن</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
 
-            let message = `طلب جديد عبر Flash Store:%0A- الباقة: ${packageName}%0A- السعر: ${packagePrice}%0A- الـ ID: ${gameId}`;
-            let url = `https://api.callmebot.com/whatsapp.php?phone=${phone}&text=${message}&apikey=${apikey}`;
+        function playVideo(id) {
+            const v = videos.find(item => item.id === id);
+            if (!v) return;
 
-            fetch(url)
-                .then(response => {
-                    alert("تم إرسال طلبك بنجاح لـ Flash Store! سيتم التواصل معك وتحويل الشحن قريباً.");
-                    document.getElementById(idFieldId).value = "";
-                })
-                .catch(error => {
-                    alert("حدث خطأ أثناء الإرسال، حاول مرة أخرى.");
-                });
+            document.getElementById('player-section').style.display = 'block';
+            document.getElementById('player-title').innerText = `🎥 جاري عرض: ${v.title}`;
+            document.getElementById('player-desc').innerText = v.desc;
+            
+            const player = document.getElementById('main-video-player');
+            player.src = v.url;
+            player.play();
+
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function loginAdmin() {
+            const email = document.getElementById('admin-email').value.trim();
+            const pass = document.getElementById('admin-pass').value.trim();
+            const alertBox = document.getElementById('login-alert');
+
+            if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
+                isAdminLoggedIn = true;
+                localStorage.setItem('admin_logged', 'true');
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('dashboard-container').style.display = 'block';
+            } else {
+                alertBox.style.display = 'block';
+                alertBox.className = 'alert alert-error';
+                alertBox.innerText = '❌ البريد الإلكتروني أو كلمة المرور غير صحيحة!';
+            }
+        }
+
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            localStorage.setItem('admin_logged', 'false');
+            document.getElementById('login-container').style.display = 'block';
+            document.getElementById('dashboard-container').style.display = 'none';
+        }
+
+        function addNewVideo() {
+            const title = document.getElementById('v-title').value.trim();
+            const type = document.getElementById('v-type').value;
+            const duration = parseInt(document.getElementById('v-duration').value);
+            const thumb = document.getElementById('v-thumb').value.trim();
+            const url = document.getElementById('v-url').value.trim();
+            const desc = document.getElementById('v-desc').value.trim();
+            const alertBox = document.getElementById('upload-alert');
+
+            alertBox.style.display = 'none';
+
+            // الشرط الأساسي: الفيلم ممنوع أن تزيد مدته عن ساعتين (120 دقيقة)
+            if (type === 'فيلم' && duration > 120) {
+                alertBox.style.display = 'block';
+                alertBox.className = 'alert alert-error';
+                alertBox.innerText = '❌ عذراً يا مطورنا، شرط النظام يمنع نشر أفلام تتجاوز مدتها ساعتين (120 دقيقة)!';
+                return;
+            }
+
+            if (!title || !thumb || !url) {
+                alertBox.style.display = 'block';
+                alertBox.className = 'alert alert-error';
+                alertBox.innerText = '⚠️ يرجى تعبئة الحقول الأساسية ووضع الروابط بشكل صحيح.';
+                return;
+            }
+
+            const newVid = {
+                id: Date.now(),
+                title,
+                type,
+                duration,
+                thumb,
+                url,
+                desc: desc || 'لا يوجد وصف متاح.'
+            };
+
+            videos.push(newVid);
+            localStorage.setItem('cimain_videos', JSON.stringify(videos));
+
+            alertBox.style.display = 'block';
+            alertBox.className = 'alert alert-success';
+            alertBox.innerText = `🎉 تم نشر "${title}" بنجاح وأصبح متاحاً للجميع على المنصة!`;
+
+            // تفريغ الحقول
+            document.getElementById('v-title').value = '';
+            document.getElementById('v-thumb').value = '';
+            document.getElementById('v-url').value = '';
+            document.getElementById('v-desc').value = '';
+
+            renderVideos();
         }
     </script>
 </body>
