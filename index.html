@@ -1,302 +1,1225 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CimaLight Social Enterprise - Ultimate Massive Production Core (800+ Lines Template)</title>
-    <style>
-        :root {
-            --cimalight-red: #fe2c55;
-            --cimalight-bg: #030305;
-            --cimalight-panel: #0d0d12;
-            --cimalight-border: #1a1a24;
-            --text-main: #f3f3f6;
-            --text-sub: #82828c;
-            --accent-green: #10b981;
-            --accent-yellow: #f59e0b;
-            --accent-blue: #3b82f6;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: var(--cimalight-bg); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; direction: rtl; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Core | منصة الفيديو القصير</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0b0f;
+    --surface:#14161d;
+    --surface-2:#1b1e27;
+    --surface-3:#242833;
+    --border:#2a2e3a;
+    --text:#eef0f4;
+    --muted:#8b8f9c;
+    --muted-2:#5f636f;
+    --gold:#d4a73c;
+    --gold-soft:rgba(212,167,60,.14);
+    --danger:#e5484d;
+    --danger-soft:rgba(229,72,77,.14);
+    --ok:#3ecf8e;
+    --ok-soft:rgba(62,207,142,.14);
+    --radius-s:8px;
+    --radius-m:14px;
+    --radius-l:22px;
+    --shadow-1: 0 10px 30px rgba(0,0,0,.35);
+    --font-display:'Cairo', 'IBM Plex Sans Arabic', sans-serif;
+    --font-body:'IBM Plex Sans Arabic', 'Cairo', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(212,167,60,.10), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(80,90,140,.12), transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; transition-duration:.001ms !important;}
+  }
+  h1,h2,h3,.brand,.btn,.tab{font-family:var(--font-display);}
+  a{color:inherit;}
+  button{font-family:inherit; cursor:pointer;}
+  input,textarea,select{font-family:inherit;}
+  ::selection{background:var(--gold-soft); color:var(--gold);}
+  .hidden{display:none !important;}
 
-        /* Left Enterprise Control Panel */
-        .enterprise-control-sidebar { width: 400px; background: var(--cimalight-panel); border-left: 1px solid var(--cimalight-border); display: flex; flex-direction: column; padding: 20px; gap: 16px; overflow-y: auto; box-shadow: -8px 0 30px rgba(0,0,0,0.8); z-index: 100; }
-        .sidebar-brand-header h1 { font-size: 1.3rem; color: var(--cimalight-red); font-weight: 900; letter-spacing: 0.5px; margin-bottom: 3px; }
-        .sidebar-brand-header p { font-size: 0.72rem; color: var(--text-sub); line-height: 1.4; }
+  /* ---------- scrollbar ---------- */
+  ::-webkit-scrollbar{width:8px; height:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--surface-3); border-radius:99px;}
+  ::-webkit-scrollbar-track{background:transparent;}
 
-        .control-panel-card { background: #121218; border: 1px solid #20202c; padding: 14px; border-radius: 10px; font-size: 0.82rem; }
-        .control-panel-card h3 { font-size: 0.85rem; color: var(--accent-blue); margin-bottom: 10px; font-weight: 700; }
+  /* ---------- top shell ---------- */
+  #app{min-height:100vh; display:flex; flex-direction:column;}
 
-        .form-control-input { width: 100%; padding: 9px 12px; background: #08080c; border: 1px solid #2a2a3a; color: #fff; border-radius: 7px; font-size: 0.8rem; margin-bottom: 8px; outline: none; transition: 0.25s; }
-        .form-control-input:focus { border-color: var(--cimalight-red); box-shadow: 0 0 8px rgba(254,44,85,0.25); }
+  .topbar{
+    position:sticky; top:0; z-index:40;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:14px;
+    padding:12px 22px;
+    background:rgba(10,11,15,.72);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--border);
+  }
+  .brand{display:flex; align-items:center; gap:10px; font-weight:900; font-size:19px; letter-spacing:.2px;}
+  .brand .dot{
+    width:11px; height:11px; border-radius:50%;
+    background:var(--gold);
+    box-shadow:0 0 0 4px var(--gold-soft);
+  }
+  .brand small{display:block; font-family:var(--font-body); font-weight:400; font-size:11px; color:var(--muted); margin-top:-2px;}
 
-        .btn-action-main { width: 100%; padding: 9px; border-radius: 7px; border: none; font-weight: bold; cursor: pointer; font-size: 0.8rem; transition: 0.25s; text-align: center; }
-        .btn-red-main { background: var(--cimalight-red); color: #fff; }
-        .btn-red-main:hover { opacity: 0.88; transform: translateY(-1px); }
-        .btn-green-main { background: var(--accent-green); color: #fff; }
-        .btn-dark-main { background: #1a1a26; color: #fff; border: 1px solid #333; }
+  .tabs{display:flex; align-items:center; gap:4px; background:var(--surface); border:1px solid var(--border); padding:4px; border-radius:99px;}
+  .tab{
+    border:none; background:transparent; color:var(--muted);
+    padding:8px 16px; border-radius:99px; font-size:14px; font-weight:600;
+    transition:background .18s ease, color .18s ease;
+  }
+  .tab.active{background:var(--surface-3); color:var(--text);}
+  .tab .badge{
+    display:inline-block; margin-inline-start:6px; background:var(--danger); color:#fff;
+    font-size:10px; font-weight:700; min-width:16px; height:16px; line-height:16px;
+    border-radius:99px; padding:0 4px;
+  }
 
-        /* Right TikTok Feed Stage */
-        .stage-view-viewport { flex: 1; display: flex; justify-content: center; align-items: center; position: relative; background: #000; overflow: hidden; }
-        .tiktok-feed-frame { width: 100%; max-width: 420px; height: 100%; background: #09090d; position: relative; display: flex; flex-direction: column; justify-content: space-between; align-items: center; box-shadow: 0 0 50px rgba(0,0,0,0.95); border-left: 1px solid #1c1c28; border-right: 1px solid #1c1c28; }
-        
-        .floating-top-navbar { position: absolute; top: 16px; width: 100%; display: flex; justify-content: center; gap: 8px; z-index: 60; padding: 0 15px; }
-        .navbar-pill-btn { background: rgba(13, 13, 18, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 11px; font-weight: 600; transition: 0.3s; }
-        .navbar-pill-btn:hover { background: var(--cimalight-red); border-color: var(--cimalight-red); }
+  .top-actions{display:flex; align-items:center; gap:10px;}
+  .icon-btn{
+    width:38px; height:38px; border-radius:50%; border:1px solid var(--border);
+    background:var(--surface); color:var(--muted); display:flex; align-items:center; justify-content:center;
+    font-size:16px; transition:transform .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .icon-btn:hover{color:var(--text); border-color:var(--muted-2); transform:translateY(-1px);}
+  .user-chip{
+    display:flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--border);
+    padding:5px 12px 5px 5px; border-radius:99px;
+  }
+  .avatar{
+    width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:13px; color:#1a1406;
+    background:linear-gradient(135deg, var(--gold), #f4d97a);
+    flex-shrink:0;
+  }
+  .avatar.dev{background:linear-gradient(135deg,#7c4dff,#c9a7ff); color:#160a3a;}
+  .user-chip .uname{font-size:13px; font-weight:600;}
+  .user-chip .uage{font-size:11px; color:var(--muted);}
+  .dev-pill{
+    font-size:10px; font-weight:800; color:#160a3a; background:linear-gradient(135deg,#c9a7ff,#7c4dff);
+    padding:2px 7px; border-radius:99px; margin-inline-start:4px;
+  }
 
-        .video-simulator-viewport { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 35px; position: relative; }
-        
-        .right-side-interaction-bar { position: absolute; right: 14px; bottom: 95px; display: flex; flex-direction: column; align-items: center; gap: 18px; z-index: 50; }
-        .user-avatar-badge-core { width: 46px; height: 46px; border-radius: 50%; background: var(--cimalight-red); display: flex; justify-content: center; align-items: center; font-weight: bold; border: 2px solid #fff; font-size: 1.15rem; box-shadow: 0 4px 12px rgba(254,44,85,0.4); }
-        .action-circle-icon { width: 42px; height: 42px; background: rgba(255,255,255,0.08); backdrop-filter: blur(8px); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; cursor: pointer; transition: 0.2s; }
-        .action-circle-icon:hover { background: rgba(254,44,85,0.5); transform: scale(1.08); }
-        .action-circle-icon span { font-size: 9px; color: #fff; margin-top: 2px; display: block; }
+  main{flex:1; display:flex; flex-direction:column;}
 
-        .pending-queue-item-card { background: #08080c; border: 1px solid #3a1a1a; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 0.78rem; text-align: right; }
-    </style>
+  /* ---------- toast ---------- */
+  #toast-stack{
+    position:fixed; top:16px; left:50%; transform:translateX(-50%);
+    z-index:200; display:flex; flex-direction:column; gap:8px; align-items:center;
+    pointer-events:none;
+  }
+  .toast{
+    pointer-events:auto;
+    background:var(--surface-3); border:1px solid var(--border); color:var(--text);
+    padding:11px 18px; border-radius:99px; font-size:13.5px; font-weight:600;
+    box-shadow:var(--shadow-1);
+    display:flex; align-items:center; gap:8px;
+    animation:toast-in .25s ease;
+  }
+  .toast.ok{border-color:rgba(62,207,142,.4); color:var(--ok);}
+  .toast.err{border-color:rgba(229,72,77,.45); color:var(--danger);}
+  .toast.warn{border-color:rgba(212,167,60,.45); color:var(--gold);}
+  @keyframes toast-in{from{opacity:0; transform:translateY(-8px);} to{opacity:1; transform:translateY(0);}}
+
+  /* ---------- auth screen ---------- */
+  .auth-wrap{
+    flex:1; display:flex; align-items:center; justify-content:center; padding:40px 18px;
+  }
+  .auth-card{
+    width:100%; max-width:420px;
+    background:linear-gradient(180deg, var(--surface), var(--surface-2));
+    border:1px solid var(--border); border-radius:var(--radius-l);
+    padding:34px 30px 28px;
+    box-shadow:var(--shadow-1);
+  }
+  .auth-head{text-align:center; margin-bottom:22px;}
+  .auth-head .mark{
+    width:54px; height:54px; margin:0 auto 14px; border-radius:16px;
+    background:linear-gradient(135deg, var(--gold), #8b6c15);
+    display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:900; color:#1a1406;
+  }
+  .auth-head h1{font-size:21px; margin:0 0 4px;}
+  .auth-head p{margin:0; color:var(--muted); font-size:13.5px;}
+
+  .seg{
+    display:flex; background:var(--surface-2); border:1px solid var(--border); border-radius:99px; padding:4px; margin-bottom:20px;
+  }
+  .seg button{
+    flex:1; border:none; background:transparent; color:var(--muted); padding:9px 0; border-radius:99px; font-weight:700; font-size:14px;
+    transition:background .18s ease, color .18s ease;
+  }
+  .seg button.active{background:var(--gold); color:#1a1406;}
+
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:12.5px; color:var(--muted); margin-bottom:6px; font-weight:600;}
+  .field .opt{color:var(--muted-2); font-weight:400;}
+  .field input{
+    width:100%; background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+    padding:12px 14px; border-radius:var(--radius-s); font-size:14.5px; outline:none;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .field input:focus{border-color:var(--gold); background:var(--surface-3);}
+  .field input:focus-visible{outline:2px solid var(--gold); outline-offset:1px;}
+
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    border:none; border-radius:var(--radius-s); padding:12px 18px; font-size:14.5px; font-weight:700;
+    transition:transform .12s ease, filter .12s ease, background .15s ease;
+  }
+  .btn:active{transform:scale(.98);}
+  .btn:focus-visible{outline:2px solid var(--gold); outline-offset:2px;}
+  .btn-primary{background:var(--gold); color:#1a1406; width:100%;}
+  .btn-primary:hover{filter:brightness(1.08);}
+  .btn-ghost{background:var(--surface-2); color:var(--text); border:1px solid var(--border);}
+  .btn-ghost:hover{background:var(--surface-3);}
+  .btn-danger{background:var(--danger-soft); color:var(--danger); border:1px solid rgba(229,72,77,.4);}
+  .btn-danger:hover{background:rgba(229,72,77,.22);}
+  .btn-ok{background:var(--ok-soft); color:var(--ok); border:1px solid rgba(62,207,142,.4);}
+  .btn-ok:hover{background:rgba(62,207,142,.22);}
+  .btn-block{width:100%;}
+  .btn-sm{padding:8px 12px; font-size:13px;}
+
+  .auth-note{margin-top:16px; font-size:12px; color:var(--muted-2); text-align:center; line-height:1.7;}
+  .ban-box{
+    margin-top:14px; background:var(--danger-soft); border:1px solid rgba(229,72,77,.4); color:#ffb3b5;
+    padding:12px 14px; border-radius:var(--radius-s); font-size:13px; line-height:1.8; text-align:center;
+  }
+
+  /* ---------- feed ---------- */
+  .feed-shell{
+    flex:1; display:flex; justify-content:center; padding:22px 14px 60px;
+  }
+  .feed{
+    width:100%; max-width:430px;
+    height:calc(100vh - 130px);
+    overflow-y:auto;
+    scroll-snap-type:y mandatory;
+    border-radius:var(--radius-l);
+    border:1px solid var(--border);
+    background:#000;
+    position:relative;
+  }
+  .feed::-webkit-scrollbar{display:none;}
+  .slide{
+    scroll-snap-align:start;
+    height:calc(100vh - 130px);
+    position:relative;
+    display:flex; align-items:flex-end;
+    background:#050506;
+    overflow:hidden;
+  }
+  .slide video{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover; background:#000;
+  }
+  .slide .veil{
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,.75) 100%);
+    pointer-events:none;
+  }
+  .slide-info{
+    position:relative; z-index:2; padding:20px 84px 24px 20px; color:#fff; width:100%;
+  }
+  .slide-info .up{display:flex; align-items:center; gap:8px; margin-bottom:8px; font-weight:700; font-size:14.5px;}
+  .slide-info .title{font-size:15.5px; font-weight:700; margin:0 0 6px; line-height:1.5;}
+  .slide-info .desc{font-size:13px; color:#d7d9de; margin:0; line-height:1.6; max-height:3.4em; overflow:hidden;}
+
+  .side-rail{
+    position:absolute; z-index:3; left:12px; bottom:26px;
+    display:flex; flex-direction:column; align-items:center; gap:18px;
+  }
+  .rail-btn{
+    display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; color:#fff;
+  }
+  .rail-circle{
+    width:46px; height:46px; border-radius:50%; background:rgba(255,255,255,.14);
+    backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; font-size:19px;
+    transition:transform .15s ease, background .15s ease;
+    border:1px solid rgba(255,255,255,.14);
+  }
+  .rail-btn:active .rail-circle{transform:scale(.88);}
+  .rail-btn.liked .rail-circle{background:var(--danger); border-color:var(--danger);}
+  .rail-count{font-size:11.5px; font-weight:700;}
+  .rail-avatar{width:46px; height:46px; border-radius:50%; border:2px solid #fff; overflow:hidden; display:flex; align-items:center; justify-content:center; font-weight:800; background:linear-gradient(135deg, var(--gold), #f4d97a); color:#1a1406;}
+
+  .empty-feed{
+    height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; color:var(--muted); text-align:center; padding:30px;
+  }
+  .empty-feed .em-icon{font-size:34px;}
+  .empty-feed h3{margin:0; color:var(--text); font-size:16px;}
+  .empty-feed p{margin:0; font-size:13px; max-width:280px; line-height:1.7;}
+
+  /* ---------- generic page ---------- */
+  .page{max-width:760px; margin:0 auto; width:100%; padding:26px 18px 60px;}
+  .page-head{margin-bottom:20px;}
+  .page-head h2{margin:0 0 4px; font-size:20px;}
+  .page-head p{margin:0; color:var(--muted); font-size:13.5px;}
+
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-m); padding:22px;
+  }
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:560px){.grid-2{grid-template-columns:1fr;}}
+
+  textarea.tf{
+    width:100%; background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+    padding:12px 14px; border-radius:var(--radius-s); font-size:14px; outline:none; resize:vertical; min-height:88px;
+  }
+  textarea.tf:focus{border-color:var(--gold); background:var(--surface-3);}
+
+  .file-drop{
+    border:1.5px dashed var(--border); border-radius:var(--radius-s); padding:18px; text-align:center; color:var(--muted);
+    font-size:13px; background:var(--surface-2); cursor:pointer; transition:border-color .15s ease;
+  }
+  .file-drop:hover{border-color:var(--gold);}
+  .file-drop input{display:none;}
+  .file-drop.has-file{border-color:var(--ok); color:var(--ok);}
+
+  .divider-or{display:flex; align-items:center; gap:10px; color:var(--muted-2); font-size:12px; margin:16px 0;}
+  .divider-or::before,.divider-or::after{content:""; flex:1; height:1px; background:var(--border);}
+
+  .pending-item{
+    display:flex; gap:14px; padding:16px; border:1px solid var(--border); border-radius:var(--radius-m); background:var(--surface-2);
+    margin-bottom:12px;
+  }
+  .pending-thumb{
+    width:76px; height:100px; border-radius:10px; background:var(--surface-3); flex-shrink:0; overflow:hidden;
+    display:flex; align-items:center; justify-content:center; color:var(--muted-2); font-size:22px;
+  }
+  .pending-thumb video{width:100%; height:100%; object-fit:cover;}
+  .pending-body{flex:1; min-width:0;}
+  .pending-body h4{margin:0 0 4px; font-size:14.5px;}
+  .pending-body p{margin:0 0 8px; font-size:12.5px; color:var(--muted); line-height:1.6;}
+  .pending-meta{font-size:11px; color:var(--muted-2); margin-bottom:10px;}
+  .status-chip{
+    display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; padding:3px 10px; border-radius:99px;
+    background:var(--gold-soft); color:var(--gold); margin-bottom:8px;
+  }
+  .pending-actions{display:flex; gap:8px; flex-wrap:wrap;}
+
+  .approved-row{
+    display:flex; align-items:center; gap:12px; padding:12px; border:1px solid var(--border); border-radius:var(--radius-s);
+    background:var(--surface-2); margin-bottom:10px;
+  }
+  .approved-row .th{width:44px; height:58px; border-radius:8px; overflow:hidden; background:var(--surface-3); flex-shrink:0;}
+  .approved-row .th video{width:100%; height:100%; object-fit:cover;}
+  .approved-row .meta{flex:1; min-width:0;}
+  .approved-row .meta h5{margin:0 0 2px; font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .approved-row .meta span{font-size:11.5px; color:var(--muted);}
+
+  .stat-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:22px;}
+  .stat-box{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-m); padding:16px; text-align:center;}
+  .stat-box b{display:block; font-size:22px; font-family:var(--font-display);}
+  .stat-box span{font-size:12px; color:var(--muted);}
+
+  /* ---------- live gate ---------- */
+  .live-hero{
+    background:linear-gradient(160deg, #1c1420, var(--surface));
+    border:1px solid rgba(229,72,77,.3); border-radius:var(--radius-l); padding:34px 26px; text-align:center;
+  }
+  .live-hero .lv-badge{
+    display:inline-flex; align-items:center; gap:6px; background:var(--danger); color:#fff; font-weight:800;
+    font-size:12px; padding:5px 12px; border-radius:99px; margin-bottom:16px;
+  }
+  .live-hero .lv-badge .pulse{width:7px; height:7px; border-radius:50%; background:#fff; animation:pulse 1.4s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:.25;}}
+  .live-hero h2{margin:0 0 8px; font-size:22px;}
+  .live-hero p{color:var(--muted); font-size:13.5px; margin:0 0 22px; line-height:1.8;}
+  .age-req{display:inline-flex; gap:8px; align-items:center; background:var(--surface-2); border:1px solid var(--border); padding:8px 16px; border-radius:99px; font-size:12.5px; color:var(--muted); margin-bottom:22px;}
+  .age-req b{color:var(--text);}
+
+  /* ---------- modal (comments) ---------- */
+  .modal-back{
+    position:fixed; inset:0; background:rgba(4,4,6,.72); backdrop-filter:blur(4px); z-index:150;
+    display:flex; align-items:flex-end; justify-content:center;
+  }
+  @media (min-width:560px){ .modal-back{align-items:center;} }
+  .modal{
+    width:100%; max-width:460px; max-height:78vh; background:var(--surface); border:1px solid var(--border);
+    border-radius:22px 22px 0 0; display:flex; flex-direction:column; overflow:hidden;
+    animation:modal-up .22s ease;
+  }
+  @media (min-width:560px){ .modal{border-radius:var(--radius-l);} }
+  @keyframes modal-up{from{transform:translateY(30px); opacity:0;} to{transform:translateY(0); opacity:1;}}
+  .modal-head{display:flex; align-items:center; justify-content:space-between; padding:16px 18px; border-bottom:1px solid var(--border);}
+  .modal-head h3{margin:0; font-size:15px;}
+  .modal-body{flex:1; overflow-y:auto; padding:14px 18px;}
+  .comment-item{display:flex; gap:10px; margin-bottom:14px;}
+  .comment-item .cav{width:32px; height:32px; border-radius:50%; background:var(--surface-3); display:flex; align-items:center; justify-content:center; font-size:12.5px; font-weight:700; flex-shrink:0; color:var(--gold);}
+  .comment-item .ctext{flex:1;}
+  .comment-item .ctext .cname{font-size:12.5px; font-weight:700; margin-bottom:2px;}
+  .comment-item .ctext .cbody{font-size:13.5px; color:var(--text); line-height:1.6;}
+  .comment-item .ctext .cdate{font-size:10.5px; color:var(--muted-2); margin-top:3px;}
+  .no-comments{text-align:center; color:var(--muted-2); font-size:13px; padding:30px 0;}
+  .modal-foot{display:flex; gap:8px; padding:14px 18px; border-top:1px solid var(--border);}
+  .modal-foot input{
+    flex:1; background:var(--surface-2); border:1px solid var(--border); color:var(--text); border-radius:99px;
+    padding:11px 16px; font-size:13.5px; outline:none;
+  }
+  .modal-foot input:focus{border-color:var(--gold);}
+  .modal-foot button{border:none; background:var(--gold); color:#1a1406; width:42px; height:42px; border-radius:50%; font-size:15px; flex-shrink:0;}
+
+  .footer-tab-spacer{height:2px;}
+  .mini-note{font-size:11.5px; color:var(--muted-2); margin-top:8px; line-height:1.7;}
+
+  @media (max-width:640px){
+    .topbar{padding:10px 14px;}
+    .brand span.b-name{display:none;}
+    .tabs{gap:2px;}
+    .tab{padding:8px 11px; font-size:13px;}
+    .user-chip .uage{display:none;}
+  }
+</style>
 </head>
 <body>
+<div id="toast-stack"></div>
+<div id="app">
 
-    <!-- لوحة التحكم الإدارية الجانبية الضخمة -->
-    <div class="enterprise-control-sidebar">
-        <div class="sidebar-brand-header">
-            <h1>CimaLight Enterprise</h1>
-            <p>منصة الفيديوهات والبث المباشر (إدارة العمر 18+ وحظر 4 سنين وطابور المراجعة)</p>
-        </div>
+  <!-- ============ AUTH VIEW ============ -->
+  <div id="view-auth" class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-head">
+        <div class="mark">C</div>
+        <h1>Core Platform</h1>
+        <p>منصة الفيديو القصير الخاصة بك — سجّل دخولك أو أنشئ حساباً جديداً</p>
+      </div>
 
-        <!-- بطاقة تسجيل وإدارة حساب المستخدم -->
-        <div class="control-panel-card">
-            <h3 id="panelAuthTitle">إدارة الحساب وتحديد العمر</h3>
-            <div id="sectionLoggedOut">
-                <input type="text" id="inputUsernameReg" class="form-control-input" placeholder="اسم المستخدم الجديد">
-                <label style="font-size: 0.72rem; color: var(--text-sub); display: block; margin-bottom: 4px;">تاريخ الميلاد (للتحقق من شرط البث 18+):</label>
-                <input type="date" id="inputBirthdateReg" class="form-control-input" value="2005-01-01">
-                <button onclick="executeUserRegistration()" class="btn-action-main btn-red-main">تسجيل الدخول للنظام</button>
-            </div>
-            <div id="sectionLoggedIn" style="display:none;">
-                <p style="font-weight: bold; color: var(--cimalight-red); font-size: 0.88rem;" id="textProfileName">👤 المستخدم</p>
-                <p style="font-size: 0.75rem; color: var(--accent-yellow); margin-top: 3px;" id="textProfileAge">العمر: --</p>
-                <p style="font-size: 0.72rem; color: var(--accent-green); margin-top: 2px;" id="textProfileRole">الصلاحية: عضو عام</p>
-                <button onclick="executeUserLogout()" class="btn-action-main btn-dark-main" style="margin-top: 10px; color: #ef4444;">تسجيل الخروج من المنظومة 🚪</button>
-            </div>
-        </div>
+      <div class="seg">
+        <button id="seg-login" class="active" onclick="switchAuthTab('login')">تسجيل الدخول</button>
+        <button id="seg-register" onclick="switchAuthTab('register')">حساب جديد</button>
+      </div>
 
-        <!-- طابور المراجعة الخاص بالمطور المسؤول -->
-        <div id="sectionAdminReviewQueue" class="control-panel-card" style="border-color: #5c1d1d; background: #160a0a; display:none;">
-            <h3 style="color: #ff6b6b;">⏳ طابور مراجعة الفيديوهات (خاص بالمطور):</h3>
-            <div id="containerAdminPendingList">
-                <p style="font-size: 0.75rem; color: #777;">لا توجد فيديوهات قادمة بانتظار المراجعة حالياً.</p>
-            </div>
+      <!-- login form -->
+      <form id="form-login" onsubmit="return handleLogin(event)">
+        <div class="field">
+          <label>اسم المستخدم</label>
+          <input type="text" id="login-username" placeholder="مثال: Mohamed" autocomplete="username" required>
         </div>
+        <button type="submit" class="btn btn-primary">دخول</button>
+        <div id="login-ban-box"></div>
+        <p class="auth-note">ليس لديك حساب؟ اضغط على «حساب جديد» في الأعلى للتسجيل.</p>
+      </form>
 
-        <!-- أدوات التحكم والتشغيل المتقدمة -->
-        <div class="control-panel-card">
-            <h3>الأوامر والعمليات المتاحة</h3>
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-                <button onclick="handleLiveStreamAccess()" class="btn-action-main btn-dark-main" style="text-align: right;">🔴 فتح بث مباشر (شرط 18+ وحظر 4 سنين)</button>
-                <button onclick="handleVideoUploadProcess()" class="btn-action-main btn-dark-main" style="text-align: right;">📹 رفع فيديو جديد (ينضم لطابور المراجعة)</button>
-                <button onclick="resetSystemLocalStorage()" class="btn-action-main btn-dark-main" style="text-align: right; color: #ef4444;">🗑️ تصفير وإعادة تعيين ذاكرة النظام</button>
-            </div>
+      <!-- register form -->
+      <form id="form-register" class="hidden" onsubmit="return handleRegister(event)">
+        <div class="field">
+          <label>اسم المستخدم</label>
+          <input type="text" id="reg-username" placeholder="اختر اسم مستخدم فريد" required>
         </div>
+        <div class="field">
+          <label>البريد الإلكتروني <span class="opt">(اختياري)</span></label>
+          <input type="email" id="reg-email" placeholder="name@example.com">
+        </div>
+        <div class="field">
+          <label>تاريخ الميلاد</label>
+          <input type="date" id="reg-dob" required>
+        </div>
+        <button type="submit" class="btn btn-primary">إنشاء الحساب والدخول</button>
+        <p class="auth-note">باستخدامك المنصة، يُحسب عمرك تلقائياً من تاريخ ميلادك لتفعيل الميزات المناسبة لعمرك.</p>
+      </form>
+    </div>
+  </div>
 
-        <div style="font-size: 0.68rem; color: var(--text-sub); text-align: center; margin-top: auto; padding-top: 10px;">
-            CimaLight Enterprise Massive Core v4.0 - Production Build
+  <!-- ============ MAIN SHELL (after login) ============ -->
+  <div id="view-shell" class="hidden">
+    <div class="topbar">
+      <div class="brand">
+        <span class="dot"></span>
+        <span class="b-name">Core Platform</span>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="feed" onclick="switchTab('feed')">الموجز</button>
+        <button class="tab" data-tab="upload" onclick="switchTab('upload')">رفع فيديو</button>
+        <button class="tab" data-tab="live" onclick="switchTab('live')">البث المباشر</button>
+        <button class="tab hidden" id="tab-admin" data-tab="admin" onclick="switchTab('admin')">لوحة المطور <span class="badge hidden" id="admin-badge">0</span></button>
+      </div>
+
+      <div class="top-actions">
+        <button class="icon-btn" title="تحديث المنصة" onclick="refreshPlatform()">⟳</button>
+        <button class="icon-btn" title="تصفير الذاكرة المحلية" onclick="confirmWipe()">🗑</button>
+        <div class="user-chip">
+          <div class="avatar" id="chip-avatar">?</div>
+          <div>
+            <div class="uname" id="chip-username">—</div>
+            <div class="uage" id="chip-age">—</div>
+          </div>
+          <span class="dev-pill hidden" id="chip-dev">مطوّر</span>
         </div>
+        <button class="icon-btn" title="تسجيل الخروج" onclick="handleLogout()">⏻</button>
+      </div>
     </div>
 
-    <!-- واجهة عرض الفيديوهات العامة (TikTok Style) -->
-    <div class="stage-view-viewport">
-        <div class="floating-top-navbar">
-            <button class="navbar-pill-btn" onclick="handleLiveStreamAccess()">🔴 بث مباشر</button>
-            <button class="navbar-pill-btn" onclick="handleVideoUploadProcess()">📹 رفع فيديو</button>
-            <button class="navbar-pill-btn" onclick="location.reload()">🔄 تحديث العرض</button>
+    <main>
+      <!-- ---- FEED TAB ---- -->
+      <section id="tab-content-feed" class="tab-content">
+        <div class="feed-shell">
+          <div class="feed" id="feed-container"></div>
         </div>
+      </section>
 
-        <div class="tiktok-feed-frame">
-            <div class="video-simulator-viewport">
-                <div style="margin-bottom: 12px;">
-                    <h2 style="font-size: 1.15rem; color: #fff;">منصة CimaLight العامة</h2>
-                    <p style="font-size: 0.76rem; color: var(--text-sub); margin-top: 4px;">الفيديوهات المعتمدة والمنشورة للعامة فقط</p>
-                </div>
-                <div id="containerApprovedFeedItems" style="width: 100%; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-top: 10px; padding: 4px;">
-                    <div style="background: #14141d; padding: 14px; border-radius: 8px; border: 1px solid #222; text-align: center; color: #666; font-size: 0.8rem;">
-                        لا توجد فيديوهات معتمدة حالياً في الواجهة العامة.
-                    </div>
-                </div>
-            </div>
-
-            <div class="right-side-interaction-bar">
-                <div class="user-avatar-badge-core" id="badgeSidebarAvatar">M</div>
-                <div class="action-circle-icon" onclick="alert('تم تسجيل الإعجاب بالفيديو بنجاح!')">❤️<span>1.5K</span></div>
-                <div class="action-circle-icon" onclick="alert('تم فتح نافذة التعليقات التفاعلية.')">💬<span>410</span></div>
-                <div class="action-circle-icon" onclick="alert('تم نسخ رابط الفيديو بنجاح.')">↗️<span>مشاركة</span></div>
-            </div>
+      <!-- ---- UPLOAD TAB ---- -->
+      <section id="tab-content-upload" class="tab-content hidden">
+        <div class="page">
+          <div class="page-head">
+            <h2>رفع فيديو جديد</h2>
+            <p>سيدخل الفيديو في حالة «قادم وتحت مراجعة المطور» ولن يظهر للعامة إلا بعد اعتماده.</p>
+          </div>
+          <div class="card">
+            <form onsubmit="return handleUpload(event)">
+              <div class="field">
+                <label>عنوان الفيديو</label>
+                <input type="text" id="up-title" placeholder="اكتب عنواناً جذاباً" required>
+              </div>
+              <div class="field">
+                <label>الوصف</label>
+                <textarea class="tf" id="up-desc" placeholder="عن ماذا يتحدث هذا الفيديو؟" required></textarea>
+              </div>
+              <div class="field">
+                <label>رابط الفيديو <span class="opt">(MP4 مباشر)</span></label>
+                <input type="url" id="up-url" placeholder="https://example.com/video.mp4">
+              </div>
+              <div class="divider-or">أو</div>
+              <div class="field">
+                <label class="file-drop" id="file-drop-label" for="up-file">
+                  📁 اضغط لاختيار ملف فيديو من جهازك (محاكاة رفع الملف)
+                  <input type="file" id="up-file" accept="video/*" onchange="handleFilePicked(event)">
+                </label>
+                <p class="mini-note">يُفضّل استخدام رابط مباشر للفيديوهات الكبيرة لتفادي حدود التخزين المحلي للمتصفح.</p>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">إرسال للمراجعة</button>
+            </form>
+          </div>
         </div>
+      </section>
+
+      <!-- ---- LIVE TAB ---- -->
+      <section id="tab-content-live" class="tab-content hidden">
+        <div class="page">
+          <div class="live-hero">
+            <span class="lv-badge"><span class="pulse"></span> غرفة البث المباشر</span>
+            <h2>الدخول إلى البث المباشر</h2>
+            <p>هذه الغرفة مخصصة للبالغين فقط. يتم التحقق من عمرك تلقائياً بناءً على تاريخ ميلادك المسجّل عند إنشاء الحساب.</p>
+            <div class="age-req">🔞 الحد الأدنى للعمر: <b>18 سنة</b></div>
+            <div>
+              <button class="btn btn-primary" onclick="attemptLiveEntry()">التحقق من العمر والدخول للبث</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---- ADMIN TAB ---- -->
+      <section id="tab-content-admin" class="tab-content hidden">
+        <div class="page">
+          <div class="page-head">
+            <h2>لوحة تحكم المطور</h2>
+            <p>مراجعة الفيديوهات المعلّقة، واعتماد أو رفض الحسابات المحظورة.</p>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat-box"><b id="stat-pending">0</b><span>قيد المراجعة</span></div>
+            <div class="stat-box"><b id="stat-approved">0</b><span>منشور للعامة</span></div>
+            <div class="stat-box"><b id="stat-banned">0</b><span>حسابات محظورة</span></div>
+          </div>
+
+          <h3 style="margin:0 0 12px; font-size:15.5px;">🕓 فيديوهات قادمة وتحت المراجعة</h3>
+          <div id="admin-pending-list"></div>
+
+          <h3 style="margin:26px 0 12px; font-size:15.5px;">✅ الفيديوهات المعتمدة حالياً</h3>
+          <div id="admin-approved-list"></div>
+
+          <h3 style="margin:26px 0 12px; font-size:15.5px;">⛔ الحسابات المحظورة من البث المباشر</h3>
+          <div id="admin-banned-list"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- comments modal (hidden by default) -->
+<div id="comments-modal-back" class="modal-back hidden" onclick="if(event.target===this) closeComments()">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="comments-video-title">التعليقات</h3>
+      <button class="icon-btn" onclick="closeComments()">✕</button>
     </div>
+    <div class="modal-body" id="comments-list"></div>
+    <div class="modal-foot">
+      <input type="text" id="comment-input" placeholder="أضف تعليقاً…" onkeydown="if(event.key==='Enter'){submitComment();}">
+      <button onclick="submitComment()">➤</button>
+    </div>
+  </div>
+</div>
 
-    <script>
-        // هيكل وإدارة حالة النظام الضخمة (Enterprise Architecture State)
-        let systemCoreData = {
-            activeUser: JSON.parse(localStorage.getItem('cimalight_ent_user')) || null,
-            pendingQueue: JSON.parse(localStorage.getItem('cimalight_ent_pending')) || [],
-            approvedFeed: JSON.parse(localStorage.getItem('cimalight_ent_approved')) || []
-        };
+<script>
+/* =========================================================================
+   Core Platform — Front-end only Enterprise Core (localStorage powered)
+   ========================================================================= */
 
-        function bootEnterpriseSystem() {
-            if (systemCoreData.activeUser) {
-                document.getElementById('sectionLoggedOut').style.display = 'none';
-                document.getElementById('sectionLoggedIn').style.display = 'block';
-                document.getElementById('textProfileName').innerText = "👤 " + systemCoreData.activeUser.name;
-                
-                let calculatedUserAge = computeExactAgeValue(systemCoreData.activeUser.birthDate);
-                document.getElementById('textProfileAge').innerText = "العمر: " + calculatedUserAge + " سنة";
-                document.getElementById('badgeSidebarAvatar').innerText = systemCoreData.activeUser.name.charAt(0).toUpperCase();
+const STORE_KEYS = {
+  users: 'evc_users',
+  session: 'evc_session',
+  bans: 'evc_bans',
+  videos: 'evc_videos',
+};
 
-                // فحص صلاحيات المطور الرئيسي للنظام
-                if (systemCoreData.activeUser.name.toLowerCase() === 'mohamed' || systemCoreData.activeUser.isDeveloperAdmin) {
-                    systemCoreData.activeUser.isDeveloperAdmin = true;
-                    document.getElementById('textProfileRole').innerText = "الصلاحية: مطور النظام (Admin)";
-                    document.getElementById('sectionAdminReviewQueue').style.display = 'block';
-                    renderAdminReviewQueueUI();
-                } else {
-                    document.getElementById('textProfileRole').innerText = "الصلاحية: مستخدم عام";
-                    document.getElementById('sectionAdminReviewQueue').style.display = 'none';
-                }
-            } else {
-                document.getElementById('sectionLoggedOut').style.display = 'block';
-                document.getElementById('sectionLoggedIn').style.display = 'none';
-                document.getElementById('sectionAdminReviewQueue').style.display = 'none';
-            }
-            renderApprovedFeedDisplayUI();
-        }
+const DEV_USERNAME = 'mohamed'; // lower-cased compare
+const LIVE_MIN_AGE = 18;
+const BAN_YEARS = 4;
 
-        function executeUserRegistration() {
-            let typedName = document.getElementById('inputUsernameReg').value.trim();
-            let selectedDate = document.getElementById('inputBirthdateReg').value;
-            if (!typedName) { alert("تنبيه هام: يجب كتابة اسم المستخدم أولاً!"); return; }
+let activeVideoId = null;     // currently open comments modal target
+let currentTab = 'feed';
 
-            let isDevAccount = (typedName.toLowerCase() === 'mohamed');
-            systemCoreData.activeUser = { name: typedName, birthDate: selectedDate, isDeveloperAdmin: isDevAccount };
-            localStorage.setItem('cimalight_ent_user', JSON.stringify(systemCoreData.activeUser));
-            
-            bootEnterpriseSystem();
-            alert("تم تسجيل دخولك بنجاح في المنظومة يا بطل!");
-        }
+/* ---------------------------- storage helpers ---------------------------- */
 
-        function executeUserLogout() {
-            localStorage.removeItem('cimalight_ent_user');
-            systemCoreData.activeUser = null;
-            bootEnterpriseSystem();
-        }
+function loadJSON(key, fallback){
+  try{
+    const raw = localStorage.getItem(key);
+    if(!raw) return fallback;
+    return JSON.parse(raw);
+  }catch(e){
+    console.error('تعذرت قراءة', key, e);
+    return fallback;
+  }
+}
+function saveJSON(key, value){
+  try{
+    localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  }catch(e){
+    console.error('تعذر الحفظ', key, e);
+    toast('تعذر حفظ البيانات محلياً (قد تكون الذاكرة ممتلئة)', 'err');
+    return false;
+  }
+}
 
-        function computeExactAgeValue(birthdateString) {
-            let birthDateObj = new Date(birthdateString);
-            let currentDateObj = new Date();
-            let ageResultYears = currentDateObj.getFullYear() - birthDateObj.getFullYear();
-            let monthDifference = currentDateObj.getMonth() - birthDateObj.getMonth();
-            if (monthDifference < 0 || (monthDifference === 0 && currentDateObj.getDate() < birthDateObj.getDate())) {
-                ageResultYears--;
-            }
-            return ageResultYears;
-        }
+function getUsers(){ return loadJSON(STORE_KEYS.users, []); }
+function setUsers(list){ saveJSON(STORE_KEYS.users, list); }
 
-        function handleLiveStreamAccess() {
-            if (!systemCoreData.activeUser) { alert("يجب تسجيل الدخول أولاً لتتمكن من فتح غرفة البث المباشر!"); return; }
-            let userAgeValue = computeExactAgeValue(systemCoreData.activeUser.birthDate);
-            
-            if (userAgeValue < 18) {
-                alert("❌ عذراً يا بطل! البث المباشر مخصص لمن هم فوق 18 سنة فقط. عمرك الحالي هو (" + userAgeValue + " سنة). بناءً على اللائحة التنفيذية تم تطبيق حظر لمدة 4 سنوات على حسابك!");
-                executeUserLogout();
-                location.reload();
-                return;
-            }
-            alert("🎉 مبروك! عمرك يتجاوز 18 سنة، تم المصادقة على فتح غرفة البث المباشر بنجاح.");
-        }
+function getBans(){ return loadJSON(STORE_KEYS.bans, {}); }
+function setBans(obj){ saveJSON(STORE_KEYS.bans, obj); }
 
-        function handleVideoUploadProcess() {
-            if (!systemCoreData.activeUser) { alert("يجب تسجيل الدخول أولاً لرفع الفيديوهات وتفعيل طابور المراجعة!"); return; }
-            let videoDescriptionInput = prompt("اكتب عنوان ووصف الفيديو الجديد:");
-            if (!videoDescriptionInput) return;
+function getVideos(){ return loadJSON(STORE_KEYS.videos, []); }
+function setVideos(list){ saveJSON(STORE_KEYS.videos, list); }
 
-            let newVideoRecord = {
-                id: Date.now(),
-                author: systemCoreData.activeUser.name,
-                caption: videoDescriptionInput,
-                timestamp: new Date().toLocaleDateString()
-            };
+function getSession(){ return loadJSON(STORE_KEYS.session, null); }
+function setSession(username){ saveJSON(STORE_KEYS.session, username); }
+function clearSession(){ localStorage.removeItem(STORE_KEYS.session); }
 
-            systemCoreData.pendingQueue.push(newVideoRecord);
-            localStorage.setItem('cimalight_ent_pending', JSON.stringify(systemCoreData.pendingQueue));
+/* ------------------------------- utilities ------------------------------- */
 
-            alert("📹 تم رفع الفيديو بنجاح! هو الآن مدرج في قائمة (فيديو قادم وتحت مراجعة المطور) ولن ينشر للعامة إلا بالموافقة الرسمية.");
-            if (systemCoreData.activeUser.isDeveloperAdmin) {
-                renderAdminReviewQueueUI();
-            }
-        }
+function uid(){ return 'v_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8); }
 
-        function renderAdminReviewQueueUI() {
-            let queueBoxContainer = document.getElementById('containerAdminPendingList');
-            if (systemCoreData.pendingQueue.length === 0) {
-                queueBoxContainer.innerHTML = '<p style="font-size: 0.75rem; color: #777;">لا توجد فيديوهات قادمة بانتظار المراجعة حالياً.</p>';
-                return;
-            }
-            let generatedHtmlString = '';
-            systemCoreData.pendingQueue.forEach((vidItem, arrayIndex) => {
-                generatedHtmlString += `<div class="pending-queue-item-card">
-                    <p style="color:#fff; margin-bottom:3px;"><b>المستخدم:</b> ${vidItem.author}</p>
-                    <p style="color:#ccc; margin-bottom:6px;"><b>الوصف:</b> ${vidItem.caption}</p>
-                    <div style="display:flex; gap:6px;">
-                        <button class="btn-action-main btn-green-main" style="padding:5px 10px; font-size:0.72rem;" onclick="approvePendingVideoItem(${arrayIndex})">قبول ونشر للعامة</button>
-                        <button class="btn-action-main btn-red-main" style="padding:5px 10px; font-size:0.72rem;" onclick="rejectPendingVideoItem(${arrayIndex})">رفض وحذف</button>
-                    </div>
-                </div>`;
-            });
-            queueBoxContainer.innerHTML = generatedHtmlString;
-        }
+function isDev(username){
+  return !!username && username.trim().toLowerCase() === DEV_USERNAME;
+}
 
-        function approvePendingVideoItem(index) {
-            let approvedVideoObject = systemCoreData.pendingQueue.splice(index, 1)[0];
-            systemCoreData.approvedFeed.push(approvedVideoObject);
-            
-            localStorage.setItem('cimalight_ent_pending', JSON.stringify(systemCoreData.pendingQueue));
-            localStorage.setItem('cimalight_ent_approved', JSON.stringify(systemCoreData.approvedFeed));
-            
-            renderAdminReviewQueueUI();
-            renderApprovedFeedDisplayUI();
-            alert("✅ تم قبول الفيديو واعتماده وعرضه في الواجهة العامة للجميع بنجاح!");
-        }
+// دقيق: يحسب الفرق بالسنوات الكاملة بين تاريخين، مع مراعاة الشهر واليوم (والسنوات الكبيسة ضمنياً عبر كائن Date)
+function calcAge(dobStr, atDate){
+  const dob = new Date(dobStr + 'T00:00:00');
+  const now = atDate ? new Date(atDate) : new Date();
+  if(isNaN(dob.getTime())) return null;
+  let age = now.getFullYear() - dob.getFullYear();
+  const monthDiff = now.getMonth() - dob.getMonth();
+  const dayDiff = now.getDate() - dob.getDate();
+  if(monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)){
+    age--;
+  }
+  return age;
+}
 
-        function rejectPendingVideoItem(index) {
-            systemCoreData.pendingQueue.splice(index, 1);
-            localStorage.setItem('cimalight_ent_pending', JSON.stringify(systemCoreData.pendingQueue));
-            renderAdminReviewQueueUI();
-            alert("❌ تم رفض الفيديو وحذفه نهائياً من الطابور.");
-        }
+function formatDuration(ms){
+  if(ms <= 0) return 'انتهت المدة';
+  const days = Math.floor(ms / (1000*60*60*24));
+  const years = Math.floor(days/365);
+  const remDays = days % 365;
+  const parts = [];
+  if(years>0) parts.push(years + ' سنة');
+  if(remDays>0) parts.push(remDays + ' يوم');
+  if(parts.length===0) parts.push('أقل من يوم');
+  return parts.join(' و ');
+}
 
-        function renderApprovedFeedDisplayUI() {
-            let feedDisplayBox = document.getElementById('containerApprovedFeedItems');
-            if (systemCoreData.approvedFeed.length === 0) {
-                feedDisplayBox.innerHTML = '<div style="background: #14141d; padding: 14px; border-radius: 8px; border: 1px solid #222; text-align: center; color: #666; font-size: 0.8rem;">لا توجد فيديوهات معتمدة حالياً في الواجهة العامة.</div>';
-                return;
-            }
-            let feedHtmlString = '';
-            systemCoreData.approvedFeed.forEach(feedItem => {
-                feedHtmlString += `<div style="background: #171722; padding: 12px; border-radius: 8px; border: 1px solid #2a2a38; text-align: right;">
-                    <p style="color: var(--cimalight-red); font-weight: bold; font-size: 0.82rem;">@${feedItem.author}</p>
-                    <p style="color: #fff; font-size: 0.8rem; margin-top: 5px;">${feedItem.caption}</p>
-                </div>`;
-            });
-            feedDisplayBox.innerHTML = feedHtmlString;
-        }
+function escapeHTML(str){
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
 
-        function resetSystemLocalStorage() {
-            if (confirm("هل أنت متأكد تماماً من تصفير وإعادة تعيين ذاكرة النظام المحلية؟")) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
+function initials(name){
+  if(!name) return '؟';
+  return name.trim().charAt(0).toUpperCase();
+}
 
-        window.onload = bootEnterpriseSystem;
-    </script>
+function toast(msg, type){
+  const stack = document.getElementById('toast-stack');
+  const el = document.createElement('div');
+  el.className = 'toast' + (type ? ' ' + type : '');
+  const icon = type==='ok' ? '✅' : type==='err' ? '⛔' : type==='warn' ? '⚠️' : 'ℹ️';
+  el.innerHTML = '<span>' + icon + '</span><span>' + escapeHTML(msg) + '</span>';
+  stack.appendChild(el);
+  setTimeout(()=>{
+    el.style.transition = 'opacity .3s ease, transform .3s ease';
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(-8px)';
+    setTimeout(()=> el.remove(), 320);
+  }, 3200);
+}
+
+/* ------------------------------- auth logic ------------------------------- */
+
+function switchAuthTab(which){
+  const isLogin = which === 'login';
+  document.getElementById('seg-login').classList.toggle('active', isLogin);
+  document.getElementById('seg-register').classList.toggle('active', !isLogin);
+  document.getElementById('form-login').classList.toggle('hidden', !isLogin);
+  document.getElementById('form-register').classList.toggle('hidden', isLogin);
+  document.getElementById('login-ban-box').innerHTML = '';
+}
+
+function handleRegister(evt){
+  evt.preventDefault();
+  const username = document.getElementById('reg-username').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const dob = document.getElementById('reg-dob').value;
+
+  if(!username){ toast('يرجى إدخال اسم مستخدم', 'err'); return false; }
+  if(!dob){ toast('يرجى إدخال تاريخ الميلاد', 'err'); return false; }
+
+  const dobDate = new Date(dob + 'T00:00:00');
+  if(isNaN(dobDate.getTime()) || dobDate.getTime() > Date.now()){
+    toast('تاريخ الميلاد غير صالح', 'err');
+    return false;
+  }
+
+  const users = getUsers();
+  if(users.some(u => u.username.toLowerCase() === username.toLowerCase())){
+    toast('اسم المستخدم مستخدم بالفعل، جرّب اسماً آخر أو سجّل الدخول', 'err');
+    return false;
+  }
+
+  const bans = getBans();
+  const banUntil = bans[username.toLowerCase()];
+  if(banUntil && banUntil > Date.now()){
+    showBanNotice(banUntil);
+    toast('هذا الحساب محظور حالياً من إنشاء جلسة جديدة', 'err');
+    return false;
+  }
+
+  const newUser = { username, email: email || null, dob, createdAt: Date.now() };
+  users.push(newUser);
+  setUsers(users);
+  setSession(username);
+  toast('تم إنشاء الحساب بنجاح، أهلاً بك ' + username, 'ok');
+  enterApp(username);
+  return false;
+}
+
+function handleLogin(evt){
+  evt.preventDefault();
+  const username = document.getElementById('login-username').value.trim();
+  document.getElementById('login-ban-box').innerHTML = '';
+  if(!username){ toast('يرجى إدخال اسم المستخدم', 'err'); return false; }
+
+  const bans = getBans();
+  const banUntil = bans[username.toLowerCase()];
+  if(banUntil && banUntil > Date.now()){
+    showBanNotice(banUntil);
+    return false;
+  }
+
+  const users = getUsers();
+  let user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
+
+  // Developer auto-provision: إن لم يوجد حساب باسم المطوّر بعد، يُنشأ تلقائياً عند أول دخول
+  if(!user && isDev(username)){
+    user = { username: username, email:null, dob:null, createdAt: Date.now(), isDevAccount:true };
+    users.push(user);
+    setUsers(users);
+  }
+
+  if(!user){
+    toast('لا يوجد حساب بهذا الاسم. جرّب إنشاء حساب جديد', 'err');
+    return false;
+  }
+
+  setSession(user.username);
+  toast('مرحباً بعودتك ' + user.username, 'ok');
+  enterApp(user.username);
+  return false;
+}
+
+function showBanNotice(banUntil){
+  const remaining = formatDuration(banUntil - Date.now());
+  document.getElementById('login-ban-box').innerHTML =
+    '<div class="ban-box">⛔ هذا الحساب محظور من ميزة البث المباشر ودخول المنصة بسبب مخالفة شرط العمر (18+).<br>الوقت المتبقي على انتهاء الحظر: <b>' + escapeHTML(remaining) + '</b></div>';
+}
+
+function handleLogout(){
+  clearSession();
+  document.getElementById('view-shell').classList.add('hidden');
+  document.getElementById('view-auth').classList.remove('hidden');
+  document.getElementById('login-username').value = '';
+  switchAuthTab('login');
+  toast('تم تسجيل الخروج', 'ok');
+}
+
+/* ------------------------------ app bootstrap ------------------------------ */
+
+function getCurrentUser(){
+  const username = getSession();
+  if(!username) return null;
+  const users = getUsers();
+  return users.find(u => u.username.toLowerCase() === username.toLowerCase()) || null;
+}
+
+function enterApp(username){
+  const user = getUsers().find(u => u.username.toLowerCase() === username.toLowerCase());
+  if(!user){ handleLogout(); return; }
+
+  document.getElementById('view-auth').classList.add('hidden');
+  document.getElementById('view-shell').classList.remove('hidden');
+
+  renderUserChip(user);
+  document.getElementById('tab-admin').classList.toggle('hidden', !isDev(user.username));
+
+  switchTab('feed');
+  renderFeed();
+  renderAdmin();
+}
+
+function renderUserChip(user){
+  const age = user.dob ? calcAge(user.dob) : null;
+  document.getElementById('chip-username').textContent = user.username;
+  document.getElementById('chip-age').textContent = age !== null ? ('العمر: ' + age + ' سنة') : 'حساب مطوّر';
+  const avatar = document.getElementById('chip-avatar');
+  avatar.textContent = initials(user.username);
+  avatar.classList.toggle('dev', isDev(user.username));
+  document.getElementById('chip-dev').classList.toggle('hidden', !isDev(user.username));
+}
+
+/* --------------------------------- tabs --------------------------------- */
+
+function switchTab(tab){
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.tab === tab);
+  });
+  document.querySelectorAll('.tab-content').forEach(sec=>{
+    sec.classList.toggle('hidden', sec.id !== 'tab-content-' + tab);
+  });
+  if(tab === 'feed') renderFeed();
+  if(tab === 'admin') renderAdmin();
+}
+
+/* ------------------------------ platform ctrl ------------------------------ */
+
+function refreshPlatform(){
+  renderFeed();
+  renderAdmin();
+  const user = getCurrentUser();
+  if(user) renderUserChip(user);
+  toast('تم تحديث بيانات المنصة', 'ok');
+}
+
+function confirmWipe(){
+  const ok = confirm('سيؤدي هذا إلى حذف جميع الحسابات، الفيديوهات، والحظورات المخزّنة محلياً في هذا المتصفح بشكل نهائي. هل أنت متأكد؟');
+  if(!ok) return;
+  Object.values(STORE_KEYS).forEach(k => localStorage.removeItem(k));
+  toast('تم تصفير الذاكرة المحلية بالكامل', 'warn');
+  setTimeout(()=> location.reload(), 700);
+}
+
+/* -------------------------------- live gate -------------------------------- */
+
+function attemptLiveEntry(){
+  const user = getCurrentUser();
+  if(!user){ toast('يجب تسجيل الدخول أولاً', 'err'); return; }
+
+  if(!user.dob){
+    toast('لا يوجد تاريخ ميلاد مسجّل لهذا الحساب لإجراء التحقق', 'err');
+    return;
+  }
+
+  const age = calcAge(user.dob);
+  if(age === null){
+    toast('تعذر حساب العمر من تاريخ الميلاد المسجّل', 'err');
+    return;
+  }
+
+  if(age >= LIVE_MIN_AGE){
+    toast('تم التحقق من العمر (' + age + ' سنة) — جارٍ فتح غرفة البث المباشر', 'ok');
+    alert('🔴 تم التحقق بنجاح! عمرك ' + age + ' سنة.\nيمكنك الآن الدخول إلى غرفة البث المباشر.');
+    return;
+  }
+
+  // العمر أقل من 18 — تفعيل نظام العقوبات
+  const bans = getBans();
+  const banUntilTs = Date.now() + BAN_YEARS * 365 * 24 * 60 * 60 * 1000;
+  bans[user.username.toLowerCase()] = banUntilTs;
+  setBans(bans);
+
+  alert('⛔ تم رفض الطلب: عمرك المسجّل هو ' + age + ' سنة وهو أقل من الحد الأدنى (18 سنة).\nتم فرض حظر لمدة ' + BAN_YEARS + ' سنوات على هذا الحساب، وسيتم تسجيل خروجك الآن.');
+
+  clearSession();
+  document.getElementById('view-shell').classList.add('hidden');
+  document.getElementById('view-auth').classList.remove('hidden');
+  switchAuthTab('login');
+  document.getElementById('login-username').value = user.username;
+  showBanNotice(banUntilTs);
+  toast('تم حظر الحساب لمدة ' + BAN_YEARS + ' سنوات وتسجيل الخروج تلقائياً', 'err');
+}
+
+/* -------------------------------- uploading -------------------------------- */
+
+let pickedFileDataUrl = null;
+let pickedFileName = null;
+
+function handleFilePicked(evt){
+  const file = evt.target.files[0];
+  const label = document.getElementById('file-drop-label');
+  if(!file){
+    pickedFileDataUrl = null; pickedFileName = null;
+    label.classList.remove('has-file');
+    label.childNodes[0].textContent = '📁 اضغط لاختيار ملف فيديو من جهازك (محاكاة رفع الملف)';
+    return;
+  }
+  const MAX_BYTES = 15 * 1024 * 1024; // 15MB احتياطي لحدود localStorage
+  if(file.size > MAX_BYTES){
+    toast('الملف كبير جداً على التخزين المحلي، الرجاء استخدام رابط فيديو بدلاً من ذلك', 'err');
+    evt.target.value = '';
+    pickedFileDataUrl = null; pickedFileName = null;
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e){
+    pickedFileDataUrl = e.target.result;
+    pickedFileName = file.name;
+    label.classList.add('has-file');
+    label.childNodes[0].textContent = '✅ تم اختيار: ' + file.name;
+  };
+  reader.onerror = function(){
+    toast('تعذرت قراءة الملف المحدد', 'err');
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleUpload(evt){
+  evt.preventDefault();
+  const user = getCurrentUser();
+  if(!user){ toast('يجب تسجيل الدخول أولاً', 'err'); return false; }
+
+  const title = document.getElementById('up-title').value.trim();
+  const desc = document.getElementById('up-desc').value.trim();
+  const url = document.getElementById('up-url').value.trim();
+
+  if(!title || !desc){ toast('يرجى تعبئة العنوان والوصف', 'err'); return false; }
+
+  const src = url || pickedFileDataUrl;
+  if(!src){ toast('يرجى إدخال رابط فيديو أو اختيار ملف من جهازك', 'err'); return false; }
+
+  const video = {
+    id: uid(),
+    title, desc,
+    src,
+    uploader: user.username,
+    status: 'pending',
+    likes: 0,
+    likedBy: [],
+    comments: [],
+    createdAt: Date.now(),
+  };
+
+  const videos = getVideos();
+  videos.unshift(video);
+  const saved = setVideos(videos);
+  if(saved === false) return false;
+
+  evt.target.reset();
+  pickedFileDataUrl = null; pickedFileName = null;
+  document.getElementById('file-drop-label').classList.remove('has-file');
+  document.getElementById('file-drop-label').childNodes[0].textContent = '📁 اضغط لاختيار ملف فيديو من جهازك (محاكاة رفع الملف)';
+
+  toast('تم إرسال الفيديو، وهو الآن «قادم وتحت مراجعة المطوّر»', 'ok');
+  renderAdmin();
+  return false;
+}
+
+/* ---------------------------------- feed ---------------------------------- */
+
+function renderFeed(){
+  const container = document.getElementById('feed-container');
+  const videos = getVideos().filter(v => v.status === 'approved').sort((a,b)=> b.createdAt - a.createdAt);
+
+  if(videos.length === 0){
+    container.innerHTML =
+      '<div class="empty-feed">'+
+        '<div class="em-icon">🎬</div>'+
+        '<h3>لا توجد فيديوهات منشورة بعد</h3>'+
+        '<p>بمجرد أن يعتمد المطوّر أحد الفيديوهات المرفوعة، ستظهر هنا مباشرةً في الموجز العام.</p>'+
+      '</div>';
+    return;
+  }
+
+  const user = getCurrentUser();
+  container.innerHTML = videos.map(v => renderSlide(v, user)).join('');
+}
+
+function renderSlide(v, user){
+  const liked = user && v.likedBy.includes(user.username);
+  return (
+    '<div class="slide" data-vid="'+v.id+'">'+
+      '<video src="'+encodeURI(v.src)+'" playsinline muted loop controls preload="metadata"></video>'+
+      '<div class="veil"></div>'+
+      '<div class="side-rail">'+
+        '<div class="rail-btn"><div class="rail-avatar">'+escapeHTML(initials(v.uploader))+'</div></div>'+
+        '<button class="rail-btn '+(liked?'liked':'')+'" onclick="toggleLike(\''+v.id+'\')">'+
+          '<div class="rail-circle">'+(liked?'❤️':'🤍')+'</div>'+
+          '<span class="rail-count">'+v.likes+'</span>'+
+        '</button>'+
+        '<button class="rail-btn" onclick="openComments(\''+v.id+'\')">'+
+          '<div class="rail-circle">💬</div>'+
+          '<span class="rail-count">'+v.comments.length+'</span>'+
+        '</button>'+
+        '<button class="rail-btn" onclick="shareVideo(\''+v.id+'\')">'+
+          '<div class="rail-circle">↗️</div>'+
+          '<span class="rail-count">مشاركة</span>'+
+        '</button>'+
+      '</div>'+
+      '<div class="slide-info">'+
+        '<div class="up">@'+escapeHTML(v.uploader)+'</div>'+
+        '<p class="title">'+escapeHTML(v.title)+'</p>'+
+        '<p class="desc">'+escapeHTML(v.desc)+'</p>'+
+      '</div>'+
+    '</div>'
+  );
+}
+
+function toggleLike(videoId){
+  const user = getCurrentUser();
+  if(!user){ toast('يجب تسجيل الدخول للإعجاب', 'err'); return; }
+  const videos = getVideos();
+  const v = videos.find(x=>x.id===videoId);
+  if(!v) return;
+  const idx = v.likedBy.indexOf(user.username);
+  if(idx === -1){
+    v.likedBy.push(user.username);
+    v.likes++;
+  }else{
+    v.likedBy.splice(idx,1);
+    v.likes = Math.max(0, v.likes-1);
+  }
+  setVideos(videos);
+  renderFeed();
+}
+
+function shareVideo(videoId){
+  const link = location.href.split('#')[0] + '#video-' + videoId;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(link).then(()=>{
+      toast('تم نسخ رابط الفيديو إلى الحافظة', 'ok');
+    }).catch(()=>{
+      prompt('انسخ رابط المشاركة:', link);
+    });
+  }else{
+    prompt('انسخ رابط المشاركة:', link);
+  }
+}
+
+/* -------------------------------- comments -------------------------------- */
+
+function openComments(videoId){
+  activeVideoId = videoId;
+  const videos = getVideos();
+  const v = videos.find(x=>x.id===videoId);
+  if(!v) return;
+  document.getElementById('comments-video-title').textContent = 'التعليقات — ' + v.title;
+  renderCommentsList(v);
+  document.getElementById('comments-modal-back').classList.remove('hidden');
+  document.getElementById('comment-input').value = '';
+  document.getElementById('comment-input').focus();
+}
+
+function renderCommentsList(v){
+  const list = document.getElementById('comments-list');
+  if(!v.comments.length){
+    list.innerHTML = '<div class="no-comments">لا توجد تعليقات بعد، كن أول من يعلّق 👋</div>';
+    return;
+  }
+  list.innerHTML = v.comments.slice().reverse().map(c=>{
+    const d = new Date(c.date);
+    return (
+      '<div class="comment-item">'+
+        '<div class="cav">'+escapeHTML(initials(c.user))+'</div>'+
+        '<div class="ctext">'+
+          '<div class="cname">'+escapeHTML(c.user)+'</div>'+
+          '<div class="cbody">'+escapeHTML(c.text)+'</div>'+
+          '<div class="cdate">'+d.toLocaleString('ar-EG')+'</div>'+
+        '</div>'+
+      '</div>'
+    );
+  }).join('');
+}
+
+function submitComment(){
+  const user = getCurrentUser();
+  if(!user){ toast('يجب تسجيل الدخول للتعليق', 'err'); return; }
+  const input = document.getElementById('comment-input');
+  const text = input.value.trim();
+  if(!text) return;
+
+  const videos = getVideos();
+  const v = videos.find(x=>x.id===activeVideoId);
+  if(!v) return;
+
+  v.comments.push({ user: user.username, text, date: Date.now() });
+  setVideos(videos);
+  input.value = '';
+  renderCommentsList(v);
+  renderFeed();
+}
+
+function closeComments(){
+  document.getElementById('comments-modal-back').classList.add('hidden');
+  activeVideoId = null;
+}
+
+/* --------------------------------- admin --------------------------------- */
+
+function renderAdmin(){
+  const user = getCurrentUser();
+  if(!user || !isDev(user.username)) return;
+
+  const videos = getVideos();
+  const pending = videos.filter(v=>v.status==='pending').sort((a,b)=>b.createdAt-a.createdAt);
+  const approved = videos.filter(v=>v.status==='approved').sort((a,b)=>b.createdAt-a.createdAt);
+  const bans = getBans();
+  const activeBans = Object.entries(bans).filter(([,until]) => until > Date.now());
+
+  document.getElementById('stat-pending').textContent = pending.length;
+  document.getElementById('stat-approved').textContent = approved.length;
+  document.getElementById('stat-banned').textContent = activeBans.length;
+
+  const badge = document.getElementById('admin-badge');
+  if(pending.length > 0){
+    badge.textContent = pending.length;
+    badge.classList.remove('hidden');
+  }else{
+    badge.classList.add('hidden');
+  }
+
+  const pendingList = document.getElementById('admin-pending-list');
+  pendingList.innerHTML = pending.length ? pending.map(v=>{
+    const d = new Date(v.createdAt);
+    return (
+      '<div class="pending-item">'+
+        '<div class="pending-thumb"><video src="'+encodeURI(v.src)+'" muted></video></div>'+
+        '<div class="pending-body">'+
+          '<span class="status-chip">🕓 فيديو قادم وتحت مراجعة المطور</span>'+
+          '<h4>'+escapeHTML(v.title)+'</h4>'+
+          '<p>'+escapeHTML(v.desc)+'</p>'+
+          '<div class="pending-meta">رفعه: @'+escapeHTML(v.uploader)+' — '+d.toLocaleString('ar-EG')+'</div>'+
+          '<div class="pending-actions">'+
+            '<button class="btn btn-ok btn-sm" onclick="approveVideo(\''+v.id+'\')">✔ قبول ونشر فوري</button>'+
+            '<button class="btn btn-danger btn-sm" onclick="rejectVideo(\''+v.id+'\')">✕ رفض وحذف نهائي</button>'+
+          '</div>'+
+        '</div>'+
+      '</div>'
+    );
+  }).join('') : '<p class="mini-note">لا توجد فيديوهات بانتظار المراجعة حالياً.</p>';
+
+  const approvedList = document.getElementById('admin-approved-list');
+  approvedList.innerHTML = approved.length ? approved.map(v=>{
+    return (
+      '<div class="approved-row">'+
+        '<div class="th"><video src="'+encodeURI(v.src)+'" muted></video></div>'+
+        '<div class="meta"><h5>'+escapeHTML(v.title)+'</h5><span>@'+escapeHTML(v.uploader)+' · '+v.likes+' إعجاب · '+v.comments.length+' تعليق</span></div>'+
+        '<button class="btn btn-danger btn-sm" onclick="rejectVideo(\''+v.id+'\')">حذف</button>'+
+      '</div>'
+    );
+  }).join('') : '<p class="mini-note">لا توجد فيديوهات منشورة بعد.</p>';
+
+  const bannedList = document.getElementById('admin-banned-list');
+  bannedList.innerHTML = activeBans.length ? activeBans.map(([uname, until])=>{
+    return (
+      '<div class="approved-row">'+
+        '<div class="meta"><h5>@'+escapeHTML(uname)+'</h5><span>الحظر ينتهي بعد: '+escapeHTML(formatDuration(until-Date.now()))+'</span></div>'+
+        '<button class="btn btn-ghost btn-sm" onclick="liftBan(\''+uname+'\')">رفع الحظر</button>'+
+      '</div>'
+    );
+  }).join('') : '<p class="mini-note">لا يوجد أي حساب محظور حالياً.</p>';
+}
+
+function approveVideo(videoId){
+  const videos = getVideos();
+  const v = videos.find(x=>x.id===videoId);
+  if(!v) return;
+  v.status = 'approved';
+  setVideos(videos);
+  toast('تم اعتماد الفيديو ونشره للعامة', 'ok');
+  renderAdmin();
+  renderFeed();
+}
+
+function rejectVideo(videoId){
+  const ok = confirm('هل أنت متأكد من رفض وحذف هذا الفيديو نهائياً؟ لا يمكن التراجع عن هذا الإجراء.');
+  if(!ok) return;
+  let videos = getVideos();
+  videos = videos.filter(x=>x.id!==videoId);
+  setVideos(videos);
+  toast('تم حذف الفيديو نهائياً من النظام', 'warn');
+  renderAdmin();
+  renderFeed();
+}
+
+function liftBan(username){
+  const bans = getBans();
+  delete bans[username.toLowerCase()];
+  setBans(bans);
+  toast('تم رفع الحظر عن @' + username, 'ok');
+  renderAdmin();
+}
+
+/* --------------------------------- init --------------------------------- */
+
+(function init(){
+  // مفاتيح افتراضية إن لم تكن موجودة
+  if(localStorage.getItem(STORE_KEYS.users) === null) setUsers([]);
+  if(localStorage.getItem(STORE_KEYS.bans) === null) setBans({});
+  if(localStorage.getItem(STORE_KEYS.videos) === null) setVideos([]);
+
+  const session = getSession();
+  if(session){
+    const user = getUsers().find(u=>u.username.toLowerCase()===session.toLowerCase());
+    const bans = getBans();
+    const banUntil = bans[session.toLowerCase()];
+    if(banUntil && banUntil > Date.now()){
+      clearSession();
+      switchAuthTab('login');
+      document.getElementById('login-username').value = session;
+      showBanNotice(banUntil);
+    }else if(user){
+      enterApp(user.username);
+      return;
+    }
+  }
+  switchAuthTab('login');
+})();
+</script>
 </body>
 </html>
