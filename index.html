@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سينما لايت برو | CimaLight Pro Social</title>
+    <title>سينما لايت برو | CimaLight Pro Ultimate</title>
     <style>
         :root {
-            --bg-main: #0b0f19;
-            --bg-card: #151c2c;
-            --bg-glass: rgba(21, 28, 44, 0.85);
+            --bg-main: #07090e;
+            --bg-card: #111827;
+            --bg-glass: rgba(17, 24, 39, 0.9);
             --accent: #e50914;
-            --accent-hover: #f6121d;
+            --accent-hover: #ff1e2a;
             --accent-glow: rgba(229, 9, 20, 0.4);
             --text-main: #ffffff;
-            --text-muted: #94a3b8;
-            --border-color: #1e293b;
+            --text-muted: #9ca3af;
+            --border-color: #1f2937;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -25,12 +25,12 @@
             color: var(--text-main);
             min-height: 100vh;
             overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% 0%, #1a0507 0%, var(--bg-main) 70%);
+            background-image: radial-gradient(circle at 50% 0%, #1a0305 0%, var(--bg-main) 70%);
         }
 
         header {
             background: var(--bg-glass);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(15px);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -39,7 +39,7 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.6);
         }
 
         .logo {
@@ -50,88 +50,87 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            text-shadow: 0 0 15px var(--accent-glow);
+            text-shadow: 0 0 20px var(--accent-glow);
         }
 
-        nav { display: flex; gap: 20px; align-items: center; }
+        nav { display: flex; gap: 15px; align-items: center; }
         
         nav a {
             color: var(--text-muted);
             text-decoration: none;
             font-weight: 600;
-            font-size: 15px;
+            font-size: 14px;
             cursor: pointer;
             transition: var(--transition);
             padding: 8px 16px;
-            border-radius: 8px;
+            border-radius: 10px;
         }
 
         nav a:hover, nav a.active {
             color: var(--text-main);
-            background-color: rgba(229, 9, 20, 0.1);
+            background-color: rgba(229, 9, 20, 0.15);
         }
 
-        .container { max-width: 1350px; margin: 30px auto; padding: 0 25px; }
+        .container { max-width: 1400px; margin: 30px auto; padding: 0 25px; }
 
         .hero {
-            background: linear-gradient(135deg, rgba(229,9,20,0.2) 0%, rgba(11,15,25,0.8) 100%), url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1200&q=80') center/cover;
-            padding: 60px 40px;
-            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(229,9,20,0.25) 0%, rgba(7,9,14,0.9) 100%), url('https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&w=1400&q=80') center/cover;
+            padding: 70px 40px;
+            border-radius: 24px;
             margin-bottom: 40px;
             border: 1px solid var(--border-color);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.7);
             position: relative;
             overflow: hidden;
         }
 
-        .hero-content { position: relative; z-index: 2; max-width: 600px; }
-        .hero h1 { font-size: 38px; font-weight: 900; margin-bottom: 12px; line-height: 1.2; }
-        .hero p { font-size: 16px; color: var(--text-muted); margin-bottom: 20px; }
+        .hero-content { position: relative; z-index: 2; max-width: 650px; }
+        .hero h1 { font-size: 42px; font-weight: 900; margin-bottom: 15px; line-height: 1.2; letter-spacing: -0.5px; }
+        .hero p { font-size: 16px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
 
         .controls-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
             gap: 15px;
             flex-wrap: wrap;
         }
 
-        .search-box {
-            position: relative;
-            flex-grow: 1;
-            max-width: 400px;
-        }
-
+        .search-box { position: relative; flex-grow: 1; max-width: 450px; }
         .search-box input {
             width: 100%;
-            padding: 12px 20px 12px 45px;
+            padding: 14px 20px 14px 45px;
             background: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
+            border-radius: 14px;
             color: white;
             font-size: 14px;
+            transition: var(--transition);
         }
+        .search-box input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 10px var(--accent-glow); }
 
         .filter-select {
-            padding: 12px 20px;
+            padding: 14px 20px;
             background: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
+            border-radius: 14px;
             color: white;
             font-weight: 600;
             cursor: pointer;
+            transition: var(--transition);
         }
+        .filter-select:focus { border-color: var(--accent); outline: none; }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
             gap: 25px;
         }
 
         .card {
             background-color: var(--bg-card);
-            border-radius: 16px;
+            border-radius: 18px;
             overflow: hidden;
             border: 1px solid var(--border-color);
             transition: var(--transition);
@@ -143,36 +142,29 @@
         .card:hover {
             transform: translateY(-8px);
             border-color: var(--accent);
-            box-shadow: 0 10px 25px var(--accent-glow);
+            box-shadow: 0 12px 30px var(--accent-glow);
         }
 
-        .card-img-container {
-            position: relative;
-            height: 360px;
-            overflow: hidden;
-        }
-
-        .card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .card-img-container { position: relative; height: 380px; overflow: hidden; background: #000; }
+        .card img { width: 100%; height: 100%; object-fit: cover; transition: var(--transition); }
+        .card:hover img { transform: scale(1.05); }
 
         .card-badge {
             position: absolute;
             top: 12px;
             right: 12px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 5px 12px;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: bold;
             color: var(--accent);
             border: 1px solid rgba(229, 9, 20, 0.3);
         }
 
-        .card-content { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
-        .card-content h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .card-content { padding: 22px; display: flex; flex-direction: column; flex-grow: 1; }
+        .card-content h3 { font-size: 19px; font-weight: 700; margin-bottom: 8px; }
         .card-content p { font-size: 13px; color: var(--text-muted); margin-bottom: 15px; flex-grow: 1; line-height: 1.5; }
         
         .card-meta {
@@ -181,7 +173,7 @@
             font-size: 12px;
             color: var(--text-muted);
             margin-bottom: 15px;
-            padding-top: 10px;
+            padding-top: 12px;
             border-top: 1px solid var(--border-color);
         }
 
@@ -190,7 +182,7 @@
             color: white;
             border: none;
             padding: 12px;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: 700;
             font-size: 14px;
@@ -205,59 +197,62 @@
 
         .btn:hover { background: var(--accent-hover); transform: scale(1.02); }
         .btn-danger { background: #dc2626 !important; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4) !important; }
+        .btn-danger:hover { background: #b91c1c !important; }
 
         .section { display: none; }
         .section.active { display: block; }
 
         .player-container {
             background-color: var(--bg-card);
-            padding: 30px;
-            border-radius: 20px;
+            padding: 35px;
+            border-radius: 24px;
             margin-top: 30px;
             border: 1px solid var(--border-color);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.7);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
         }
 
         video {
             width: 100%;
-            max-height: 600px;
-            border-radius: 14px;
+            max-height: 650px;
+            border-radius: 16px;
             background: black;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.8);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
         }
 
         .comments-section {
-            margin-top: 25px;
-            padding-top: 20px;
+            margin-top: 30px;
+            padding-top: 25px;
             border-top: 1px solid var(--border-color);
         }
 
         .comment-box {
             display: flex;
-            gap: 12px;
+            gap: 14px;
             margin-bottom: 15px;
-            background: rgba(255,255,255,0.03);
-            padding: 12px;
-            border-radius: 10px;
+            background: rgba(255,255,255,0.02);
+            padding: 15px;
+            border-radius: 12px;
             align-items: flex-start;
+            border: 1px solid rgba(255,255,255,0.03);
         }
 
-        .comment-box img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+        .comment-box img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
         .comment-body { flex-grow: 1; }
-        .comment-author { font-weight: bold; font-size: 13px; margin-bottom: 3px; display: flex; justify-content: space-between; }
-        .comment-text { font-size: 13px; color: var(--text-muted); }
+        .comment-author { font-weight: bold; font-size: 14px; margin-bottom: 4px; display: flex; justify-content: space-between; }
+        .comment-text { font-size: 14px; color: var(--text-muted); line-height: 1.5; }
 
         .form-box {
             background-color: var(--bg-card);
             padding: 40px;
-            border-radius: 20px;
-            max-width: 650px;
+            border-radius: 24px;
+            max-width: 700px;
             margin: 20px auto;
             border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .form-group { margin-bottom: 22px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: #e2e8f0; }
         
         .form-group input, .form-group select, .form-group textarea {
             width: 100%;
@@ -265,13 +260,17 @@
             background-color: var(--bg-main);
             border: 1px solid var(--border-color);
             color: white;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 14px;
+            transition: var(--transition);
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--accent); outline: none; box-shadow: 0 0 10px var(--accent-glow);
         }
 
         .alert {
             padding: 14px;
-            border-radius: 10px;
+            border-radius: 12px;
             margin-bottom: 20px;
             font-weight: bold;
             text-align: center;
@@ -285,11 +284,12 @@
             align-items: center;
             gap: 10px;
             background: rgba(255,255,255,0.08);
-            padding: 5px 15px;
+            padding: 6px 16px;
             border-radius: 30px;
             font-size: 13px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .user-pill img { width: 28px; height: 28px; border-radius: 50%; }
+        .user-pill img { width: 30px; height: 30px; border-radius: 50%; }
     </style>
 </head>
 <body>
@@ -298,7 +298,7 @@
         <div class="logo" onclick="switchSection('home')">
             <span>🎬</span> CimaLight Pro
         </div>
-        <nav style="display: flex; align-items: center; gap: 15px;">
+        <nav>
             <a onclick="switchSection('home')" id="nav-home" class="active">الرئيسية</a>
             <a onclick="switchSection('admin')" id="nav-admin">لوحة المطور</a>
             <div id="auth-nav-container">
@@ -309,11 +309,12 @@
 
     <div class="container">
         
+        <!-- قسم الرئيسية -->
         <div id="home-section" class="section active">
             <div class="hero">
                 <div class="hero-content">
-                    <h1>عالم السينما التفاعلي</h1>
-                    <p>شاهد، تفاعل، أعجب بالعمل، واكتب رأيك بحرية كاملة مع مجتمع عشاق السينما.</p>
+                    <h1>عالم السينما التفاعلي الأسطوري</h1>
+                    <p>شاهد أرقى الأفلام والمسلسلات بجودات صاروخية، تفاعل بالإعجابات، وشارك رأيك بمجتمع المتابعين بحرية تامة.</p>
                 </div>
             </div>
 
@@ -330,69 +331,71 @@
 
             <div id="video-grid" class="grid"></div>
 
+            <!-- مشغل الفيديو -->
             <div id="player-section" class="player-container" style="display: none;">
-                <div class="player-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2 id="player-title" style="font-size: 22px;"></h2>
+                <div class="player-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                    <h2 id="player-title" style="font-size: 24px;"></h2>
                     <div style="display: flex; gap: 10px;">
-                        <button class="btn" id="like-btn" onclick="toggleLike()" style="background: #334155; width: auto; padding: 6px 15px;">👍 <span id="like-count">0</span></button>
-                        <button class="btn" style="width: auto; padding: 6px 15px; background: #334155;" onclick="closePlayer()">إغلاق المشغل ✕</button>
+                        <button class="btn" id="like-btn" onclick="toggleLike()" style="background: #1f2937; width: auto; padding: 8px 18px; border: 1px solid var(--border-color);">👍 إعجاب (<span id="like-count">0</span>)</button>
+                        <button class="btn" style="width: auto; padding: 8px 18px; background: #1f2937; border: 1px solid var(--border-color);" onclick="closePlayer()">إغلاق المشغل ✕</button>
                     </div>
                 </div>
                 <video id="main-video-player" controls></video>
-                <p id="player-desc" style="margin-top: 15px; color: var(--text-muted); line-height: 1.6;"></p>
+                <p id="player-desc" style="margin-top: 15px; color: var(--text-muted); line-height: 1.7; font-size: 15px;"></p>
                 
                 <!-- قسم التعليقات -->
                 <div class="comments-section">
-                    <h3 style="margin-bottom: 15px; font-size: 16px;">💬 تعليقات المشاهدين</h3>
+                    <h3 style="margin-bottom: 15px; font-size: 18px;">💬 مناقشات وتعليقات المشاهدين</h3>
                     <div id="comments-list"></div>
                     
-                    <div id="comment-input-area" style="margin-top: 15px; display: none;">
+                    <div id="comment-input-area" style="margin-top: 20px; display: none;">
                         <div style="display: flex; gap: 10px;">
-                            <input type="text" id="new-comment-text" placeholder="اكتب تعليقك باحترام..." style="flex-grow: 1; padding: 12px; background: var(--bg-main); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
-                            <button class="btn" style="width: auto; padding: 0 20px;" onclick="postComment()">إرسال</button>
+                            <input type="text" id="new-comment-text" placeholder="اكتب تعليقك الراقي هنا..." style="flex-grow: 1; padding: 14px; background: var(--bg-main); border: 1px solid var(--border-color); color: white; border-radius: 12px;">
+                            <button class="btn" style="width: auto; padding: 0 25px;" onclick="postComment()">إرسال</button>
                         </div>
                     </div>
-                    <p id="login-required-msg" style="color: #facc15; font-size: 13px; margin-top: 10px; display: none;">⚠️ يجب تسجيل الدخول بحساب جوجل لتتمكن من كتابة تعليق أو الإعجاب.</p>
+                    <p id="login-required-msg" style="color: #facc15; font-size: 13px; margin-top: 12px; display: none;">⚠️ يجب تسجيل الدخول بحساب جوجل لتتمكن من كتابة تعليق أو الإعجاب بالعرض.</p>
                 </div>
             </div>
         </div>
 
+        <!-- قسم لوحة المطور -->
         <div id="admin-section" class="section">
             <div id="login-container" class="form-box">
-                <h2 style="margin-bottom: 20px; text-align: center;">تسجيل دخول المطور</h2>
+                <h2 style="margin-bottom: 20px; text-align: center; color: var(--accent);">🔐 تسجيل دخول المطور</h2>
                 <div id="login-alert" class="alert"></div>
                 <div class="form-group">
-                    <label>البريد الإلكتروني:</label>
-                    <input type="email" id="admin-email" placeholder="أدخل إيميلك...">
+                    <label>البريد الإلكتروني للمطور:</label>
+                    <input type="email" id="admin-email" placeholder="mohamedadel@gmail.com">
                 </div>
                 <div class="form-group">
                     <label>كلمة المرور:</label>
-                    <input type="password" id="admin-pass" placeholder="كلمة المرور...">
+                    <input type="password" id="admin-pass" placeholder="كلمة المرور السرية...">
                 </div>
-                <button class="btn" onclick="loginAdmin()">دخول لوحة التحكم الآمنة</button>
+                <button class="btn" onclick="loginAdmin()">دخول لوحة التحكم السيادية</button>
             </div>
 
             <div id="dashboard-container" style="display: none;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-                    <h2>🛠️ لوحة تحكم وإدارة المحتوى والرقابة</h2>
-                    <button class="btn" style="width: auto; background: #334155;" onclick="logoutAdmin()">تسجيل الخروج</button>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+                    <h2>🛠️ لوحة التحكم والإدارة والرقابة الشاملة</h2>
+                    <button class="btn" style="width: auto; background: #1f2937;" onclick="logoutAdmin()">تسجيل الخروج</button>
                 </div>
 
-                <!-- نموذج رفع فيديو جديد -->
+                <!-- نموذج نشر فيلم أو مسلسل عبر رابط مباشر (صاروخي) -->
                 <div class="form-box" style="max-width: 100%; margin-bottom: 30px;">
                     <div id="upload-alert" class="alert"></div>
-                    <h3 style="margin-bottom: 20px; color: var(--accent);">➕ نشر فيلم أو مسلسل جديد</h3>
+                    <h3 style="margin-bottom: 20px; color: var(--accent);">➕ نشر فيلم أو مسلسل جديد (عبر رابط مباشر MP4)</h3>
                     
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                         <div class="form-group">
-                            <label>العنوان:</label>
-                            <input type="text" id="v-title" placeholder="اكتب العنوان...">
+                            <label>عنوان الفيلم / المسلسل:</label>
+                            <input type="text" id="v-title" placeholder="مثال: فيلم The Deep أو عسكر في المعسكر...">
                         </div>
                         <div class="form-group">
-                            <label>النوع:</label>
+                            <label>نوع العمل:</label>
                             <select id="v-type">
-                                <option value="فيلم">فيلم</option>
-                                <option value="مسلسل">مسلسل</option>
+                                <option value="فيلم">فيلم سينمائي</option>
+                                <option value="مسلسل">مسلسل تليفزيوني</option>
                             </select>
                         </div>
                     </div>
@@ -400,30 +403,30 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                         <div class="form-group">
                             <label>المدة بالدقائق:</label>
-                            <input type="number" id="v-duration" value="100" min="1" max="300">
+                            <input type="number" id="v-duration" value="120" min="1" max="500">
                         </div>
                         <div class="form-group">
-                            <label>صورة الغلاف:</label>
-                            <input type="file" id="v-thumb-file" accept="image/*">
+                            <label>رابط صورة الغلاف (Poster URL):</label>
+                            <input type="text" id="v-thumb" placeholder="ضع رابط صورة الغلاف هنا...">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>ملف الفيديو (MP4):</label>
-                        <input type="file" id="v-video-file" accept="video/mp4">
+                        <label>رابط فيديو الملف المباشر (Direct MP4 URL):</label>
+                        <input type="text" id="v-url" placeholder="مثال: https://archive.org/download/.../video.mp4">
                     </div>
 
                     <div class="form-group">
-                        <label>وصف العمل:</label>
-                        <textarea id="v-desc" rows="3" placeholder="القصة..."></textarea>
+                        <label>قصة العمل أو الوصف:</label>
+                        <textarea id="v-desc" rows="3" placeholder="تفاصيل وقصة الفيلم..."></textarea>
                     </div>
                     
-                    <button class="btn" onclick="uploadNewVideo()">نشر العمل فوراً</button>
+                    <button class="btn" onclick="addNewVideoByLink()">نشر العمل فوراً على المنصة</button>
                 </div>
 
-                <!-- إدارة وحظر المستخدمين والمحتوى -->
+                <!-- قائمة إدارة المحتوى والحظر -->
                 <div class="form-box" style="max-width: 100%;">
-                    <h3 style="margin-bottom: 20px; color: #facc15;">🛡️ إدارة المستخدمين وحظرهم والمحتوى المنشور</h3>
+                    <h3 style="margin-bottom: 20px; color: #facc15;">🛡️ السيطرة والرقابة (حذف الفيديوهات وحظر المستخدمين)</h3>
                     <div id="admin-management-list"></div>
                 </div>
             </div>
@@ -435,7 +438,22 @@
         const ADMIN_EMAIL = "mohamedadel@gmail.com";
         const ADMIN_PASS = "cima2026password";
 
-        let videos = JSON.parse(localStorage.getItem('cimapro_videos')) || [];
+        // بيانات افتراضية أولية (تحتوي على فيلم The Deep الرائع برابط مباشر ونظيف)
+        let defaultVideos = [
+            {
+                id: 1711000001,
+                title: "The Deep (مغامرات الأعماق)",
+                type: "فيلم",
+                duration: 52,
+                thumb: "https://images.unsplash.com/photo-1682687220063-4742bd7fd538?auto=format&fit=crop&w=600&q=80",
+                url: "https://archive.org/download/the_blue_planet/the_blue_planet_04_the_deep.mp4",
+                desc: "فيلم وثائقي استكشافي ومغامرة بحرية شيقة جداً تحت أعماق المحيطات، بجودة عالية ومباشرة.",
+                likes: [],
+                comments: []
+            }
+        ];
+
+        let videos = JSON.parse(localStorage.getItem('cimapro_videos')) || defaultVideos;
         let bannedUsers = JSON.parse(localStorage.getItem('cimapro_banned')) || [];
         let currentUser = JSON.parse(localStorage.getItem('cimapro_current_user')) || null;
         let isAdminLoggedIn = localStorage.getItem('admin_logged') === 'true';
@@ -466,14 +484,13 @@
 
         // محاكاة تسجيل دخول جوجل الحقيقي للمستخدمين
         function simulateGoogleLogin() {
-            // محاكاة اختيار حساب جوجل أو إدخال الاسم
-            let name = prompt("أدخل اسمك الكريم لتسجيل الدخول عبر Google:", "مستخدم سينما");
+            let name = prompt("أدخل اسمك الكريم لتسجيل الدخول بـ Google:", "مستخدم سينما");
             if (!name) return;
 
             let email = name.toLowerCase().replace(/\s+/g, '') + '@gmail.com';
 
             if (bannedUsers.includes(email)) {
-                alert("❌ عذراً، هذا الحساب محظور من الإدارة ولا يمكنه تسجيل الدخول.");
+                alert("❌ عذراً، هذا الحساب محظور من الإدارة ولا يمكنه الدخول للمنصة.");
                 return;
             }
 
@@ -531,7 +548,7 @@
             });
 
             if (filtered.length === 0) {
-                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 50px; color: var(--text-muted);"><h3>لا توجد عروض مطابقة حالياً.</h3></div>`;
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 50px; color: var(--text-muted);"><h3>لا توجد عروض مطابقة لبحثك حالياً.</h3></div>`;
                 return;
             }
 
@@ -545,12 +562,12 @@
                         </div>
                         <div class="card-content">
                             <h3>${v.title}</h3>
-                            <p>${v.desc.substring(0, 80)}...</p>
+                            <p>${v.desc.substring(0, 75)}...</p>
                             <div class="card-meta">
                                 <span>⏱️ ${v.duration} دقيقة</span>
                                 <span>👍 ${likesCount} إعجاب</span>
                             </div>
-                            <button class="btn" onclick="playVideo(${v.id})">مشاهدة وتفاعل</button>
+                            <button class="btn" onclick="playVideo(${v.id})">مشاهدة فورية</button>
                         </div>
                     </div>
                 `;
@@ -570,13 +587,12 @@
             const player = document.getElementById('main-video-player');
             player.src = v.url;
 
-            // تحديث زر الإعجاب
             if(!v.likes) v.likes = [];
             document.getElementById('like-count').innerText = v.likes.length;
             if (currentUser && v.likes.includes(currentUser.email)) {
                 document.getElementById('like-btn').style.background = 'var(--accent)';
             } else {
-                document.getElementById('like-btn').style.background = '#334155';
+                document.getElementById('like-btn').style.background = '#1f2937';
             }
 
             renderComments(v);
@@ -609,7 +625,7 @@
             list.innerHTML = '';
 
             if (!v.comments || v.comments.length === 0) {
-                list.innerHTML = `<p style="color: var(--text-muted); font-size: 13px;">لا توجد تعليقات بعد. كن أول من يعلق!</p>`;
+                list.innerHTML = `<p style="color: var(--text-muted); font-size: 13px;">لا توجد تعليقات بعد. كن أول من يشارك برأيه!</p>`;
                 return;
             }
 
@@ -621,7 +637,7 @@
                         <div class="comment-body">
                             <div class="comment-author">
                                 <span>${c.userName}</span>
-                                ${canDelete ? `<button onclick="deleteComment(${v.id}, ${idx})" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:11px;">حذف</button>` : ''}
+                                ${canDelete ? `<button onclick="deleteComment(${v.id}, ${idx})" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:12px; font-weight:bold;">حذف</button>` : ''}
                             </div>
                             <div class="comment-text">${c.text}</div>
                         </div>
@@ -683,7 +699,7 @@
             } else {
                 alertBox.style.display = 'block';
                 alertBox.className = 'alert alert-error';
-                alertBox.innerText = '❌ البريد الإلكتروني أو كلمة المرور غير صحيحة!';
+                alertBox.innerText = '❌ البريد الإلكتروني للمطور أو كلمة المرور غير صحيحة!';
             }
         }
 
@@ -694,72 +710,57 @@
             document.getElementById('dashboard-container').style.display = 'none';
         }
 
-        function uploadNewVideo() {
+        function addNewVideoByLink() {
             const title = document.getElementById('v-title').value.trim();
             const type = document.getElementById('v-type').value;
-            const duration = parseInt(document.getElementById('v-duration').value) || 0;
-            const thumbFile = document.getElementById('v-thumb-file').files[0];
-            const videoFile = document.getElementById('v-video-file').files[0];
+            const duration = parseInt(document.getElementById('v-duration').value) || 120;
+            const thumb = document.getElementById('v-thumb').value.trim();
+            const url = document.getElementById('v-url').value.trim();
             const desc = document.getElementById('v-desc').value.trim();
             const alertBox = document.getElementById('upload-alert');
 
-            if (!title || !thumbFile || !videoFile) {
+            if (!title || !url || !thumb) {
                 alertBox.style.display = 'block';
                 alertBox.className = 'alert alert-error';
-                alertBox.innerText = '⚠️ يرجى ملء كافة البيانات المطلوبة واختيار الملفات.';
+                alertBox.innerText = '⚠️ يرجى ملء العنوان، رابط الصورة، ورابط الفيديو المباشر.';
                 return;
             }
 
+            videos.push({
+                id: Date.now(),
+                title, type, duration, thumb, url,
+                desc: desc || 'عمل سينمائي رائع يعرض حصرياً على المنصة.',
+                likes: [],
+                comments: []
+            });
+
+            localStorage.setItem('cimapro_videos', JSON.stringify(videos));
             alertBox.style.display = 'block';
             alertBox.className = 'alert alert-success';
-            alertBox.innerText = '⏳ جاري رفع النشر المعالجة...';
+            alertBox.innerText = '🎉 تم نشر العمل بنجاح وصار متاحاً للمشاهدين فوراً!';
 
-            const readerThumb = new FileReader();
-            const readerVideo = new FileReader();
+            document.getElementById('v-title').value = '';
+            document.getElementById('v-thumb').value = '';
+            document.getElementById('v-url').value = '';
+            document.getElementById('v-desc').value = '';
 
-            readerThumb.onload = function(e) {
-                const thumbResult = e.target.result;
-                readerVideo.onload = function(ev) {
-                    const videoResult = ev.target.result;
-
-                    videos.push({
-                        id: Date.now(),
-                        title, type, duration,
-                        thumb: thumbResult,
-                        url: videoResult,
-                        desc: desc || 'لا يوجد وصف.',
-                        likes: [],
-                        comments: []
-                    });
-
-                    localStorage.setItem('cimapro_videos', JSON.stringify(videos));
-                    alertBox.innerText = `🎉 تم النشر بنجاح!`;
-                    document.getElementById('v-title').value = '';
-                    document.getElementById('v-thumb-file').value = '';
-                    document.getElementById('v-video-file').value = '';
-                    document.getElementById('v-desc').value = '';
-                    renderVideos();
-                    renderAdminManagement();
-                };
-                readerVideo.readAsDataURL(videoFile);
-            };
-            readerThumb.readAsDataURL(thumbFile);
+            renderVideos();
+            renderAdminManagement();
         }
 
-        // لوحة التحكم الخاصة بالمدير لحذف أي فيديو أو حظر مستخدمين
         function renderAdminManagement() {
             const container = document.getElementById('admin-management-list');
             container.innerHTML = '';
 
             if (videos.length === 0) {
-                container.innerHTML = `<p style="color: var(--text-muted);">لا توجد فيديوهات منشورة حالياً للحذف.</p>`;
+                container.innerHTML = `<p style="color: var(--text-muted);">لا توجد فيديوهات منشورة حالياً.</p>`;
                 return;
             }
 
-            let html = '<h4 style="margin-bottom: 10px;">إدارة الفيديوهات المنشورة (حذف أي فيديو):</h4><div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px;">';
+            let html = '<h4 style="margin-bottom: 12px; font-size: 15px;">إدارة وحذف العروض المنشورة:</h4><div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px;">';
             videos.forEach(v => {
                 html += `
-                    <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-main); padding: 10px 15px; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-main); padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border-color);">
                         <span>🎬 ${v.title} (${v.type})</span>
                         <button class="btn btn-danger" style="width: auto; padding: 6px 15px; font-size: 12px;" onclick="adminDeleteVideo(${v.id})">حذف نهائي</button>
                     </div>
@@ -767,24 +768,23 @@
             });
             html += '</div>';
 
-            // قسم الحظر
-            html += '<h4 style="margin-bottom: 10px;">إدارة حظر المستخدمين (بواسطة البريد):</h4>';
+            html += '<h4 style="margin-bottom: 12px; font-size: 15px;">حظر المستخدمين المشاغبين (بواسطة البريد):</h4>';
             html += `
                 <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                    <input type="text" id="ban-email-input" placeholder="اكتب البريد الإلكتروني للمستخدم المراد حظره..." style="flex-grow:p; padding: 10px; background: var(--bg-main); border: 1px solid var(--border-color); color:white; border-radius:8px;">
+                    <input type="text" id="ban-email-input" placeholder="اكتب إيميل المستخدم لحظره نهائياً..." style="flex-grow:1; padding: 12px; background: var(--bg-main); border: 1px solid var(--border-color); color:white; border-radius:10px;">
                     <button class="btn btn-danger" style="width: auto;" onclick="banUserAction()">حظر المستخدم</button>
                 </div>
             `;
 
             if (bannedUsers.length > 0) {
-                html += '<p style="font-size: 13px; color: #ff8085; margin-top: 5px;">المستخدمون المحظورون حالياً: ' + bannedUsers.join(', ') + '</p>';
+                html += '<p style="font-size: 13px; color: #ff8085; margin-top: 10px;">الإيميلات المحظورة حالياً: ' + bannedUsers.join(', ') + '</p>';
             }
 
             container.innerHTML = html;
         }
 
         function adminDeleteVideo(id) {
-            if (!confirm("هل أنت متأكد من حذف هذا الفيديو نهائياً من المنصة؟")) return;
+            if (!confirm("هل أنت متأكد من حذف هذا العمل نهائياً من المنصة؟")) return;
             videos = videos.filter(v => v.id !== id);
             localStorage.setItem('cimapro_videos', JSON.stringify(videos));
             renderVideos();
@@ -800,7 +800,7 @@
             if (!bannedUsers.includes(email)) {
                 bannedUsers.push(email);
                 localStorage.setItem('cimapro_banned', JSON.stringify(bannedUsers));
-                alert(`🚫 تم حظر المستخدم ذو الإيميل: ${email} بنجاح.`);
+                alert(`🚫 تم حظر المستخدم ذو الإيميل: ${email} بنجاح ولن يتمكن من الدخول.`);
                 emailInput.value = '';
                 renderAdminManagement();
             }
