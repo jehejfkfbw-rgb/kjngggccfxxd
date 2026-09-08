@@ -149,7 +149,19 @@
   .video-meta{
     position:relative; z-index:5; padding:0 76px 22px 16px; width:100%;
   }
-  .video-meta .author{ font-weight:800; font-size:15px; margin-bottom:4px; }
+  .video-meta .author-row{ display:flex; align-items:center; gap:9px; margin-bottom:6px; }
+  .video-meta .author-avatar{
+    width:34px; height:34px; border-radius:50%; object-fit:cover;
+    background:linear-gradient(145deg,var(--accent),var(--accent-2));
+    display:flex; align-items:center; justify-content:center; font-weight:900; font-size:15px; color:#1A1020;
+    flex-shrink:0;
+  }
+  .video-meta .author{ font-weight:800; font-size:15px; }
+  .follow-btn{
+    padding:5px 14px; border-radius:999px; font-size:11.5px; font-weight:700;
+    background:var(--accent); color:#fff; border:1px solid var(--accent);
+  }
+  .follow-btn.following{ background:transparent; color:#fff; border:1px solid rgba(255,255,255,.5); }
   .video-meta .song{ font-size:12.5px; color:var(--text-dim); display:flex; align-items:center; gap:6px; }
   .video-meta .caption{ font-size:13.5px; margin-top:6px; line-height:1.5; color:#EDE6F5; }
 
@@ -194,22 +206,51 @@
   .close-x{ font-size:20px; color:var(--text-dim); }
 
   .profile-card{
-    display:flex; align-items:center; gap:14px; margin-bottom:20px;
+    display:flex; align-items:center; gap:14px; margin-bottom:14px;
     background:var(--surface); padding:16px; border-radius:var(--radius);
   }
   .avatar{
     width:60px; height:60px; border-radius:50%;
     background:linear-gradient(145deg,var(--accent),var(--accent-2));
     display:flex; align-items:center; justify-content:center; font-weight:900; font-size:22px; color:#1A1020;
+    object-fit:cover; flex-shrink:0; position:relative;
+  }
+  .avatar-wrap{ position:relative; flex-shrink:0; }
+  .avatar-edit-btn{
+    position:absolute; bottom:-2px; left:-2px; width:22px; height:22px; border-radius:50%;
+    background:var(--accent); color:#fff; font-size:11px; display:flex; align-items:center; justify-content:center;
+    border:2px solid var(--surface);
   }
   .profile-card .pname{ font-weight:800; font-size:15px; }
   .profile-card .pid{ font-size:11.5px; color:var(--text-dim); margin-top:2px;}
   .profile-card .page{ font-size:11.5px; color:var(--text-dim); margin-top:2px;}
+  .edit-profile-link{ font-size:12px; color:var(--accent-2); font-weight:700; margin-bottom:14px; display:inline-block; }
 
   .stat-row{ display:flex; gap:10px; margin-bottom:20px; }
   .stat-box{ flex:1; background:var(--surface); border-radius:14px; padding:12px; text-align:center; }
   .stat-box b{ display:block; font-size:17px; }
   .stat-box span{ font-size:11px; color:var(--text-dim); }
+
+  .tabs-row{ display:flex; gap:8px; margin-bottom:16px; background:var(--surface); border-radius:14px; padding:4px; }
+  .tab-btn{ flex:1; padding:9px; border-radius:11px; font-size:12.5px; font-weight:700; color:var(--text-dim); text-align:center; }
+  .tab-btn.active{ background:var(--accent); color:#fff; }
+  .tab-pane{ display:none; }
+  .tab-pane.active{ display:block; }
+
+  .chat-item{ display:flex; align-items:center; gap:12px; background:var(--surface); border-radius:14px; padding:12px; margin-bottom:9px; }
+  .chat-item .avatar{ width:44px; height:44px; font-size:17px; }
+  .chat-item .cname{ font-weight:700; font-size:13.5px; }
+  .chat-item .clast{ font-size:11.5px; color:var(--text-dim); margin-top:2px; }
+
+  .chat-thread{ position:absolute; inset:0; bottom:64px; background:var(--bg); display:flex; flex-direction:column; }
+  .chat-thread-head{ display:flex; align-items:center; gap:12px; padding:16px 18px; border-bottom:1px solid var(--line); }
+  .chat-messages{ flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:8px; }
+  .msg-bubble{ max-width:75%; padding:9px 13px; border-radius:16px; font-size:13.5px; line-height:1.5; }
+  .msg-bubble.mine{ align-self:flex-end; background:var(--accent); color:#fff; border-bottom-left-radius:4px; }
+  .msg-bubble.theirs{ align-self:flex-start; background:var(--surface); border-bottom-right-radius:4px; }
+  .chat-input-row{ display:flex; gap:8px; padding:12px 16px; border-top:1px solid var(--line); }
+  .chat-input-row input{ flex:1; padding:11px 13px; border-radius:12px; border:1px solid var(--line); background:var(--surface); color:var(--text); }
+  .chat-input-row button{ background:var(--accent); color:#fff; padding:0 16px; border-radius:12px; font-weight:700; }
 
   .admin-toggle-row{
     display:flex; align-items:center; justify-content:space-between;
@@ -357,12 +398,31 @@
       <div class="sub-screen">
         <div class="sub-header"><h2 class="brand-font">حسابك</h2></div>
         <div class="profile-card">
-          <div class="avatar" id="profile-avatar-letter">?</div>
+          <div class="avatar-wrap">
+            <div class="avatar" id="profile-avatar-letter">?</div>
+            <button class="avatar-edit-btn" onclick="document.getElementById('avatar-file-input').click()">✏️</button>
+            <input type="file" id="avatar-file-input" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)">
+          </div>
           <div>
             <div class="pname" id="profile-name">—</div>
             <div class="pid" id="profile-id">—</div>
             <div class="page" id="profile-age">—</div>
           </div>
+        </div>
+        <a href="#" class="edit-profile-link" onclick="toggleEditProfile(); return false;">✏️ تعديل الاسم</a>
+
+        <div id="edit-profile-box" style="display:none; background:var(--surface); padding:14px; border-radius:14px; margin-bottom:14px;">
+          <div class="field" style="margin-bottom:10px;">
+            <label>الاسم الجديد</label>
+            <input id="edit-name-input" type="text" placeholder="اكتب اسمك">
+          </div>
+          <button class="primary-btn" onclick="saveProfileName()" style="margin-top:0;">حفظ الاسم</button>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat-box"><b id="stat-videos">0</b><span>فيديوهاتك</span></div>
+          <div class="stat-box"><b id="stat-followers">0</b><span>متابعينك</span></div>
+          <div class="stat-box"><b id="stat-following">0</b><span>بتتابع</span></div>
         </div>
 
         <div class="admin-toggle-row" id="admin-status-row" style="display:none;">
@@ -370,12 +430,6 @@
             <div class="lbl">🛡️ حساب مشرف (Admin)</div>
             <div class="sub">تم تفعيل هذه الصلاحية من داخل Firebase Console من قبل مالك المشروع</div>
           </div>
-        </div>
-
-        <div class="stat-row">
-          <div class="stat-box"><b id="stat-videos">0</b><span>فيديوهاتك</span></div>
-          <div class="stat-box"><b id="stat-likes">0</b><span>إعجاباتك</span></div>
-          <div class="stat-box"><b id="stat-comments">0</b><span>تعليقاتك</span></div>
         </div>
 
         <div class="section-title">فيديوهاتك</div>
@@ -411,7 +465,44 @@
     <div class="screen" id="screen-messages">
       <div class="sub-screen">
         <div class="sub-header"><h2 class="brand-font">الرسائل</h2></div>
-        <div id="messages-list"></div>
+
+        <div class="tabs-row">
+          <div class="tab-btn active" id="tab-btn-chats" onclick="switchMsgTab('chats')">المحادثات</div>
+          <div class="tab-btn" id="tab-btn-requests" onclick="switchMsgTab('requests')">طلبات الصداقة</div>
+          <div class="tab-btn" id="tab-btn-add" onclick="switchMsgTab('add')">إضافة صديق</div>
+        </div>
+
+        <div class="tab-pane active" id="tab-chats">
+          <div id="chats-list"><div class="empty-hint">لسه مفيش محادثات — اقبل طلب صداقة عشان تبدأ تتكلم</div></div>
+        </div>
+
+        <div class="tab-pane" id="tab-requests">
+          <div id="requests-list"><div class="empty-hint">مفيش طلبات صداقة جديدة</div></div>
+        </div>
+
+        <div class="tab-pane" id="tab-add">
+          <div class="field">
+            <label>ابحث بمعرف المستخدم (User ID)</label>
+            <input id="add-friend-input" type="text" placeholder="مثال: mohamed_01">
+          </div>
+          <button class="primary-btn" onclick="sendFriendRequest()">إرسال طلب صداقة</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT THREAD (opened from a chat item) -->
+    <div class="screen" id="screen-chat-thread">
+      <div class="chat-thread">
+        <div class="chat-thread-head">
+          <button class="close-x" onclick="closeChatThread()">←</button>
+          <div class="avatar" id="chat-thread-avatar" style="width:38px; height:38px; font-size:15px;">?</div>
+          <div style="font-weight:800; font-size:14px;" id="chat-thread-name">—</div>
+        </div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="chat-input-row">
+          <input id="chat-input" type="text" placeholder="اكتب رسالة...">
+          <button onclick="sendChatMessage()">إرسال</button>
+        </div>
       </div>
     </div>
 
@@ -614,6 +705,7 @@ let recordedChunks = [];
 let currentUploadBlob = null;
 let commentsTargetId = null;
 let feedUnsub = null;
+let LAST_VIDEOS = [];
 let pendingUnsub = null;
 let usersUnsub = null;
 let flaggedUnsub = null;
@@ -799,6 +891,7 @@ auth.onAuthStateChanged(async (user)=>{
     document.getElementById('bottom-nav').style.display = 'flex';
 
     listenFeed();
+    loadFollowing().then(()=>{ if(LAST_VIDEOS.length) renderFeed(LAST_VIDEOS); });
     // Live-update this user's own profile doc (covers admin promotion, bans, stat changes)
     db.collection('users').doc(user.uid).onSnapshot(s=>{
       if(!s.exists) return;
@@ -813,10 +906,14 @@ auth.onAuthStateChanged(async (user)=>{
   } else {
     CURRENT_UID = null;
     CURRENT_PROFILE = null;
+    FOLLOWING_SET = new Set();
     if(feedUnsub) feedUnsub();
     if(pendingUnsub) pendingUnsub();
     if(usersUnsub) usersUnsub();
     if(flaggedUnsub) flaggedUnsub();
+    if(requestsUnsub) requestsUnsub();
+    if(chatsUnsub) chatsUnsub.forEach(u=>u());
+    if(currentChatUnsub) currentChatUnsub();
     document.getElementById('main-app').style.display = 'none';
     document.getElementById('bottom-nav').style.display = 'none';
   }
@@ -843,10 +940,12 @@ function listenFeed(){
     .onSnapshot(snap=>{
       const videos = [];
       snap.forEach(doc=> videos.push({id:doc.id, ...doc.data()}));
-      renderFeed(videos.length ? videos : seedVideos());
+      LAST_VIDEOS = videos.length ? videos : seedVideos();
+      renderFeed(LAST_VIDEOS);
     }, err=>{
       // Likely missing index or offline — fall back to demo content.
-      renderFeed(seedVideos());
+      LAST_VIDEOS = seedVideos();
+      renderFeed(LAST_VIDEOS);
     });
 }
 
@@ -880,6 +979,14 @@ function renderFeed(videos){
     }
     const liked = CURRENT_UID && (v.likedBy||[]).includes(CURRENT_UID);
     const comments = v.comments || [];
+    const isOwnVideo = CURRENT_UID && v.authorUid === CURRENT_UID;
+    const isFollowing = v.authorUid && FOLLOWING_SET.has(v.authorUid);
+    const avatarHTML = v.authorPhotoURL
+      ? `<img class="author-avatar" src="${v.authorPhotoURL}" alt="">`
+      : `<div class="author-avatar">${escapeHtml((v.authorName||'?').trim().charAt(0).toUpperCase())}</div>`;
+    const followBtnHTML = (v.authorUid && !isOwnVideo && !v.isDemo)
+      ? `<button class="follow-btn ${isFollowing?'following':''}" onclick="toggleFollow('${v.authorUid}', this)">${isFollowing?'متابَع':'متابعة'}</button>`
+      : '';
     card.innerHTML = `
       ${mediaHTML}
       <div class="video-shade"></div>
@@ -898,13 +1005,49 @@ function renderFeed(videos){
         </div>
       </div>
       <div class="video-meta">
-        <div class="author">@${escapeHtml(v.authorName||'')}</div>
+        <div class="author-row">
+          ${avatarHTML}
+          <div class="author">@${escapeHtml(v.authorName||'')}</div>
+          ${followBtnHTML}
+        </div>
         <div class="song">🎵 ${escapeHtml(v.song || 'صوت أصلي')}</div>
         <div class="caption">${escapeHtml(v.caption||'')}</div>
       </div>
     `;
     feed.appendChild(card);
   });
+}
+
+/* ---------------- FOLLOW ---------------- */
+let FOLLOWING_SET = new Set();
+async function loadFollowing(){
+  FOLLOWING_SET = new Set();
+  if(!CURRENT_UID) return;
+  const snap = await db.collection('follows').where('followerUid','==',CURRENT_UID).get();
+  snap.forEach(doc=> FOLLOWING_SET.add(doc.data().followingUid));
+}
+async function toggleFollow(targetUid, btnEl){
+  if(!CURRENT_UID){ toast('سجّل الدخول الأول'); return; }
+  const followId = CURRENT_UID + '_' + targetUid;
+  const ref = db.collection('follows').doc(followId);
+  try{
+    if(FOLLOWING_SET.has(targetUid)){
+      await ref.delete();
+      FOLLOWING_SET.delete(targetUid);
+      if(btnEl){ btnEl.textContent = 'متابعة'; btnEl.classList.remove('following'); }
+    } else {
+      await ref.set({followerUid: CURRENT_UID, followingUid: targetUid, createdAt: firebase.firestore.FieldValue.serverTimestamp()});
+      FOLLOWING_SET.add(targetUid);
+      if(btnEl){ btnEl.textContent = 'متابَع'; btnEl.classList.add('following'); }
+    }
+  }catch(e){
+    toast('حصل خطأ، حاول تاني');
+  }
+}
+async function getFollowCounts(uid){
+  const followers = await db.collection('follows').where('followingUid','==',uid).get();
+  const following = await db.collection('follows').where('followerUid','==',uid).get();
+  return {followers: followers.size, following: following.size};
 }
 
 async function toggleLike(videoId, isDemo){
@@ -997,14 +1140,26 @@ async function submitComment(){
 function renderProfile(){
   if(!CURRENT_UID || !CURRENT_PROFILE) return;
   const p = CURRENT_PROFILE;
-  document.getElementById('profile-avatar-letter').textContent = (p.name||'?').trim().charAt(0).toUpperCase();
+  const avatarBox = document.getElementById('profile-avatar-letter');
+  if(p.photoURL){
+    avatarBox.innerHTML = '';
+    avatarBox.style.backgroundImage = `url(${p.photoURL})`;
+    avatarBox.style.backgroundSize = 'cover';
+    avatarBox.style.backgroundPosition = 'center';
+  } else {
+    avatarBox.style.backgroundImage = 'none';
+    avatarBox.textContent = (p.name||'?').trim().charAt(0).toUpperCase();
+  }
   document.getElementById('profile-name').textContent = p.name;
   document.getElementById('profile-id').textContent = 'ID: ' + p.handle;
   document.getElementById('profile-age').textContent = 'العمر: ' + p.age + ' سنة';
+  document.getElementById('edit-name-input').value = p.name;
 
   document.getElementById('stat-videos').textContent = (p.myVideos||[]).length;
-  document.getElementById('stat-likes').textContent = (p.myLikes||[]).length;
-  document.getElementById('stat-comments').textContent = (p.myComments||[]).length;
+  getFollowCounts(CURRENT_UID).then(counts=>{
+    document.getElementById('stat-followers').textContent = counts.followers;
+    document.getElementById('stat-following').textContent = counts.following;
+  });
 
   const vidsBox = document.getElementById('profile-videos');
   vidsBox.innerHTML = (p.myVideos||[]).length===0
@@ -1032,6 +1187,39 @@ function renderProfile(){
     if(usersUnsub) usersUnsub();
     if(pendingUnsub) pendingUnsub();
     if(flaggedUnsub) flaggedUnsub();
+  }
+}
+
+/* ---------------- EDIT PROFILE (name + photo) ---------------- */
+function toggleEditProfile(){
+  const box = document.getElementById('edit-profile-box');
+  box.style.display = (box.style.display === 'none' || !box.style.display) ? 'block' : 'none';
+}
+async function saveProfileName(){
+  const newName = document.getElementById('edit-name-input').value.trim();
+  if(!newName){ toast('اكتب اسم صحيح'); return; }
+  try{
+    await db.collection('users').doc(CURRENT_UID).update({name: newName});
+    toast('تم تحديث الاسم ✅');
+    document.getElementById('edit-profile-box').style.display = 'none';
+  }catch(e){
+    toast('حصل خطأ أثناء الحفظ');
+  }
+}
+async function handleAvatarUpload(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  if(!file.type.startsWith('image/')){ toast('اختار ملف صورة'); return; }
+  toast('جاري رفع الصورة...');
+  try{
+    const path = `avatars/${CURRENT_UID}.jpg`;
+    const ref = storage.ref().child(path);
+    await ref.put(file);
+    const url = await ref.getDownloadURL();
+    await db.collection('users').doc(CURRENT_UID).update({photoURL: url});
+    toast('تم تحديث الصورة الشخصية ✅');
+  }catch(e){
+    toast('حصل خطأ أثناء رفع الصورة');
   }
 }
 
@@ -1123,9 +1311,174 @@ function listenAdminFlagged(){
 }
 
 /* ---------------- MESSAGES ---------------- */
+/* ---------------- MESSAGES: TABS ---------------- */
+function switchMsgTab(tab){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-btn-'+tab).classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+}
+
+let chatsUnsub = null;
+let requestsUnsub = null;
 function renderMessages(){
-  const box = document.getElementById('messages-list');
-  box.innerHTML = `<div class="list-item"><span><b>فريق SnapVibe</b><br>أهلاً بيك في SnapVibe! ابدأ بمشاهدة الفيديوهات أو صوّر أول فيديو ليك.</span></div>`;
+  if(!CURRENT_UID) return;
+
+  // Incoming friend requests (pending, addressed to me)
+  if(requestsUnsub) requestsUnsub();
+  requestsUnsub = db.collection('friendRequests')
+    .where('toUid','==',CURRENT_UID).where('status','==','pending')
+    .onSnapshot(snap=>{
+      const box = document.getElementById('requests-list');
+      if(snap.empty){ box.innerHTML = '<div class="empty-hint">مفيش طلبات صداقة جديدة</div>'; return; }
+      box.innerHTML = '';
+      snap.forEach(doc=>{
+        const r = doc.data();
+        box.innerHTML += `
+          <div class="list-item" style="flex-direction:column; align-items:stretch; gap:8px;">
+            <div><b>${escapeHtml(r.fromName)}</b> <span class="meta">(${escapeHtml(r.fromHandle||'')})</span></div>
+            <div style="display:flex; gap:8px;">
+              <button style="flex:1; background:var(--accent); color:#fff; padding:8px; border-radius:10px; font-weight:700; font-size:12px;" onclick="respondFriendRequest('${doc.id}','accepted')">✅ قبول</button>
+              <button style="flex:1; background:var(--surface-alt); color:var(--text-dim); padding:8px; border-radius:10px; font-weight:700; font-size:12px;" onclick="respondFriendRequest('${doc.id}','rejected')">رفض</button>
+            </div>
+          </div>`;
+      });
+    }, ()=>{});
+
+  // Accepted friends → chat list. Two exact-match listeners (I'm the
+  // sender / I'm the receiver) merged client-side — a broad query with
+  // no uid filter would return other users' friendships too, which the
+  // security rules correctly reject.
+  if(chatsUnsub) chatsUnsub.forEach(u=>u());
+  let acceptedAsSender = [];
+  let acceptedAsReceiver = [];
+  function renderChatsList(){
+    const box = document.getElementById('chats-list');
+    const friends = [
+      ...acceptedAsSender.map(r=>({uid:r.toUid, name:r.toName})),
+      ...acceptedAsReceiver.map(r=>({uid:r.fromUid, name:r.fromName}))
+    ];
+    if(friends.length===0){ box.innerHTML = '<div class="empty-hint">لسه مفيش محادثات — اقبل طلب صداقة عشان تبدأ تتكلم</div>'; return; }
+    box.innerHTML = '';
+    friends.forEach(f=>{
+      box.innerHTML += `
+        <div class="chat-item" onclick='openChatThread(${JSON.stringify(f.uid)}, ${JSON.stringify(f.name)})'>
+          <div class="avatar">${escapeHtml((f.name||'?').trim().charAt(0).toUpperCase())}</div>
+          <div>
+            <div class="cname">${escapeHtml(f.name)}</div>
+            <div class="clast">اضغط عشان تفتح المحادثة</div>
+          </div>
+        </div>`;
+    });
+  }
+  const unsub1 = db.collection('friendRequests')
+    .where('fromUid','==',CURRENT_UID).where('status','==','accepted')
+    .onSnapshot(snap=>{
+      acceptedAsSender = snap.docs.map(d=>d.data());
+      renderChatsList();
+    }, ()=>{});
+  const unsub2 = db.collection('friendRequests')
+    .where('toUid','==',CURRENT_UID).where('status','==','accepted')
+    .onSnapshot(snap=>{
+      acceptedAsReceiver = snap.docs.map(d=>d.data());
+      renderChatsList();
+    }, ()=>{});
+  chatsUnsub = [unsub1, unsub2];
+}
+
+async function sendFriendRequest(){
+  if(!CURRENT_UID){ toast('سجّل الدخول الأول'); return; }
+  const handle = document.getElementById('add-friend-input').value.trim();
+  if(!handle){ toast('اكتب معرف المستخدم'); return; }
+  if(handle === CURRENT_PROFILE.handle){ toast('مينفعش تبعت طلب لنفسك'); return; }
+  try{
+    const snap = await db.collection('users').where('handle','==',handle).limit(1).get();
+    if(snap.empty){ toast('مفيش مستخدم بالمعرف ده'); return; }
+    const targetDoc = snap.docs[0];
+    const targetUid = targetDoc.id;
+    const targetData = targetDoc.data();
+
+    // Avoid duplicate pending/accepted requests between the same pair.
+    // Two exact queries (not a broad "in" query) so every returned doc
+    // always satisfies the security rule (auth.uid is fromUid or toUid).
+    const [sentByMe, sentToMe] = await Promise.all([
+      db.collection('friendRequests').where('fromUid','==',CURRENT_UID).where('toUid','==',targetUid).get(),
+      db.collection('friendRequests').where('fromUid','==',targetUid).where('toUid','==',CURRENT_UID).get()
+    ]);
+    if(!sentByMe.empty || !sentToMe.empty){ toast('في طلب صداقة بينكم بالفعل'); return; }
+
+    await db.collection('friendRequests').add({
+      fromUid: CURRENT_UID, fromName: CURRENT_PROFILE.name, fromHandle: CURRENT_PROFILE.handle,
+      toUid: targetUid, toName: targetData.name, toHandle: targetData.handle,
+      status: 'pending', createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('تم إرسال طلب الصداقة ✅');
+    document.getElementById('add-friend-input').value = '';
+    switchMsgTab('chats');
+  }catch(e){
+    toast('حصل خطأ، حاول تاني');
+  }
+}
+async function respondFriendRequest(reqId, decision){
+  try{
+    await db.collection('friendRequests').doc(reqId).update({status: decision});
+    toast(decision === 'accepted' ? 'تم قبول طلب الصداقة 🎉' : 'تم رفض الطلب');
+  }catch(e){
+    toast('حصل خطأ، حاول تاني');
+  }
+}
+
+/* ---------------- CHAT THREAD ---------------- */
+let currentChatId = null;
+let currentChatUnsub = null;
+function chatIdFor(uidA, uidB){
+  return [uidA, uidB].sort().join('_');
+}
+function openChatThread(otherUid, otherName){
+  currentChatId = chatIdFor(CURRENT_UID, otherUid);
+  document.getElementById('chat-thread-name').textContent = otherName;
+  document.getElementById('chat-thread-avatar').textContent = (otherName||'?').trim().charAt(0).toUpperCase();
+  document.getElementById('chat-thread-avatar').dataset.otherUid = otherUid;
+
+  if(currentChatUnsub) currentChatUnsub();
+  currentChatUnsub = db.collection('chats').doc(currentChatId).collection('messages')
+    .orderBy('createdAt','asc')
+    .onSnapshot(snap=>{
+      const box = document.getElementById('chat-messages');
+      box.innerHTML = '';
+      snap.forEach(doc=>{
+        const m = doc.data();
+        const mine = m.fromUid === CURRENT_UID;
+        box.innerHTML += `<div class="msg-bubble ${mine?'mine':'theirs'}">${escapeHtml(m.text)}</div>`;
+      });
+      box.scrollTop = box.scrollHeight;
+    }, ()=>{});
+
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-chat-thread').classList.add('active');
+}
+function closeChatThread(){
+  if(currentChatUnsub) currentChatUnsub();
+  currentChatId = null;
+  showScreen('messages');
+}
+async function sendChatMessage(){
+  if(!currentChatId){ return; }
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if(!text) return;
+  if(autoFilterOn && containsProfanity(text)){
+    toast('الرسالة فيها لفظ غير لائق — عدّلها');
+    return;
+  }
+  input.value = '';
+  try{
+    await db.collection('chats').doc(currentChatId).collection('messages').add({
+      fromUid: CURRENT_UID, text, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }catch(e){
+    toast('تعذر إرسال الرسالة');
+  }
 }
 
 /* ---------------- UPLOAD / CAMERA ---------------- */
@@ -1191,7 +1544,7 @@ async function publishVideo(){
       videoURL = await ref.getDownloadURL();
     }
     const docRef = await db.collection('videos').add({
-      authorUid: CURRENT_UID, authorName: CURRENT_PROFILE.name,
+      authorUid: CURRENT_UID, authorName: CURRENT_PROFILE.name, authorPhotoURL: CURRENT_PROFILE.photoURL || null,
       caption, song: song || 'صوت أصلي', videoURL,
       status: 'pending', likes: 0, likedBy: [], comments: [],
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
