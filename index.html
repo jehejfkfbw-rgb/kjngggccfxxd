@@ -283,11 +283,6 @@
 
   @keyframes fadeIn{ to{ opacity:1; } }
 </style>
-<!-- Firebase (real auth + database + storage — no backend server needed) -->
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-storage-compat.js"></script>
 </head>
 <body>
 
@@ -302,6 +297,9 @@
 
   <!-- LOGIN / SIGNUP -->
   <div id="login-screen">
+    <div id="config-warning" style="display:none; background:#4A1620; border:1px solid var(--danger); color:#FFD8D8; padding:14px; border-radius:14px; margin-bottom:18px; font-size:12.5px; line-height:1.8;">
+      ⚠️ <b>الإعدادات ناقصة:</b> بيانات مشروع Firebase (firebaseConfig) لسه فيها القيم الافتراضية (YOUR_API_KEY...). التطبيق مش هيقدر يسجل دخول أو ينشئ حسابات لحد ما تستبدلها ببيانات مشروعك الحقيقي من Firebase Console — راجع خطوة 5 في ملف SETUP.md.
+    </div>
     <div class="login-head">
       <div class="mark brand-font">S</div>
       <h1 class="brand-font" id="auth-title">إنشاء حساب في SnapVibe</h1>
@@ -518,17 +516,94 @@
 // ---- 1) PASTE YOUR OWN FIREBASE PROJECT CONFIG HERE ----
 // Firebase Console → Project settings → General → Your apps → SDK setup
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyB18EZUPF-Lc9Rml87Vml2DD2SlKSpbQXw",
+  authDomain: "linkup-36f62.firebaseapp.com",
+  projectId: "linkup-36f62",
+  storageBucket: "linkup-36f62.firebasestorage.app",
+  messagingSenderId: "464978005796",
+  appId: "1:464978005796:web:738ba3ea86edc5139f2db1"
 };
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-const storage = firebase.storage();
+
+// Guard against the #1 real-world cause of "the button does nothing":
+// leaving the placeholder config in place.
+const CONFIG_IS_PLACEHOLDER = Object.values(firebaseConfig).some(v => String(v).includes('YOUR_'));
+
+// ---- Multi-CDN loader with automatic fallback ----
+// Loads directly from three independent CDN providers, in order.
+// www.gstatic.com is a Google-owned domain some networks/security
+// software block specifically — jsDelivr and unpkg are unrelated
+// domains serving the same official Firebase files, so if one is
+// blocked, the next is tried automatically with no action needed.
+const FB_VERSION = '10.13.2';
+function cdnCandidates(file){
+  return [
+    `https://www.gstatic.com/firebasejs/${FB_VERSION}/${file}`,
+    `https://cdn.jsdelivr.net/npm/firebase@${FB_VERSION}/${file}`,
+    `https://unpkg.com/firebase@${FB_VERSION}/${file}`
+  ];
+}
+function loadScriptWithFallback(urls){
+  return new Promise((resolve, reject)=>{
+    let i = 0;
+    function tryNext(){
+      if(i >= urls.length){ reject(new Error('All CDN sources failed for ' + urls[0])); return; }
+      const s = document.createElement('script');
+      s.src = urls[i];
+      s.onload = ()=> resolve(urls[i]);
+      s.onerror = ()=>{ console.warn('CDN source failed, trying next:', urls[i]); i++; tryNext(); };
+      document.head.appendChild(s);
+    }
+    tryNext();
+  });
+}
+
+let auth, db, storage;
+let SDK_LOADED = false;
+
+async function loadFirebaseAndInit(){
+  try{
+    await loadScriptWithFallback(cdnCandidates('firebase-app-compat.js'));
+    await loadScriptWithFallback(cdnCandidates('firebase-auth-compat.js'));
+    await loadScriptWithFallback(cdnCandidates('firebase-firestore-compat.js'));
+    await loadScriptWithFallback(cdnCandidates('firebase-storage-compat.js'));
+    SDK_LOADED = (typeof firebase !== 'undefined');
+  }catch(loadErr){
+    console.error('All Firebase CDN sources failed to load:', loadErr);
+    SDK_LOADED = false;
+  }
+
+  const warningBox = document.getElementById('config-warning');
+  if(!SDK_LOADED){
+    if(warningBox){
+      warningBox.innerHTML = '⚠️ <b>تعذر تحميل مكتبات Firebase من ثلاث مصادر مختلفة (gstatic, jsDelivr, unpkg).</b> ده معناه غالباً إن مفيش اتصال إنترنت فعلي وقت فتح الصفحة، أو إن الشبكة اللي إنت عليها (فايروول/شبكة عمل/مزود خدمة) بتحجب الوصول للـ CDNs دي بالكامل. جرب: افتح الصفحة على نت تاني (بيانات الموبايل مثلاً)، أو تأكد إن مفيش إضافة حاجبة (Ad-blocker/VPN) شغالة، وبعدين اعمل Refresh.';
+      warningBox.style.display = 'block';
+    }
+    return;
+  }
+
+  try{
+    firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    db = firebase.firestore();
+    storage = firebase.storage();
+  }catch(initErr){
+    console.error('Firebase init failed:', initErr);
+    SDK_LOADED = false;
+  }
+
+  if(warningBox){
+    warningBox.style.display = (CONFIG_IS_PLACEHOLDER || !auth) ? 'block' : 'none';
+  }
+
+  if(auth){
+    registerAuthStateListener();
+  }
+}
+// Kick off loading immediately — everything else in this script only
+// touches `auth`/`db`/`storage` from inside functions, which by the time
+// they're actually called (via a button click) will run after this
+// promise chain has resolved.
+loadFirebaseAndInit();
 
 let CURRENT_UID = null;
 let CURRENT_PROFILE = null;
@@ -593,6 +668,10 @@ function switchAuthMode(mode){
 
 /* ---------------- SIGNUP ---------------- */
 async function handleSignup(){
+  if(CONFIG_IS_PLACEHOLDER || !auth){
+    toast('إعدادات Firebase غير مكتملة — راجع الرسالة الحمراء فوق');
+    return;
+  }
   const name = document.getElementById('in-name').value.trim();
   const uid = document.getElementById('in-uid').value.trim();
   const dob = document.getElementById('in-dob').value.trim();
@@ -611,6 +690,10 @@ async function handleSignup(){
     toast('كلمة المرور لازم تكون 6 أحرف على الأقل');
     return;
   }
+  const btn = document.getElementById('auth-submit-btn');
+  const originalText = btn.textContent;
+  btn.textContent = 'جاري إنشاء الحساب...';
+  btn.disabled = true;
   try{
     const cred = await auth.createUserWithEmailAndPassword(email, password);
     const age = calcAge(dob);
@@ -622,22 +705,38 @@ async function handleSignup(){
     });
     toast('تم إنشاء الحساب بنجاح 🎉');
   }catch(e){
+    console.error('Signup error:', e);
     toast(friendlyAuthError(e));
+  }finally{
+    btn.textContent = originalText;
+    btn.disabled = false;
   }
 }
 
 /* ---------------- LOGIN ---------------- */
 async function handleLoginReal(){
+  if(CONFIG_IS_PLACEHOLDER || !auth){
+    toast('إعدادات Firebase غير مكتملة — راجع الرسالة الحمراء فوق');
+    return;
+  }
   const email = document.getElementById('in-email').value.trim();
   const password = document.getElementById('in-password').value;
   if(!email || !password){
     toast('من فضلك أدخل البريد الإلكتروني وكلمة المرور');
     return;
   }
+  const btn = document.getElementById('auth-submit-btn');
+  const originalText = btn.textContent;
+  btn.textContent = 'جاري تسجيل الدخول...';
+  btn.disabled = true;
   try{
     await auth.signInWithEmailAndPassword(email, password);
   }catch(e){
+    console.error('Login error:', e);
     toast(friendlyAuthError(e));
+  }finally{
+    btn.textContent = originalText;
+    btn.disabled = false;
   }
 }
 
@@ -674,6 +773,10 @@ function calcAge(dobStr){
 }
 
 /* ---------------- AUTH STATE ---------------- */
+// Called from loadFirebaseAndInit() only after `auth` is confirmed to
+// exist — never runs if the SDK failed to load, so it can never throw
+// "Cannot read properties of undefined".
+function registerAuthStateListener(){
 auth.onAuthStateChanged(async (user)=>{
   if(user){
     const snap = await db.collection('users').doc(user.uid).get();
@@ -718,6 +821,7 @@ auth.onAuthStateChanged(async (user)=>{
     document.getElementById('bottom-nav').style.display = 'none';
   }
 });
+}
 
 /* ---------------- NAVIGATION ---------------- */
 function showScreen(name){
