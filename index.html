@@ -1,699 +1,1757 @@
-window.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    const splash = document.getElementById('splash');
-    if(splash) splash.style.display = 'none';
-  }, 2500);
-});
-
-function registerAuthStateListener(){
-  auth.onAuthStateChanged(async (user)=>{
-    if(user){
-      CURRENT_UID = user.uid;
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('main-app').style.display = 'block';
-      document.getElementById('bottom-nav').style.display = 'flex';
-      await loadUserProfile(user.uid);
-      initFeed();
-      loadChats();
-      loadFriendRequests();
-    } else {
-      CURRENT_UID = null;
-      CURRENT_PROFILE = null;
-      document.getElementById('main-app').style.display = 'none';
-      document.getElementById('bottom-nav').style.display = 'none';
-      document.getElementById('login-screen').style.display = 'flex';
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SnapVibe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#150E1B;
+    --surface:#211729;
+    --surface-alt:#2C2036;
+    --line:#3A2E46;
+    --accent:#FF3E6C;
+    --accent-2:#FFC145;
+    --text:#F6F1EC;
+    --text-dim:#B7ACC2;
+    --danger:#FF5C5C;
+    --radius:18px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    height:100%;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Tajawal', sans-serif;
+    overflow:hidden;
+  }
+  .brand-font{ font-family:'Cairo', sans-serif; }
+  button{ font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; }
+  input, select{ font-family:inherit; }
+  img,video{ display:block; }
+  ::-webkit-scrollbar{ width:0; height:0; }
+ 
+  #app-shell{
+    position:relative;
+    width:100%;
+    max-width:480px;
+    height:100vh;
+    margin:0 auto;
+    background:var(--bg);
+    overflow:hidden;
+    box-shadow:0 0 60px rgba(0,0,0,.6);
+  }
+  @media (min-width:481px){
+    body{ display:flex; align-items:center; justify-content:center; background:#08050B; }
+    #app-shell{ height:92vh; border-radius:32px; }
+  }
+ 
+  /* ---------- SPLASH ---------- */
+  #splash{
+    position:absolute; inset:0; z-index:100;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px;
+    background:radial-gradient(circle at 50% 30%, #3A1E3A 0%, #150E1B 70%);
+    animation:splashOut .6s ease 1.9s forwards;
+  }
+  .splash-logo{
+    width:118px; height:118px; border-radius:32px;
+    background:linear-gradient(145deg, var(--accent), var(--accent-2));
+    display:flex; align-items:center; justify-content:center;
+    font-size:64px; font-weight:900; color:#1A1020;
+    box-shadow:0 18px 40px -10px rgba(255,62,108,.55);
+    animation:logoPop .7s cubic-bezier(.2,1.4,.4,1);
+  }
+  .splash-name{ font-size:30px; font-weight:800; letter-spacing:.5px; }
+  .splash-tag{ color:var(--text-dim); font-size:14px; }
+  @keyframes logoPop{ from{ transform:scale(.3); opacity:0;} to{ transform:scale(1); opacity:1;} }
+  @keyframes splashOut{ to{ opacity:0; visibility:hidden; pointer-events:none; } }
+ 
+  /* ---------- LOGIN ---------- */
+  #login-screen{
+    position:absolute; inset:0; z-index:90;
+    display:none;
+    flex-direction:column; justify-content:center;
+    padding:36px 28px;
+    background:linear-gradient(180deg,#1B1222,#150E1B 60%);
+    opacity:0; animation:fadeIn .5s ease 2.0s forwards;
+  }
+  .login-head{ text-align:center; margin-bottom:28px; }
+  .login-head .mark{
+    width:56px; height:56px; margin:0 auto 10px; border-radius:16px;
+    background:linear-gradient(145deg, var(--accent), var(--accent-2));
+    display:flex; align-items:center; justify-content:center; font-size:30px; font-weight:900; color:#1A1020;
+  }
+  .login-head h1{ font-size:22px; font-weight:800; }
+  .login-head p{ color:var(--text-dim); font-size:13px; margin-top:4px; }
+  .field{ margin-bottom:14px; }
+  .field label{ display:block; font-size:12px; color:var(--text-dim); margin-bottom:6px; }
+  .field input{
+    width:100%; padding:13px 14px; border-radius:14px; border:1px solid var(--line);
+    background:var(--surface); color:var(--text); font-size:14px; outline:none;
+  }
+  .field input:focus{ border-color:var(--accent); }
+  .primary-btn{
+    width:100%; padding:14px; border-radius:14px; margin-top:8px;
+    background:linear-gradient(90deg, var(--accent), #FF6E8F);
+    color:#fff; font-weight:700; font-size:15px;
+  }
+  .login-note{ text-align:center; color:var(--text-dim); font-size:11.5px; margin-top:14px; line-height:1.7; }
+ 
+  /* ---------- MAIN APP ---------- */
+  #main-app{ position:absolute; inset:0; display:none; }
+  .screen{ position:absolute; inset:0; display:none; }
+  .screen.active{ display:block; }
+ 
+  /* top bar (feed) */
+  .top-bar{
+    position:absolute; top:0; right:0; left:0; z-index:20;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 16px 10px;
+    background:linear-gradient(180deg, rgba(0,0,0,.55), transparent);
+  }
+  .top-bar .logo-mini{ font-weight:900; font-size:19px; }
+  .top-bar .logo-mini span{ color:var(--accent-2); }
+  .live-btn{
+    display:flex; align-items:center; gap:6px;
+    background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.25);
+    padding:7px 13px; border-radius:999px; font-size:12.5px; font-weight:700;
+  }
+  .live-dot{ width:7px; height:7px; border-radius:50%; background:var(--danger); animation:pulse 1.2s infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.3;} }
+ 
+  /* feed */
+  #feed{
+    position:absolute; inset:0;
+    overflow-y:scroll; scroll-snap-type:y mandatory;
+    padding-bottom:64px;
+  }
+  .video-card{
+    position:relative;
+    width:100%; height:calc(100% - 64px);
+    scroll-snap-align:start;
+    display:flex; align-items:flex-end;
+    overflow:hidden;
+    background:#000;
+  }
+  .video-card video, .video-card .fallback-bg{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  }
+  .fallback-bg{
+    display:flex; align-items:center; justify-content:center;
+    font-size:15px; color:rgba(255,255,255,.75); text-align:center; padding:30px;
+  }
+  .video-shade{
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, transparent 40%, rgba(0,0,0,.75) 100%);
+  }
+  .video-meta{
+    position:relative; z-index:5; padding:0 76px 22px 16px; width:100%;
+  }
+  .video-meta .author-row{ display:flex; align-items:center; gap:9px; margin-bottom:6px; }
+  .video-meta .author-avatar{
+    width:34px; height:34px; border-radius:50%; object-fit:cover;
+    background:linear-gradient(145deg,var(--accent),var(--accent-2));
+    display:flex; align-items:center; justify-content:center; font-weight:900; font-size:15px; color:#1A1020;
+    flex-shrink:0;
+  }
+  .video-meta .author{ font-weight:800; font-size:15px; }
+  .follow-btn{
+    padding:5px 14px; border-radius:999px; font-size:11.5px; font-weight:700;
+    background:var(--accent); color:#fff; border:1px solid var(--accent);
+  }
+  .follow-btn.following{ background:transparent; color:#fff; border:1px solid rgba(255,255,255,.5); }
+  .video-meta .song{ font-size:12.5px; color:var(--text-dim); display:flex; align-items:center; gap:6px; }
+  .video-meta .caption{ font-size:13.5px; margin-top:6px; line-height:1.5; color:#EDE6F5; }
+ 
+  .side-actions{
+    position:absolute; left:12px; bottom:24px; z-index:6;
+    display:flex; flex-direction:column; align-items:center; gap:20px;
+  }
+  .side-actions .action{ display:flex; flex-direction:column; align-items:center; gap:5px; }
+  .side-actions .icon-circle{
+    width:46px; height:46px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,.12); font-size:22px;
+  }
+  .side-actions .icon-circle.liked{ background:var(--accent); }
+  .side-actions .count{ font-size:11.5px; font-weight:700; color:#fff; }
+ 
+  /* bottom nav */
+  #bottom-nav{
+    position:absolute; bottom:0; right:0; left:0; height:64px; z-index:30;
+    background:var(--surface);
+    border-top:1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-around;
+    padding:0 6px;
+  }
+  .nav-btn{ display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10.5px; color:var(--text-dim); flex:1; }
+  .nav-btn .ic{ font-size:21px; }
+  .nav-btn.active{ color:var(--text); }
+  .nav-btn.active .ic{ color:var(--accent-2); }
+  .nav-btn.upload .ic{
+    width:38px; height:30px; border-radius:9px;
+    background:linear-gradient(90deg, var(--accent), var(--accent-2));
+    display:flex; align-items:center; justify-content:center; color:#1A1020; font-size:18px; font-weight:900;
+  }
+ 
+  /* generic secondary screen (profile / messages / camera / live / admin) */
+  .sub-screen{
+    position:absolute; inset:0; bottom:64px; overflow-y:auto;
+    background:var(--bg); padding:20px 18px 30px;
+  }
+  .sub-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+  .sub-header h2{ font-size:19px; font-weight:800; }
+  .close-x{ font-size:20px; color:var(--text-dim); }
+ 
+  .profile-card{
+    display:flex; align-items:center; gap:14px; margin-bottom:14px;
+    background:var(--surface); padding:16px; border-radius:var(--radius);
+  }
+  .avatar{
+    width:60px; height:60px; border-radius:50%;
+    background:linear-gradient(145deg,var(--accent),var(--accent-2));
+    display:flex; align-items:center; justify-content:center; font-weight:900; font-size:22px; color:#1A1020;
+    object-fit:cover; flex-shrink:0; position:relative;
+  }
+  .avatar-wrap{ position:relative; flex-shrink:0; }
+  .avatar-edit-btn{
+    position:absolute; bottom:-2px; left:-2px; width:22px; height:22px; border-radius:50%;
+    background:var(--accent); color:#fff; font-size:11px; display:flex; align-items:center; justify-content:center;
+    border:2px solid var(--surface);
+  }
+  .profile-card .pname{ font-weight:800; font-size:15px; }
+  .profile-card .pid{ font-size:11.5px; color:var(--text-dim); margin-top:2px;}
+  .profile-card .page{ font-size:11.5px; color:var(--text-dim); margin-top:2px;}
+  .edit-profile-link{ font-size:12px; color:var(--accent-2); font-weight:700; margin-bottom:14px; display:inline-block; }
+ 
+  .stat-row{ display:flex; gap:10px; margin-bottom:20px; }
+  .stat-box{ flex:1; background:var(--surface); border-radius:14px; padding:12px; text-align:center; }
+  .stat-box b{ display:block; font-size:17px; }
+  .stat-box span{ font-size:11px; color:var(--text-dim); }
+ 
+  .tabs-row{ display:flex; gap:8px; margin-bottom:16px; background:var(--surface); border-radius:14px; padding:4px; }
+  .tab-btn{ flex:1; padding:9px; border-radius:11px; font-size:12.5px; font-weight:700; color:var(--text-dim); text-align:center; }
+  .tab-btn.active{ background:var(--accent); color:#fff; }
+  .tab-pane{ display:none; }
+  .tab-pane.active{ display:block; }
+ 
+  .chat-item{ display:flex; align-items:center; gap:12px; background:var(--surface); border-radius:14px; padding:12px; margin-bottom:9px; }
+  .chat-item .avatar{ width:44px; height:44px; font-size:17px; }
+  .chat-item .cname{ font-weight:700; font-size:13.5px; }
+  .chat-item .clast{ font-size:11.5px; color:var(--text-dim); margin-top:2px; }
+ 
+  .chat-thread{ position:absolute; inset:0; bottom:64px; background:var(--bg); display:flex; flex-direction:column; }
+  .chat-thread-head{ display:flex; align-items:center; gap:12px; padding:16px 18px; border-bottom:1px solid var(--line); }
+  .chat-messages{ flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:8px; }
+  .msg-bubble{ max-width:75%; padding:9px 13px; border-radius:16px; font-size:13.5px; line-height:1.5; }
+  .msg-bubble.mine{ align-self:flex-end; background:var(--accent); color:#fff; border-bottom-left-radius:4px; }
+  .msg-bubble.theirs{ align-self:flex-start; background:var(--surface); border-bottom-right-radius:4px; }
+  .chat-input-row{ display:flex; gap:8px; padding:12px 16px; border-top:1px solid var(--line); }
+  .chat-input-row input{ flex:1; padding:11px 13px; border-radius:12px; border:1px solid var(--line); background:var(--surface); color:var(--text); }
+  .chat-input-row button{ background:var(--accent); color:#fff; padding:0 16px; border-radius:12px; font-weight:700; }
+ 
+  .admin-toggle-row{
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--surface-alt); padding:14px; border-radius:14px; margin-bottom:20px;
+    border:1px dashed var(--line);
+  }
+  .admin-toggle-row .lbl{ font-size:13px; font-weight:700; }
+  .admin-toggle-row .sub{ font-size:11px; color:var(--text-dim); margin-top:2px; }
+  .switch{ position:relative; width:44px; height:25px; border-radius:20px; background:var(--line); transition:.2s; }
+  .switch::after{ content:''; position:absolute; top:3px; right:3px; width:19px; height:19px; border-radius:50%; background:#fff; transition:.2s; }
+  .switch.on{ background:var(--accent); }
+  .switch.on::after{ transform:translateX(-19px); }
+ 
+  .section-title{ font-size:13px; font-weight:800; color:var(--text-dim); margin:18px 0 10px; }
+  .list-item{
+    background:var(--surface); border-radius:14px; padding:13px 14px; margin-bottom:9px;
+    font-size:13px; display:flex; justify-content:space-between; gap:10px;
+  }
+  .list-item .meta{ color:var(--text-dim); font-size:11px; }
+  .empty-hint{ color:var(--text-dim); font-size:12.5px; text-align:center; padding:20px 10px; }
+ 
+  /* upload / camera */
+  .camera-box{
+    width:100%; aspect-ratio:9/13; background:#000; border-radius:var(--radius); overflow:hidden;
+    display:flex; align-items:center; justify-content:center; margin-bottom:16px; position:relative;
+  }
+  .camera-box video{ width:100%; height:100%; object-fit:cover; }
+  .camera-box .cam-off{ color:var(--text-dim); font-size:13px; text-align:center; padding:20px; }
+  .rec-controls{ display:flex; gap:10px; margin-bottom:16px; }
+  .rec-controls button{ flex:1; padding:12px; border-radius:12px; background:var(--surface); font-weight:700; font-size:13px; }
+  .rec-controls button.record{ background:var(--danger); color:#fff; }
+  .rec-controls button.stop{ background:var(--accent); color:#fff; }
+ 
+  /* live screen */
+  .live-frame{
+    width:100%; aspect-ratio:9/14; background:#000; border-radius:var(--radius); overflow:hidden; position:relative; margin-bottom:16px;
+  }
+  .live-frame video{ width:100%; height:100%; object-fit:cover; }
+  .live-badge{
+    position:absolute; top:12px; right:12px; background:var(--danger); font-weight:800; font-size:11px;
+    padding:5px 10px; border-radius:8px; display:flex; align-items:center; gap:5px;
+  }
+  .live-viewers{ position:absolute; top:12px; left:12px; background:rgba(0,0,0,.5); font-size:11px; padding:5px 10px; border-radius:8px; }
+ 
+  /* comments modal */
+  #comments-modal{
+    position:absolute; inset:0; z-index:60; display:none;
+    background:rgba(0,0,0,.5);
+  }
+  #comments-modal .sheet{
+    position:absolute; right:0; left:0; bottom:0; max-height:70%;
+    background:var(--surface); border-radius:22px 22px 0 0; padding:16px 16px 0;
+    display:flex; flex-direction:column;
+  }
+  #comments-modal .sheet-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  #comments-list{ overflow-y:auto; flex:1; padding-bottom:10px; }
+  .comment-row{ padding:8px 0; border-bottom:1px solid var(--line); font-size:13px; }
+  .comment-row b{ font-size:12.5px; }
+  .comment-input-row{ display:flex; gap:8px; padding:10px 0 16px; }
+  .comment-input-row input{
+    flex:1; padding:11px 13px; border-radius:12px; border:1px solid var(--line); background:var(--surface-alt); color:var(--text);
+  }
+  .comment-input-row button{ background:var(--accent); color:#fff; padding:0 16px; border-radius:12px; font-weight:700; }
+ 
+  .toast{
+    position:absolute; bottom:80px; right:50%; transform:translateX(50%);
+    background:rgba(20,14,26,.95); border:1px solid var(--line); padding:10px 18px; border-radius:999px;
+    font-size:12.5px; z-index:80; opacity:0; pointer-events:none; transition:.25s;
+  }
+  .toast.show{ opacity:1; transform:translateX(50%) translateY(-6px); }
+ 
+  @keyframes fadeIn{ to{ opacity:1; } }
+</style>
+</head>
+<body>
+ 
+<div id="app-shell">
+ 
+  <!-- SPLASH -->
+  <div id="splash">
+    <div class="splash-logo brand-font">S</div>
+    <div class="splash-name brand-font">Snap<span style="color:var(--accent-2)">Vibe</span></div>
+    <div class="splash-tag">لحظاتك... على طبيعتها</div>
+  </div>
+ 
+  <!-- LOGIN / SIGNUP -->
+  <div id="login-screen">
+    <div id="config-warning" style="display:none; background:#4A1620; border:1px solid var(--danger); color:#FFD8D8; padding:14px; border-radius:14px; margin-bottom:18px; font-size:12.5px; line-height:1.8;">
+      ⚠️ <b>الإعدادات ناقصة:</b> بيانات مشروع Firebase (firebaseConfig) لسه فيها القيم الافتراضية (YOUR_API_KEY...). التطبيق مش هيقدر يسجل دخول أو ينشئ حسابات لحد ما تستبدلها ببيانات مشروعك الحقيقي من Firebase Console — راجع خطوة 5 في ملف SETUP.md.
+    </div>
+    <div class="login-head">
+      <div class="mark brand-font">S</div>
+      <h1 class="brand-font" id="auth-title">إنشاء حساب في SnapVibe</h1>
+      <p>حساب حقيقي محمي بواسطة Firebase Authentication</p>
+    </div>
+ 
+    <div id="signup-fields">
+      <div class="field">
+        <label>الاسم بالكامل</label>
+        <input id="in-name" type="text" placeholder="أدخل اسمك بالكامل">
+      </div>
+      <div class="field">
+        <label>السن</label>
+        <input id="in-age" type="number" min="6" max="120" placeholder="مثال: 22" inputmode="numeric">
+      </div>
+    </div>
+ 
+    <div class="field">
+      <label>البريد الإلكتروني</label>
+      <input id="in-email" type="email" placeholder="example@email.com">
+    </div>
+    <div class="field">
+      <label>كلمة المرور</label>
+      <input id="in-password" type="password" placeholder="6 أحرف على الأقل">
+    </div>
+ 
+    <button class="primary-btn" id="auth-submit-btn" onclick="handleSignup()">إنشاء حساب</button>
+    <p class="login-note" id="auth-switch-note">
+      عندك حساب بالفعل؟ <a href="#" onclick="switchAuthMode('login'); return false;" style="color:var(--accent-2); font-weight:700;">سجّل دخول</a>
+    </p>
+    <p class="login-note">
+      كلمة المرور والبريد يتم التحقق منهم فعلياً بواسطة Firebase — مفيش أي بيانات دخول مكتوبة جوه كود الصفحة.<br>
+      لوحة المطورين (Admin) بتتفعل فقط للحساب اللي يتم تحديده يدوياً كمشرف من داخل Firebase Console — مش من أي بيانات تدخلها في المتصفح.
+    </p>
+  </div>
+ 
+  <!-- MAIN APP -->
+  <div id="main-app">
+ 
+    <!-- FEED -->
+    <div class="screen active" id="screen-feed">
+      <div class="top-bar">
+        <div class="logo-mini brand-font">Snap<span>Vibe</span></div>
+        <button class="live-btn" onclick="openLive()"><span class="live-dot"></span> بث مباشر</button>
+      </div>
+      <div id="feed"></div>
+    </div>
+ 
+    <!-- PROFILE ("أنت") -->
+    <div class="screen" id="screen-profile">
+      <div class="sub-screen">
+        <div class="sub-header"><h2 class="brand-font">حسابك</h2></div>
+        <div class="profile-card">
+          <div class="avatar-wrap">
+            <div class="avatar" id="profile-avatar-letter">?</div>
+            <button class="avatar-edit-btn" onclick="document.getElementById('avatar-file-input').click()">✏️</button>
+            <input type="file" id="avatar-file-input" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)">
+          </div>
+          <div>
+            <div class="pname" id="profile-name">—</div>
+            <div class="pid" id="profile-id">—</div>
+            <div class="page" id="profile-age">—</div>
+          </div>
+        </div>
+        <a href="#" class="edit-profile-link" onclick="toggleEditProfile(); return false;">✏️ تعديل الاسم</a>
+ 
+        <div id="edit-profile-box" style="display:none; background:var(--surface); padding:14px; border-radius:14px; margin-bottom:14px;">
+          <div class="field" style="margin-bottom:10px;">
+            <label>الاسم الجديد</label>
+            <input id="edit-name-input" type="text" placeholder="اكتب اسمك">
+          </div>
+          <div class="field" style="margin-bottom:10px;">
+            <label>المعرف (اسم المستخدم)</label>
+            <input id="edit-handle-input" type="text" placeholder="مثال: mohamed_1234">
+          </div>
+          <button class="primary-btn" onclick="saveProfileName()" style="margin-top:0;">حفظ التعديلات</button>
+        </div>
+ 
+        <div class="stat-row">
+          <div class="stat-box"><b id="stat-videos">0</b><span>فيديوهاتك</span></div>
+          <div class="stat-box"><b id="stat-followers">0</b><span>متابعينك</span></div>
+          <div class="stat-box"><b id="stat-following">0</b><span>بتتابع</span></div>
+        </div>
+ 
+        <div class="admin-toggle-row" id="admin-status-row" style="display:none;">
+          <div>
+            <div class="lbl">🛡️ حساب مشرف (Admin)</div>
+            <div class="sub">تم تفعيل هذه الصلاحية من داخل Firebase Console من قبل مالك المشروع</div>
+          </div>
+        </div>
+ 
+        <div class="section-title">فيديوهاتك</div>
+        <div id="profile-videos"><div class="empty-hint">لسه معملتش أي فيديو</div></div>
+ 
+        <div class="section-title">اللايكات اللي عملتها</div>
+        <div id="profile-likes"><div class="empty-hint">لسه معجبتش بأي فيديو</div></div>
+ 
+        <div class="section-title">تعليقاتك</div>
+        <div id="profile-comments"><div class="empty-hint">لسه معلقتش على حاجة</div></div>
+ 
+        <div id="admin-panel" style="display:none;">
+          <div class="section-title">👥 إدارة المستخدمين</div>
+          <div id="admin-users-list"></div>
+ 
+          <div class="section-title">🎬 مراجعة المحتوى المعلق</div>
+          <div id="admin-pending-list"><div class="empty-hint">لا يوجد محتوى بانتظار المراجعة</div></div>
+ 
+          <div class="section-title">🚫 الفلترة التلقائية</div>
+          <div class="admin-toggle-row">
+            <div>
+              <div class="lbl">حذف التعليقات النابية تلقائياً</div>
+              <div class="sub">يتم فحص كل تعليق وقت إرساله ومنع النابي منه مباشرة</div>
+            </div>
+            <div class="switch on" id="filter-switch" onclick="toggleAutoFilter()"></div>
+          </div>
+          <div id="admin-flagged-list"></div>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- MESSAGES -->
+    <div class="screen" id="screen-messages">
+      <div class="sub-screen">
+        <div class="sub-header"><h2 class="brand-font">الرسائل</h2></div>
+ 
+        <div class="tabs-row">
+          <div class="tab-btn active" id="tab-btn-chats" onclick="switchMsgTab('chats')">المحادثات</div>
+          <div class="tab-btn" id="tab-btn-requests" onclick="switchMsgTab('requests')">طلبات الصداقة</div>
+          <div class="tab-btn" id="tab-btn-add" onclick="switchMsgTab('add')">إضافة صديق</div>
+        </div>
+ 
+        <div class="tab-pane active" id="tab-chats">
+          <div id="chats-list"><div class="empty-hint">لسه مفيش محادثات — اقبل طلب صداقة عشان تبدأ تتكلم</div></div>
+        </div>
+ 
+        <div class="tab-pane" id="tab-requests">
+          <div id="requests-list"><div class="empty-hint">مفيش طلبات صداقة جديدة</div></div>
+        </div>
+ 
+        <div class="tab-pane" id="tab-add">
+          <div class="field">
+            <label>ابحث بمعرف المستخدم (User ID)</label>
+            <input id="add-friend-input" type="text" placeholder="مثال: mohamed_01">
+          </div>
+          <button class="primary-btn" onclick="sendFriendRequest()">إرسال طلب صداقة</button>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- CHAT THREAD (opened from a chat item) -->
+    <div class="screen" id="screen-chat-thread">
+      <div class="chat-thread">
+        <div class="chat-thread-head">
+          <button class="close-x" onclick="closeChatThread()">←</button>
+          <div class="avatar" id="chat-thread-avatar" style="width:38px; height:38px; font-size:15px;">?</div>
+          <div style="font-weight:800; font-size:14px;" id="chat-thread-name">—</div>
+        </div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="chat-input-row">
+          <input id="chat-input" type="text" placeholder="اكتب رسالة...">
+          <button onclick="sendChatMessage()">إرسال</button>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- UPLOAD / CAMERA -->
+    <div class="screen" id="screen-upload">
+      <div class="sub-screen">
+        <div class="sub-header">
+          <h2 class="brand-font">فيديو جديد</h2>
+          <button class="close-x" onclick="closeUpload()">✕</button>
+        </div>
+        <div class="camera-box" id="camera-box">
+          <div class="cam-off">اضغط "تشغيل الكاميرا" عشان تبدأ التصوير</div>
+        </div>
+        <div class="rec-controls">
+          <button onclick="startCamera()">تشغيل الكاميرا</button>
+          <button class="record" id="btn-record" onclick="toggleRecord()">ابدأ التصوير</button>
+        </div>
+        <div class="field">
+          <label>اسم الأغنية</label>
+          <input id="in-song" type="text" placeholder="مثال: اسم الأغنية - المطرب">
+        </div>
+        <div class="field">
+          <label>الوصف</label>
+          <input id="in-caption" type="text" placeholder="اكتب وصف للفيديو">
+        </div>
+        <button class="primary-btn" onclick="publishVideo()">إرسال للمراجعة والنشر</button>
+        <p class="login-note">الفيديو هيظهر في الفيد العام بعد موافقة المشرف عليه من لوحة المراجعة.</p>
+      </div>
+    </div>
+ 
+    <!-- LIVE -->
+    <div class="screen" id="screen-live">
+      <div class="sub-screen">
+        <div class="sub-header">
+          <h2 class="brand-font">البث المباشر</h2>
+          <button class="close-x" onclick="closeLive()">✕</button>
+        </div>
+        <div class="live-frame">
+          <div class="live-badge"><span class="live-dot"></span> مباشر</div>
+          <div class="live-viewers" id="live-viewers">👁 0</div>
+          <video id="live-video" autoplay muted playsinline></video>
+        </div>
+        <button class="primary-btn" onclick="endLive()">إنهاء البث</button>
+      </div>
+    </div>
+ 
+  </div>
+ 
+  <!-- BOTTOM NAV -->
+  <div id="bottom-nav" style="display:none;">
+    <button class="nav-btn" id="nav-profile" onclick="showScreen('profile')">
+      <span class="ic">👤</span><span>أنت</span>
+    </button>
+    <button class="nav-btn" id="nav-messages" onclick="showScreen('messages')">
+      <span class="ic">✉️</span><span>الرسائل</span>
+    </button>
+    <button class="nav-btn upload" id="nav-upload" onclick="showScreen('upload')">
+      <span class="ic">+</span><span>فيديو</span>
+    </button>
+    <button class="nav-btn" id="nav-live" onclick="openLive()">
+      <span class="ic">🔴</span><span>بث</span>
+    </button>
+    <button class="nav-btn active" id="nav-home" onclick="showScreen('feed')">
+      <span class="ic">🏠</span><span>الرئيسية</span>
+    </button>
+  </div>
+ 
+  <!-- COMMENTS MODAL -->
+  <div id="comments-modal">
+    <div class="sheet">
+      <div class="sheet-head">
+        <h3 class="brand-font">التعليقات</h3>
+        <button class="close-x" onclick="closeComments()">✕</button>
+      </div>
+      <div id="comments-list"></div>
+      <div class="comment-input-row">
+        <input id="comment-input" type="text" placeholder="اكتب تعليق...">
+        <button onclick="submitComment()">إرسال</button>
+      </div>
+    </div>
+  </div>
+ 
+  <div class="toast" id="toast"></div>
+ 
+</div>
+ 
+<script>
+/* ============================================================
+   SnapVibe — Firebase-backed app
+   Real Authentication: Firebase Auth (email + password).
+   Real Database: Firestore.
+   Real Access Control: Firestore Security Rules (server-side —
+   see firestore.rules). isAdmin/banned flags on a user's own
+   document can ONLY be changed by an existing admin per the
+   rules — never by the client, no matter what the JS here says.
+   The FIRST admin must be set manually in the Firebase Console
+   by the project owner. That is intentional: there is no
+   "secret login" that grants admin, because any such secret
+   shipped to the browser would be visible to everyone.
+   ============================================================ */
+ 
+// ---- 1) PASTE YOUR OWN FIREBASE PROJECT CONFIG HERE ----
+// Firebase Console → Project settings → General → Your apps → SDK setup
+const firebaseConfig = {
+  apiKey: "AIzaSyAfqUdOD-Y2qMUwj6Hc749w9-2JCjPef6U",
+  authDomain: "snapvibe-df811.firebaseapp.com",
+  databaseURL: "https://snapvibe-df811-default-rtdb.firebaseio.com",
+  projectId: "snapvibe-df811",
+  storageBucket: "snapvibe-df811.firebasestorage.app",
+  messagingSenderId: "572071205713",
+  appId: "1:572071205713:web:816fa0c7feecafd58b5170",
+  measurementId: "G-D3NTW3TFNK"
+};
+ 
+// Guard against the #1 real-world cause of "the button does nothing":
+// leaving the placeholder config in place.
+const CONFIG_IS_PLACEHOLDER = Object.values(firebaseConfig).some(v => String(v).includes('YOUR_'));
+ 
+// ---- Multi-CDN loader with automatic fallback ----
+// jsDelivr and unpkg tried first — www.gstatic.com is a Google-owned
+// domain that's proven unreliable on some networks (blocked/slow),
+// so it's kept only as a last-resort fallback instead of the first
+// attempt, to avoid a guaranteed failed request on every page load.
+const FB_VERSION = '10.13.2';
+function cdnCandidates(file){
+  return [
+    `https://cdn.jsdelivr.net/npm/firebase@${FB_VERSION}/${file}`,
+    `https://unpkg.com/firebase@${FB_VERSION}/${file}`,
+    `https://www.gstatic.com/firebasejs/${FB_VERSION}/${file}`
+  ];
+}
+function loadScriptWithFallback(urls){
+  return new Promise((resolve, reject)=>{
+    let i = 0;
+    function tryNext(){
+      if(i >= urls.length){ reject(new Error('All CDN sources failed for ' + urls[0])); return; }
+      const s = document.createElement('script');
+      s.src = urls[i];
+      s.onload = ()=> resolve(urls[i]);
+      s.onerror = ()=>{ console.warn('CDN source failed, trying next:', urls[i]); i++; tryNext(); };
+      document.head.appendChild(s);
     }
+    tryNext();
   });
 }
+ 
+let auth, db, storage;
+let SDK_LOADED = false;
+ 
+async function loadFirebaseAndInit(){
+  try{
+    await loadScriptWithFallback(cdnCandidates('firebase-app-compat.js'));
+    await loadScriptWithFallback(cdnCandidates('firebase-auth-compat.js'));
+    await loadScriptWithFallback(cdnCandidates('firebase-firestore-compat.js'));
+    await loadScriptWithFallback(cdnCandidates('firebase-storage-compat.js'));
+    SDK_LOADED = (typeof firebase !== 'undefined');
+  }catch(loadErr){
+    console.error('All Firebase CDN sources failed to load:', loadErr);
+    SDK_LOADED = false;
+  }
+ 
+  const warningBox = document.getElementById('config-warning');
+  if(!SDK_LOADED){
+    if(warningBox){
+      warningBox.innerHTML = '⚠️ <b>تعذر تحميل مكتبات Firebase من ثلاث مصادر مختلفة (gstatic, jsDelivr, unpkg).</b> ده معناه غالباً إن مفيش اتصال إنترنت فعلي وقت فتح الصفحة، أو إن الشبكة اللي إنت عليها (فايروول/شبكة عمل/مزود خدمة) بتحجب الوصول للـ CDNs دي بالكامل. جرب: افتح الصفحة على نت تاني (بيانات الموبايل مثلاً)، أو تأكد إن مفيش إضافة حاجبة (Ad-blocker/VPN) شغالة، وبعدين اعمل Refresh.';
+      warningBox.style.display = 'block';
+    }
+    return;
+  }
+ 
+  try{
+    firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    db = firebase.firestore();
+    storage = firebase.storage();
+  }catch(initErr){
+    console.error('Firebase init failed:', initErr);
+    SDK_LOADED = false;
+  }
+ 
+  if(warningBox){
+    warningBox.style.display = (CONFIG_IS_PLACEHOLDER || !auth) ? 'block' : 'none';
+  }
+ 
+  if(auth){
+    registerAuthStateListener();
+  }
+}
+// Kick off loading immediately — everything else in this script only
+// touches `auth`/`db`/`storage` from inside functions, which by the time
+// they're actually called (via a button click) will run after this
+// promise chain has resolved.
+loadFirebaseAndInit();
+ 
+let CURRENT_UID = null;
+let CURRENT_PROFILE = null;
+let authMode = 'signup';
+let mediaStream = null;
+let mediaRecorder = null;
+let recordedChunks = [];
+let currentUploadBlob = null;
+let commentsTargetId = null;
+let feedUnsub = null;
+let LAST_VIDEOS = [];
+let pendingUnsub = null;
+let usersUnsub = null;
+let flaggedUnsub = null;
+let autoFilterOn = true;
+// 🆕 FIX: true while a fresh signup is writing its Firestore profile doc.
+// Prevents the auth-state listener from wrongly concluding a brand-new
+// account is "corrupted" and signing it out before the profile write lands.
+let SIGNUP_IN_PROGRESS = false;
 
+// 🆕 DEVELOPER ACCOUNT
+// Only an account created with this exact email is ever granted isAdmin
+// automatically. The PASSWORD is never stored here or anywhere in this
+// file — it lives only inside Firebase Authentication (hashed, on
+// Google's servers), exactly like every other user's password. Whoever
+// signs up with this email, using whatever password they choose at
+// signup time, becomes the developer/admin account. Server-side
+// Firestore security rules (see firestore.rules) are what actually
+// enforce that no OTHER account can grant itself isAdmin — this
+// constant alone is just a convenience for the client UI.
+const DEV_ADMIN_EMAIL = 'jehejfkfbw@gmail.com';
+
+// 🆕 Returns true if a user profile is currently under an active ban
+// (permanent, or temporary and not yet expired).
+function isBanActive(profile){
+  if(!profile || !profile.banned) return false;
+  if(!profile.banUntil) return true; // permanent ban
+  const untilMs = profile.banUntil.toMillis ? profile.banUntil.toMillis() : profile.banUntil;
+  return untilMs > Date.now();
+}
+function banUntilLabel(profile){
+  if(!profile.banUntil) return null;
+  const untilMs = profile.banUntil.toMillis ? profile.banUntil.toMillis() : profile.banUntil;
+  return new Date(untilMs).toLocaleString('ar-EG');
+}
+ 
+// Basic Arabic/English profanity word list — expand as needed.
+// Real, unbypassable enforcement of "no profanity" should ALSO
+// live in a Cloud Function trigger server-side; this client-side
+// list gives immediate UX feedback and blocks the common cases.
+const BAD_WORDS = ['كلب','حمار','غبي','قذر','wtf','fuck','shit','bitch','asshole'];
+ 
+function containsProfanity(text){
+  const t = String(text||'').toLowerCase();
+  return BAD_WORDS.some(w => t.includes(w.toLowerCase()));
+}
+ 
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2000);
+}
+ 
+/* ---------------- SPLASH -> LOGIN ---------------- */
+window.addEventListener('load', ()=>{
+  setTimeout(()=>{
+    document.getElementById('login-screen').style.display = 'flex';
+  }, 1900);
+});
+ 
+/* ---------------- AUTH MODE SWITCH ---------------- */
 function switchAuthMode(mode){
   authMode = mode;
-  const title = document.getElementById('auth-title');
-  const submitBtn = document.getElementById('auth-submit-btn');
-  const switchNote = document.getElementById('auth-switch-note');
   const signupFields = document.getElementById('signup-fields');
-
-  if(mode === 'login'){
-    title.textContent = 'تسجيل الدخول إلى SnapVibe';
-    submitBtn.textContent = 'دخول';
-    signupFields.style.display = 'none';
-    switchNote.innerHTML = 'معندكش حساب؟ <a href="#" onclick="switchAuthMode(\'signup\'); return false;" style="color:var(--accent-2); font-weight:700;">أنشئ حساب جديد</a>';
-  } else {
-    title.textContent = 'إنشاء حساب في SnapVibe';
-    submitBtn.textContent = 'إنشاء حساب';
+  const title = document.getElementById('auth-title');
+  const btn = document.getElementById('auth-submit-btn');
+  const note = document.getElementById('auth-switch-note');
+  if(mode === 'signup'){
     signupFields.style.display = 'block';
-    switchNote.innerHTML = 'عندك حساب بالفعل؟ <a href="#" onclick="switchAuthMode(\'login\'); return false;" style="color:var(--accent-2); font-weight:700;">سجّل دخول</a>';
+    title.textContent = 'إنشاء حساب في SnapVibe';
+    btn.textContent = 'إنشاء حساب';
+    btn.setAttribute('onclick','handleSignup()');
+    note.innerHTML = 'عندك حساب بالفعل؟ <a href="#" onclick="switchAuthMode(\'login\'); return false;" style="color:var(--accent-2); font-weight:700;">سجّل دخول</a>';
+  } else {
+    signupFields.style.display = 'none';
+    title.textContent = 'تسجيل الدخول إلى SnapVibe';
+    btn.textContent = 'دخول';
+    btn.setAttribute('onclick','handleLoginReal()');
+    note.innerHTML = 'مفيش حساب لسه؟ <a href="#" onclick="switchAuthMode(\'signup\'); return false;" style="color:var(--accent-2); font-weight:700;">اعمل حساب جديد</a>';
+  }
+}
+ 
+/* ---------------- SIGNUP ---------------- */
+async function handleSignup(){
+  if(CONFIG_IS_PLACEHOLDER || !auth){
+    toast('إعدادات Firebase غير مكتملة — راجع الرسالة الحمراء فوق');
+    return;
+  }
+  const name = document.getElementById('in-name').value.trim();
+  const ageStr = document.getElementById('in-age').value.trim();
+  const email = document.getElementById('in-email').value.trim();
+  const password = document.getElementById('in-password').value;
+
+  if(!name || !ageStr || !email || !password){
+    toast('من فضلك املأ كل الحقول');
+    return;
+  }
+  const age = parseInt(ageStr, 10);
+  if(!age || age < 6 || age > 120){
+    toast('اكتب سن صحيح');
+    return;
+  }
+  if(password.length < 6){
+    toast('كلمة المرور لازم تكون 6 أحرف على الأقل');
+    return;
+  }
+  const btn = document.getElementById('auth-submit-btn');
+  const originalText = btn.textContent;
+  btn.textContent = 'جاري إنشاء الحساب...';
+  btn.disabled = true;
+  // 🆕 FIX: raise the flag BEFORE creating the auth account, since
+  // onAuthStateChanged can fire before this function's own .set() below
+  // finishes writing the profile document (classic race condition).
+  SIGNUP_IN_PROGRESS = true;
+  try{
+    // 🆕 Auto-generate a unique username (handle) — the user can change
+    // it any time later from their profile.
+    const handle = await generateUniqueHandle(name);
+    const cred = await auth.createUserWithEmailAndPassword(email, password);
+    // 🆕 The ONLY account that ever gets isAdmin:true automatically is one
+    // whose email matches DEV_ADMIN_EMAIL exactly. Firestore security rules
+    // enforce this server-side too, so this check can't be bypassed by
+    // editing the page's JavaScript.
+    const isDevAccount = email.trim().toLowerCase() === DEV_ADMIN_EMAIL.toLowerCase();
+    await db.collection('users').doc(cred.user.uid).set({
+      name, handle, age,
+      isAdmin: isDevAccount, banned: false, banUntil: null,
+      myVideos: [], myLikes: [], myComments: [],
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast(isDevAccount ? 'تم إنشاء حساب المطور بنجاح 🛡️' : 'تم إنشاء الحساب بنجاح 🎉');
+  }catch(e){
+    console.error('Signup error:', e);
+    toast(friendlyAuthError(e));
+  }finally{
+    // 🆕 FIX: lower the flag once the profile write has settled
+    // (success or failure) so the listener returns to normal behavior.
+    SIGNUP_IN_PROGRESS = false;
+    btn.textContent = originalText;
+    btn.disabled = false;
   }
 }
 
-async function handleSignup(){
-  if(!SDK_LOADED || !auth){
-    toast('خطأ: لم يتم تحميل مكتبات Firebase');
+/* ---------------- LOGIN ---------------- */
+async function handleLoginReal(){
+  if(CONFIG_IS_PLACEHOLDER || !auth){
+    toast('إعدادات Firebase غير مكتملة — راجع الرسالة الحمراء فوق');
     return;
   }
   const email = document.getElementById('in-email').value.trim();
-  const password = document.getElementById('in-password').value.trim();
-
-  if(authMode === 'signup'){
-    const name = document.getElementById('in-name').value.trim();
-    const uid = document.getElementById('in-uid').value.trim().toLowerCase();
-    const dob = document.getElementById('in-dob').value.trim();
-
-    if(!name || !uid || !email || !password){
-      toast('يرجى ملء جميع الحقول المطلوبة');
-      return;
-    }
-
-    try {
-      const userCred = await auth.createUserWithEmailAndPassword(email, password);
-      const firebaseUid = userCred.user.uid;
-
-      await db.collection('users').doc(firebaseUid).set({
-        uid: uid,
-        name: name,
-        dob: dob,
-        email: email,
-        avatar: '',
-        followersCount: 0,
-        followingCount: 0,
-        videosCount: 0,
-        isAdmin: false,
-        banned: false,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-
-      toast('تم إنشاء الحساب بنجاح!');
-    } catch(err){
-      toast('خطأ في التسجيل: ' + err.message);
-    }
-  } else {
-    if(!email || !password){
-      toast('يرجى إدخال البريد وكلمة المرور');
-      return;
-    }
-    try {
-      await auth.signInWithEmailAndPassword(email, password);
-      toast('تم تسجيل الدخول بنجاح');
-    } catch(err){
-      toast('خطأ في الدخول: ' + err.message);
-    }
+  const password = document.getElementById('in-password').value;
+  if(!email || !password){
+    toast('من فضلك أدخل البريد الإلكتروني وكلمة المرور');
+    return;
+  }
+  const btn = document.getElementById('auth-submit-btn');
+  const originalText = btn.textContent;
+  btn.textContent = 'جاري تسجيل الدخول...';
+  btn.disabled = true;
+  try{
+    await auth.signInWithEmailAndPassword(email, password);
+  }catch(e){
+    console.error('Login error:', e);
+    toast(friendlyAuthError(e));
+  }finally{
+    btn.textContent = originalText;
+    btn.disabled = false;
   }
 }
+ 
+function friendlyAuthError(e){
+  const map = {
+    'auth/email-already-in-use': 'البريد الإلكتروني ده مسجل بالفعل — سجّل دخول بدل إنشاء حساب',
+    'auth/invalid-email': 'البريد الإلكتروني غير صحيح',
+    'auth/weak-password': 'كلمة المرور ضعيفة، اختار كلمة أقوى',
+    'auth/wrong-password': 'كلمة المرور غير صحيحة',
+    'auth/user-not-found': 'مفيش حساب بهذا البريد الإلكتروني',
+    'auth/invalid-credential': 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
+    'auth/too-many-requests': 'محاولات كتير غلط — حاول تاني بعد شوية'
+  };
+  return map[e.code] || ('حصل خطأ: ' + e.message);
+}
+ 
+function parseDob(dobStr){
+  const parts = String(dobStr||'').trim().split('/');
+  if(parts.length !== 3) return null;
+  const day = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10);
+  const year = parseInt(parts[2], 10);
+  if(!day || !month || !year) return null;
+  const d = new Date(year, month - 1, day);
+  if(isNaN(d) || d.getFullYear() !== year || d.getMonth() !== month - 1 || d.getDate() !== day) return null;
+  return d;
+}
+function calcAge(dobStr){
+  const dob = parseDob(dobStr);
+  if(!dob) return '—';
+  const diff = Date.now() - dob.getTime();
+  const ageDt = new Date(diff);
+  return Math.abs(ageDt.getUTCFullYear() - 1970);
+}
 
-async function loadUserProfile(firebaseUid){
-  try {
-    const doc = await db.collection('users').doc(firebaseUid).get();
-    if(doc.exists){
-      CURRENT_PROFILE = doc.data();
-      document.getElementById('profile-name').textContent = CURRENT_PROFILE.name || 'مستخدم';
-      document.getElementById('profile-id').textContent = '@' + (CURRENT_PROFILE.uid || '');
-      document.getElementById('profile-age').textContent = 'تاريخ الميلاد: ' + (CURRENT_PROFILE.dob || 'غير متوفر');
-      
-      const firstLetter = (CURRENT_PROFILE.name || 'م').charAt(0);
-      const avatarEl = document.getElementById('profile-avatar-letter');
-      if(avatarEl){
-        avatarEl.textContent = firstLetter;
+// 🆕 Auto-generates a unique @username from the person's name at signup
+// time. Falls back to a timestamp suffix if it can't find a free one
+// after a few tries. The user can change this later from their profile.
+async function generateUniqueHandle(name){
+  const base = (name||'user').trim().toLowerCase()
+    .replace(/\s+/g,'_')
+    .replace(/[^a-z0-9_\u0600-\u06FF]/g,'')
+    .slice(0,20) || 'user';
+  for(let attempt=0; attempt<20; attempt++){
+    const suffix = Math.floor(1000 + Math.random()*9000);
+    const candidate = (base + '_' + suffix).slice(0,30);
+    try{
+      const snap = await db.collection('users').where('handle','==',candidate).limit(1).get();
+      if(snap.empty) return candidate;
+    }catch(e){
+      break;
+    }
+  }
+  return (base + '_' + Date.now()).slice(0,30);
+}
+
+/* ---------------- AUTH STATE ---------------- */
+// Called from loadFirebaseAndInit() only after `auth` is confirmed to
+// exist — never runs if the SDK failed to load, so it can never throw
+// "Cannot read properties of undefined".
+function registerAuthStateListener(){
+auth.onAuthStateChanged(async (user)=>{
+  if(user){
+    try{
+      let snap = await db.collection('users').doc(user.uid).get();
+
+      // 🆕 FIX: if the profile doc isn't there yet AND a signup is
+      // actively in progress, this is almost certainly the race
+      // condition (auth account created a beat before the Firestore
+      // profile write finished) rather than a genuinely broken account.
+      // Poll briefly instead of judging the account dead immediately.
+      let retries = 0;
+      while(!snap.exists && SIGNUP_IN_PROGRESS && retries < 15){
+        await new Promise(r => setTimeout(r, 300));
+        snap = await db.collection('users').doc(user.uid).get();
+        retries++;
       }
 
-      const adminRow = document.getElementById('admin-status-row');
-      const adminPanel = document.getElementById('admin-panel');
-      if(CURRENT_PROFILE.isAdmin){
-        if(adminRow) adminRow.style.display = 'flex';
-        if(adminPanel) adminPanel.style.display = 'block';
-        initAdminPanel();
+      if(!snap.exists){
+        // Auth account exists but the Firestore profile doc doesn't — usually
+        // means signup was interrupted after the account was created but
+        // before the profile document finished saving. Tell the user clearly
+        // instead of silently signing them out with no explanation.
+        toast('الحساب ده موجود لكن بياناته ناقصة في قاعدة البيانات — سجّل حساب جديد بإيميل مختلف، أو امسح الحساب ده من Firebase Console وأعد التسجيل بنفس الإيميل.');
+        auth.signOut();
+        return;
+      }
+      const profile = snap.data();
+      if(isBanActive(profile)){
+        const untilLabel = banUntilLabel(profile);
+        toast(untilLabel
+          ? 'حسابك محظور مؤقتًا حتى ' + untilLabel
+          : 'هذا الحساب محظور بشكل دائم من قبل الإدارة');
+        auth.signOut();
+        return;
+      } else if(profile.banned && profile.banUntil){
+        // 🆕 Temporary ban expired — lift it automatically so the user
+        // isn't stuck banned forever after the timer runs out.
+        await db.collection('users').doc(user.uid).update({banned:false, banUntil:null});
+        profile.banned = false;
+        profile.banUntil = null;
+      }
+      CURRENT_UID = user.uid;
+      CURRENT_PROFILE = profile;
+ 
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('main-app').style.display = 'block';
+      document.getElementById('bottom-nav').style.display = 'flex';
+ 
+      listenFeed();
+      loadFollowing().then(()=>{ if(LAST_VIDEOS.length) renderFeed(LAST_VIDEOS); });
+    }catch(err){
+      console.error('Auth state / profile load failed:', err);
+      if(err && err.code === 'permission-denied'){
+        toast('⚠️ قاعدة البيانات رافضة القراءة (Permission Denied) — على الأغلب لسه معملتش Publish لملف firestore.rules في Firebase Console. راجع خطوة 6 في SETUP.md.');
       } else {
-        if(adminRow) adminRow.style.display = 'none';
-        if(adminPanel) adminPanel.style.display = 'none';
+        toast('حصل خطأ أثناء تحميل حسابك: ' + (err && err.message ? err.message : 'غير معروف'));
       }
-      loadUserVideos(firebaseUid);
-      loadUserLikes(firebaseUid);
-      loadUserComments(firebaseUid);
+      return;
     }
-  } catch(err){
-    console.error('Error loading user profile:', err);
-  }
-}
-
-function showScreen(screenName){
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-
-  if(screenName === 'feed'){
-    document.getElementById('screen-feed').classList.add('active');
-    document.getElementById('nav-home').classList.add('active');
-  } else if(screenName === 'profile'){
-    document.getElementById('screen-profile').classList.add('active');
-    document.getElementById('nav-profile').classList.add('active');
-  } else if(screenName === 'messages'){
-    document.getElementById('screen-messages').classList.add('active');
-    document.getElementById('nav-messages').classList.add('active');
-  } else if(screenName === 'upload'){
-    document.getElementById('screen-upload').classList.add('active');
-    document.getElementById('nav-upload').classList.add('active');
-  }
-}
-
-function openLive(){
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-live').classList.add('active');
-  startLiveCamera();
-}
-
-function closeLive(){
-  if(mediaStream){
-    mediaStream.getTracks().forEach(track => track.stop());
-    mediaStream = null;
-  }
-  showScreen('feed');
-}
-
-async function startLiveCamera(){
-  try {
-    mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    const videoEl = document.getElementById('live-video');
-    if(videoEl){
-      videoEl.srcObject = mediaStream;
-    }
-  } catch(err){
-    toast('تعذر الوصول للكاميرا للبث المباشر');
-  }
-}
-
-function endLive(){
-  closeLive();
-}
-
-function closeUpload(){
-  if(mediaStream){
-    mediaStream.getTracks().forEach(track => track.stop());
-    mediaStream = null;
-  }
-  showScreen('feed');
-}
-
-async function startCamera(){
-  try {
-    mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    const box = document.getElementById('camera-box');
-    box.innerHTML = '<video autoplay muted playsinline></video>';
-    box.querySelector('video').srcObject = mediaStream;
-    toast('تم تشغيل الكاميرا بنجاح');
-  } catch(err){
-    toast('تعذر تشغيل الكاميرا');
-  }
-}
-
-function toggleRecord(){
-  const btn = document.getElementById('btn-record');
-  if(!mediaStream){
-    toast('يرجى تشغيل الكاميرا أولاً');
-    return;
-  }
-  if(mediaRecorder && mediaRecorder.state === 'recording'){
-    mediaRecorder.stop();
-    btn.textContent = 'ابدأ التصوير';
-    btn.classList.remove('stop');
-    btn.classList.add('record');
-    toast('تم إيقاف التسجيل');
+    // Live-update this user's own profile doc (covers admin promotion, bans, stat changes)
+    db.collection('users').doc(user.uid).onSnapshot(s=>{
+      if(!s.exists) return;
+      CURRENT_PROFILE = s.data();
+      if(isBanActive(CURRENT_PROFILE)){
+        const untilLabel = banUntilLabel(CURRENT_PROFILE);
+        toast(untilLabel
+          ? 'تم حظر حسابك مؤقتًا حتى ' + untilLabel
+          : 'تم حظر حسابك بشكل دائم من قبل الإدارة');
+        auth.signOut();
+        return;
+      }
+      renderProfile();
+    });
   } else {
-    recordedChunks = [];
-    try {
-      mediaRecorder = new MediaRecorder(mediaStream, { mimeType: 'video/webm' });
-    } catch(e){
-      try {
-        mediaRecorder = new MediaRecorder(mediaStream);
-      } catch(err){
-        toast('المتصفح لا يدعم تسجيل الفيديو');
-        return;
-      }
-    }
-    mediaRecorder.ondataavailable = e => {
-      if(e.data && e.data.size > 0){
-        recordedChunks.push(e.data);
-      }
-    };
-    mediaRecorder.onstop = () => {
-      currentUploadBlob = new Blob(recordedChunks, { type: 'video/webm' });
-      toast('تم تجهيز الفيديو للنشر!');
-    };
-    mediaRecorder.start();
-    btn.textContent = 'إيقاف التصوير';
-    btn.classList.remove('record');
-    btn.classList.add('stop');
-    toast('جاري التسجيل...');
+    CURRENT_UID = null;
+    CURRENT_PROFILE = null;
+    FOLLOWING_SET = new Set();
+    if(feedUnsub) feedUnsub();
+    if(pendingUnsub) pendingUnsub();
+    if(usersUnsub) usersUnsub();
+    if(flaggedUnsub) flaggedUnsub();
+    if(requestsUnsub) requestsUnsub();
+    if(chatsUnsub) chatsUnsub.forEach(u=>u());
+    if(currentChatUnsub) currentChatUnsub();
+    document.getElementById('main-app').style.display = 'none';
+    document.getElementById('bottom-nav').style.display = 'none';
   }
+});
 }
-
-async function publishVideo(){
-  if(!currentUploadBlob && !mediaStream){
-    toast('يرجى تسجيل فيديو أولاً');
-    return;
-  }
-  const song = document.getElementById('in-song').value.trim();
-  const caption = document.getElementById('in-caption').value.trim();
-
-  if(!song || !caption){
-    toast('يرجى إدخال اسم الأغنية ووصف الفيديو');
-    return;
-  }
-
-  toast('جاري رفع الفيديو...');
-  try {
-    let videoUrl = '';
-    if(storage && currentUploadBlob){
-      const storageRef = storage.ref().child('videos/' + Date.now() + '.webm');
-      const snapshot = await storageRef.put(currentUploadBlob);
-      videoUrl = await snapshot.ref.getDownloadURL();
-    }
-
-    await db.collection('videos').add({
-      uid: CURRENT_UID,
-      authorName: CURRENT_PROFILE ? CURRENT_PROFILE.name : 'مستخدم',
-      authorHandle: CURRENT_PROFILE ? CURRENT_PROFILE.uid : '',
-      song: song,
-      caption: caption,
-      videoUrl: videoUrl,
-      likesCount: 0,
-      status: 'pending',
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    toast('تم إرسال الفيديو للمراجعة بنجاح!');
-    closeUpload();
-  } catch(err){
-    toast('خطأ أثناء الرفع: ' + err.message);
-  }
+ 
+/* ---------------- NAVIGATION ---------------- */
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const map = {feed:'nav-home', profile:'nav-profile', messages:'nav-messages', upload:'nav-upload'};
+  if(map[name]) document.getElementById(map[name]).classList.add('active');
+  if(name==='profile') renderProfile();
+  if(name==='messages') renderMessages();
 }
-
-function initFeed(){
-  const feedEl = document.getElementById('feed');
-  if(!feedEl) return;
-
+ 
+/* ---------------- FEED (approved videos only — enforced by security rules) ---------------- */
+function listenFeed(){
   if(feedUnsub) feedUnsub();
-
   feedUnsub = db.collection('videos')
-    .where('status', '==', 'approved')
-    .orderBy('createdAt', 'desc')
-    .onSnapshot(snapshot => {
-      LAST_VIDEOS = [];
-      snapshot.forEach(doc => {
-        LAST_VIDEOS.push({ id: doc.id, ...doc.data() });
-      });
-
-      if(LAST_VIDEOS.length === 0){
-        feedEl.innerHTML = '<div class="fallback-bg">لا توجد فيديوهات منشورة حالياً</div>';
-        return;
-      }
-
-      let html = '';
-      LAST_VIDEOS.forEach(v => {
-        html += `
-          <div class="video-card">
-            ${v.videoUrl ? `<video src="${v.videoUrl}" loop playsinline autoplay muted></video>` : `<div class="fallback-bg">فيديو تجريبي</div>`}
-            <div class="video-shade"></div>
-            <div class="side-actions">
-              <div class="action" onclick="toggleLike('${v.id}')">
-                <div class="icon-circle" id="like-icon-${v.id}">❤️</div>
-                <div class="count" id="like-count-${v.id}">${v.likesCount || 0}</div>
-              </div>
-              <div class="action" onclick="openComments('${v.id}')">
-                <div class="icon-circle">💬</div>
-                <div class="count">تعليق</div>
-              </div>
-            </div>
-            <div class="video-meta">
-              <div class="author-row">
-                <div class="author-avatar">${(v.authorName || 'م').charAt(0)}</div>
-                <div class="author">@${v.authorHandle || ''}</div>
-                <button class="follow-btn">متابعة</button>
-              </div>
-              <div class="song">🎵 ${v.song || ''}</div>
-              <div class="caption">${v.caption || ''}</div>
-            </div>
-          </div>
-        `;
-      });
-      feedEl.innerHTML = html;
+    .where('status','==','approved')
+    .orderBy('createdAt','desc')
+    .onSnapshot(snap=>{
+      const videos = [];
+      snap.forEach(doc=> videos.push({id:doc.id, ...doc.data()}));
+      LAST_VIDEOS = videos.length ? videos : seedVideos();
+      renderFeed(LAST_VIDEOS);
+    }, err=>{
+      // Likely missing index or offline — fall back to demo content.
+      LAST_VIDEOS = seedVideos();
+      renderFeed(LAST_VIDEOS);
     });
 }
-
-async function toggleLike(videoId){
-  if(!CURRENT_UID) return;
-  const likeRef = db.collection('videos').doc(videoId).collection('likes').doc(CURRENT_UID);
-  const videoRef = db.collection('videos').doc(videoId);
-
-  try {
-    const doc = await likeRef.get();
-    if(doc.exists){
-      await likeRef.delete();
-      await videoRef.update({ likesCount: firebase.firestore.FieldValue.increment(-1) });
-      toast('تم إلغاء الإعجاب');
+ 
+function seedVideos(){
+  const demoAuthors = [
+    {name:'ياسمين خالد', caption:'يوم في حياتي 🌸', song:'أغنية صيفية - مجهول'},
+    {name:'كريم سامي', caption:'تحدي الرقص الجديد 🔥', song:'بيت - محمد حماقي'},
+    {name:'نور الهدى', caption:'وصفة سريعة ولذيذة 🍰', song:'أجواء - أحمد سعد'},
+    {name:'عمر فتحي', caption:'لحظات من الرحلة ✈️', song:'مسافر - تامر حسني'},
+    {name:'سارة عادل', caption:'روتين الصباح ☀️', song:'صباح الخير - إليسا'}
+  ];
+  return demoAuthors.map((a,i)=>({
+    id:'demo_'+i, isDemo:true, authorName:a.name, caption:a.caption, song:a.song,
+    videoURL:null, likes: 120 + i*37, likedBy: [],
+    comments: [{name:a.name, text:'شكراً لمتابعتكم! ❤️'}]
+  }));
+}
+ 
+function renderFeed(videos){
+  const feed = document.getElementById('feed');
+  feed.innerHTML = '';
+  videos.forEach(v=>{
+    const card = document.createElement('div');
+    card.className = 'video-card';
+    let mediaHTML = '';
+    if(v.videoURL){
+      mediaHTML = `<video src="${v.videoURL}" loop muted autoplay playsinline></video>`;
     } else {
-      await likeRef.set({ createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-      await videoRef.update({ likesCount: firebase.firestore.FieldValue.increment(1) });
-      toast('تم الإعجاب بالفيديو ❤️');
+      const seed = String(v.id).length;
+      mediaHTML = `<div class="fallback-bg" style="background:linear-gradient(160deg, hsl(${(seed*47)%360},55%,22%), hsl(${(seed*97)%360},50%,14%));">🎬 فيديو تجريبي — ${escapeHtml(v.caption||'')}</div>`;
     }
-  } catch(err){
-    toast('خطأ في تحديث الإعجاب');
+    const liked = CURRENT_UID && (v.likedBy||[]).includes(CURRENT_UID);
+    const comments = v.comments || [];
+    const isOwnVideo = CURRENT_UID && v.authorUid === CURRENT_UID;
+    const isFollowing = v.authorUid && FOLLOWING_SET.has(v.authorUid);
+    const avatarHTML = v.authorPhotoURL
+      ? `<img class="author-avatar" src="${v.authorPhotoURL}" alt="">`
+      : `<div class="author-avatar">${escapeHtml((v.authorName||'?').trim().charAt(0).toUpperCase())}</div>`;
+    const followBtnHTML = (v.authorUid && !isOwnVideo && !v.isDemo)
+      ? `<button class="follow-btn ${isFollowing?'following':''}" onclick="toggleFollow('${v.authorUid}', this)">${isFollowing?'متابَع':'متابعة'}</button>`
+      : '';
+    card.innerHTML = `
+      ${mediaHTML}
+      <div class="video-shade"></div>
+      <div class="side-actions">
+        <div class="action">
+          <button class="icon-circle ${liked?'liked':''}" onclick="toggleLike('${v.id}', ${!!v.isDemo})">❤️</button>
+          <span class="count" id="likecount-${v.id}">${v.likes||0}</span>
+        </div>
+        <div class="action">
+          <button class="icon-circle" onclick='openComments(${JSON.stringify(v.id)}, ${!!v.isDemo})'>💬</button>
+          <span class="count">${comments.length}</span>
+        </div>
+        <div class="action">
+          <button class="icon-circle" onclick="shareVideo()">↗️</button>
+          <span class="count">مشاركة</span>
+        </div>
+      </div>
+      <div class="video-meta">
+        <div class="author-row">
+          ${avatarHTML}
+          <div class="author">@${escapeHtml(v.authorName||'')}</div>
+          ${followBtnHTML}
+        </div>
+        <div class="song">🎵 ${escapeHtml(v.song || 'صوت أصلي')}</div>
+        <div class="caption">${escapeHtml(v.caption||'')}</div>
+      </div>
+    `;
+    feed.appendChild(card);
+  });
+}
+ 
+/* ---------------- FOLLOW ---------------- */
+let FOLLOWING_SET = new Set();
+async function loadFollowing(){
+  FOLLOWING_SET = new Set();
+  if(!CURRENT_UID) return;
+  const snap = await db.collection('follows').where('followerUid','==',CURRENT_UID).get();
+  snap.forEach(doc=> FOLLOWING_SET.add(doc.data().followingUid));
+}
+async function toggleFollow(targetUid, btnEl){
+  if(!CURRENT_UID){ toast('سجّل الدخول الأول'); return; }
+  const followId = CURRENT_UID + '_' + targetUid;
+  const ref = db.collection('follows').doc(followId);
+  try{
+    if(FOLLOWING_SET.has(targetUid)){
+      await ref.delete();
+      FOLLOWING_SET.delete(targetUid);
+      if(btnEl){ btnEl.textContent = 'متابعة'; btnEl.classList.remove('following'); }
+    } else {
+      await ref.set({followerUid: CURRENT_UID, followingUid: targetUid, createdAt: firebase.firestore.FieldValue.serverTimestamp()});
+      FOLLOWING_SET.add(targetUid);
+      if(btnEl){ btnEl.textContent = 'متابَع'; btnEl.classList.add('following'); }
+    }
+  }catch(e){
+    toast('حصل خطأ، حاول تاني');
   }
 }
-
-function openComments(videoId){
-  commentsTargetId = videoId;
-  const modal = document.getElementById('comments-modal');
-  modal.style.display = 'block';
-  loadComments(videoId);
+async function getFollowCounts(uid){
+  const followers = await db.collection('follows').where('followingUid','==',uid).get();
+  const following = await db.collection('follows').where('followerUid','==',uid).get();
+  return {followers: followers.size, following: following.size};
 }
-
+ 
+async function toggleLike(videoId, isDemo){
+  if(!CURRENT_UID){ toast('سجّل الدخول الأول'); return; }
+  if(isDemo){ toast('ده فيديو تجريبي — التفاعل الحقيقي شغال على الفيديوهات المنشورة'); return; }
+  const ref = db.collection('videos').doc(videoId);
+  await db.runTransaction(async (t)=>{
+    const doc = await t.get(ref);
+    if(!doc.exists) return;
+    const data = doc.data();
+    const likedBy = data.likedBy || [];
+    const idx = likedBy.indexOf(CURRENT_UID);
+    if(idx>-1){
+      likedBy.splice(idx,1);
+      t.update(ref, {likedBy, likes: Math.max(0,(data.likes||0)-1)});
+    } else {
+      likedBy.push(CURRENT_UID);
+      t.update(ref, {likedBy, likes:(data.likes||0)+1});
+    }
+  });
+}
+ 
+function shareVideo(){ toast('تم نسخ رابط الفيديو (محاكاة) 🔗'); }
+ 
+/* ---------------- COMMENTS ---------------- */
+async function openComments(videoId, isDemo){
+  commentsTargetId = videoId;
+  const list = document.getElementById('comments-list');
+  list.innerHTML = '';
+  let comments = [];
+  if(isDemo){
+    const demo = seedVideos().find(v=>v.id===videoId);
+    comments = demo ? demo.comments : [];
+  } else {
+    const doc = await db.collection('videos').doc(videoId).get();
+    comments = doc.exists ? (doc.data().comments || []) : [];
+  }
+  if(comments.length===0){
+    list.innerHTML = '<div class="empty-hint">كن أول من يعلق</div>';
+  } else {
+    comments.forEach(c=>{
+      const row = document.createElement('div');
+      row.className = 'comment-row';
+      row.innerHTML = `<b>${escapeHtml(c.name)}</b><br>${escapeHtml(c.text)}`;
+      list.appendChild(row);
+    });
+  }
+  document.getElementById('comments-modal').style.display = 'block';
+  document.getElementById('comments-modal').dataset.isDemo = isDemo ? '1' : '0';
+}
 function closeComments(){
   document.getElementById('comments-modal').style.display = 'none';
   commentsTargetId = null;
 }
-
-function loadComments(videoId){
-  db.collection('videos').doc(videoId).collection('comments')
-    .orderBy('createdAt', 'desc')
-    .onSnapshot(snapshot => {
-      const listEl = document.getElementById('comments-list');
-      if(!listEl) return;
-      let html = '';
-      snapshot.forEach(doc => {
-        const c = doc.data();
-        html += `
-          <div class="comment-row">
-            <b>@${c.authorHandle || 'مستخدم'}:</b> ${c.text || ''}
-            <div class="meta">${c.createdAt ? new Date(c.createdAt.toDate()).toLocaleTimeString() : ''}</div>
-          </div>
-        `;
-      });
-      listEl.innerHTML = html || '<div class="empty-hint">كن أول من يعلق!</div>';
-    });
-}
-
 async function submitComment(){
-  if(!commentsTargetId || !CURRENT_UID) return;
+  if(!CURRENT_UID){ toast('سجّل الدخول الأول'); return; }
+  const isDemo = document.getElementById('comments-modal').dataset.isDemo === '1';
+  if(isDemo){ toast('التعليقات الحقيقية شغالة على الفيديوهات المنشورة فقط'); return; }
   const input = document.getElementById('comment-input');
   const text = input.value.trim();
-  if(!text) return;
-
+  if(!text || !commentsTargetId) return;
+ 
   if(autoFilterOn && containsProfanity(text)){
-    toast('تم حظر التعليق لاحتوائه على ألفاظ غير لائقة');
-    return;
-  }
-
-  try {
-    await db.collection('videos').doc(commentsTargetId).collection('comments').add({
-      uid: CURRENT_UID,
-      authorHandle: CURRENT_PROFILE ? CURRENT_PROFILE.uid : '',
-      text: text,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    // Log it for the moderation view, but never publish it.
+    await db.collection('flaggedComments').add({
+      videoId: commentsTargetId, uid: CURRENT_UID, name: CURRENT_PROFILE.name,
+      text, createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
+    toast('تم رفض التعليق تلقائياً لاحتوائه على لفظ غير لائق 🚫');
     input.value = '';
-    toast('تم إضافة التعليق');
-  } catch(err){
-    toast('خطأ في إرسال التعليق');
-  }
-}
-
-function switchMsgTab(tab){
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-
-  if(tab === 'chats'){
-    document.getElementById('tab-btn-chats').classList.add('active');
-    document.getElementById('tab-chats').classList.add('active');
-  } else if(tab === 'requests'){
-    document.getElementById('tab-btn-requests').classList.add('active');
-    document.getElementById('tab-requests').classList.add('active');
-  } else if(tab === 'add'){
-    document.getElementById('tab-btn-add').classList.add('active');
-    document.getElementById('tab-add').classList.add('active');
-  }
-}
-
-async function sendFriendRequest(){
-  const targetUid = document.getElementById('add-friend-input').value.trim().toLowerCase();
-  if(!targetUid || targetUid === CURRENT_PROFILE.uid){
-    toast('يرجى إدخال معرف صحيح');
     return;
   }
-
-  try {
-    const usersSnap = await db.collection('users').where('uid', '==', targetUid).get();
-    if(usersSnap.empty){
-      toast('المستخدم غير موجود');
+ 
+  const ref = db.collection('videos').doc(commentsTargetId);
+  await db.runTransaction(async (t)=>{
+    const doc = await t.get(ref);
+    if(!doc.exists) return;
+    const comments = doc.data().comments || [];
+    comments.push({name: CURRENT_PROFILE.name, uid: CURRENT_UID, text});
+    t.update(ref, {comments});
+  });
+  await db.collection('users').doc(CURRENT_UID).update({
+    myComments: firebase.firestore.FieldValue.arrayUnion({videoId: commentsTargetId, text})
+  });
+  input.value = '';
+  openComments(commentsTargetId, false);
+}
+ 
+/* ---------------- PROFILE ---------------- */
+function renderProfile(){
+  if(!CURRENT_UID || !CURRENT_PROFILE) return;
+  const p = CURRENT_PROFILE;
+  const avatarBox = document.getElementById('profile-avatar-letter');
+  if(p.photoURL){
+    avatarBox.innerHTML = '';
+    avatarBox.style.backgroundImage = `url(${p.photoURL})`;
+    avatarBox.style.backgroundSize = 'cover';
+    avatarBox.style.backgroundPosition = 'center';
+  } else {
+    avatarBox.style.backgroundImage = 'none';
+    avatarBox.textContent = (p.name||'?').trim().charAt(0).toUpperCase();
+  }
+  document.getElementById('profile-name').textContent = p.name;
+  document.getElementById('profile-id').textContent = 'ID: ' + p.handle;
+  document.getElementById('profile-age').textContent = 'العمر: ' + p.age + ' سنة';
+  document.getElementById('edit-name-input').value = p.name;
+  document.getElementById('edit-handle-input').value = p.handle;
+ 
+  document.getElementById('stat-videos').textContent = (p.myVideos||[]).length;
+  getFollowCounts(CURRENT_UID).then(counts=>{
+    document.getElementById('stat-followers').textContent = counts.followers;
+    document.getElementById('stat-following').textContent = counts.following;
+  });
+ 
+  const vidsBox = document.getElementById('profile-videos');
+  vidsBox.innerHTML = (p.myVideos||[]).length===0
+    ? '<div class="empty-hint">لسه معملتش أي فيديو</div>'
+    : (p.myVideos||[]).map(v=>`<div class="list-item"><span>${escapeHtml(v.caption||'')}</span><span class="meta">${v.status==='approved'?'✅ منشور':'⏳ قيد المراجعة'}</span></div>`).join('');
+ 
+  const likesBox = document.getElementById('profile-likes');
+  likesBox.innerHTML = (p.myLikes||[]).length===0
+    ? '<div class="empty-hint">لسه معجبتش بأي فيديو</div>'
+    : `<div class="empty-hint">${(p.myLikes||[]).length} إعجاب مسجل</div>`;
+ 
+  const commentsBox = document.getElementById('profile-comments');
+  commentsBox.innerHTML = (p.myComments||[]).length===0
+    ? '<div class="empty-hint">لسه معلقتش على حاجة</div>'
+    : (p.myComments||[]).map(c=>`<div class="list-item"><span>${escapeHtml(c.text)}</span></div>`).join('');
+ 
+  const isAdmin = !!p.isAdmin;
+  document.getElementById('admin-status-row').style.display = isAdmin ? 'flex' : 'none';
+  document.getElementById('admin-panel').style.display = isAdmin ? 'block' : 'none';
+  if(isAdmin){
+    listenAdminUsers();
+    listenAdminPending();
+    listenAdminFlagged();
+  } else {
+    if(usersUnsub) usersUnsub();
+    if(pendingUnsub) pendingUnsub();
+    if(flaggedUnsub) flaggedUnsub();
+  }
+}
+ 
+/* ---------------- EDIT PROFILE (name + photo) ---------------- */
+function toggleEditProfile(){
+  const box = document.getElementById('edit-profile-box');
+  box.style.display = (box.style.display === 'none' || !box.style.display) ? 'block' : 'none';
+}
+async function saveProfileName(){
+  const newName = document.getElementById('edit-name-input').value.trim();
+  const newHandle = document.getElementById('edit-handle-input').value.trim();
+  if(!newName){ toast('اكتب اسم صحيح'); return; }
+  if(!newHandle){ toast('اكتب معرف صحيح'); return; }
+  try{
+    // 🆕 If the handle changed, make sure nobody else already has it.
+    if(newHandle !== CURRENT_PROFILE.handle){
+      const clash = await db.collection('users').where('handle','==',newHandle).limit(1).get();
+      if(!clash.empty){ toast('المعرف ده مستخدم بالفعل — اختار معرف تاني'); return; }
+    }
+    await db.collection('users').doc(CURRENT_UID).update({name: newName, handle: newHandle});
+    toast('تم تحديث بياناتك ✅');
+    document.getElementById('edit-profile-box').style.display = 'none';
+  }catch(e){
+    toast('حصل خطأ أثناء الحفظ');
+  }
+}
+async function handleAvatarUpload(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  if(!file.type.startsWith('image/')){ toast('اختار ملف صورة'); return; }
+  toast('جاري رفع الصورة...');
+  try{
+    const path = `avatars/${CURRENT_UID}.jpg`;
+    const ref = storage.ref().child(path);
+    await ref.put(file);
+    const url = await ref.getDownloadURL();
+    await db.collection('users').doc(CURRENT_UID).update({photoURL: url});
+    toast('تم تحديث الصورة الشخصية ✅');
+  }catch(e){
+    toast('حصل خطأ أثناء رفع الصورة');
+  }
+}
+ 
+/* ---------------- ADMIN: USER MANAGEMENT & BAN ---------------- */
+function listenAdminUsers(){
+  if(usersUnsub) usersUnsub();
+  usersUnsub = db.collection('users').onSnapshot(snap=>{
+    const box = document.getElementById('admin-users-list');
+    box.innerHTML = '';
+    if(snap.empty){
+      box.innerHTML = '<div class="empty-hint">لا يوجد مستخدمون مسجلون</div>';
       return;
     }
-    const targetDocId = usersSnap.docs[0].id;
-
-    await db.collection('users').doc(targetDocId).collection('friendRequests').doc(CURRENT_UID).set({
-      fromUid: CURRENT_UID,
-      fromName: CURRENT_PROFILE.name,
-      fromHandle: CURRENT_PROFILE.uid,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    snap.forEach(doc=>{
+      const u = doc.data();
+      const uid = doc.id;
+      let banLabel = '';
+      if(u.banned){
+        banLabel = u.banUntil
+          ? '🚫 محظور مؤقتًا حتى ' + banUntilLabel(u)
+          : '🚫 محظور بشكل دائم';
+      }
+      box.innerHTML += `
+        <div class="list-item" style="flex-direction:column; align-items:stretch; gap:8px;">
+          <div>
+            <b>${escapeHtml(u.name)}</b>
+            <span class="meta">(${escapeHtml(u.handle||'')})</span>
+            ${u.isAdmin ? ' 🛡️ مطور' : ''}
+          </div>
+          ${banLabel ? `<div class="meta" style="color:var(--danger);">${banLabel}</div>` : ''}
+          ${u.isAdmin ? '' : (
+            u.banned
+              ? `<button style="background:var(--accent-2); color:#1A1020; padding:8px; border-radius:10px; font-weight:700; font-size:12px;" onclick="unbanUser('${uid}')">فك الحظر</button>`
+              : `
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                  <button style="flex:1; background:var(--danger); color:#fff; padding:8px; border-radius:10px; font-weight:700; font-size:12px;" onclick="banUserPermanent('${uid}')">حظر دائم</button>
+                  <input type="number" min="1" placeholder="عدد الساعات" id="tban-${uid}" style="width:100px; padding:8px; border-radius:10px; border:1px solid var(--line); background:var(--surface-alt); color:var(--text); font-size:12px;">
+                  <button style="flex:1; background:var(--surface-alt); color:var(--text); padding:8px; border-radius:10px; font-weight:700; font-size:12px; border:1px solid var(--line);" onclick="banUserTemporary('${uid}')">حظر مؤقت</button>
+                </div>`
+          )}
+        </div>`;
     });
-
-    toast('تم إرسال طلب الصداقة بنجاح!');
+  });
+}
+// 🆕 Permanent ban — banUntil:null means "no expiry".
+async function banUserPermanent(uid){
+  try{
+    await db.collection('users').doc(uid).update({banned:true, banUntil:null});
+    toast('تم الحظر الدائم');
+  }catch(e){
+    toast('غير مسموح — تحقق من صلاحياتك كمشرف');
+  }
+}
+// 🆕 Temporary ban — reads the hours the admin typed next to this user's row.
+async function banUserTemporary(uid){
+  const input = document.getElementById('tban-'+uid);
+  const hours = parseFloat(input ? input.value : '');
+  if(!hours || hours <= 0){ toast('اكتب عدد ساعات صحيح'); return; }
+  const untilDate = new Date(Date.now() + hours*3600*1000);
+  try{
+    await db.collection('users').doc(uid).update({
+      banned:true,
+      banUntil: firebase.firestore.Timestamp.fromDate(untilDate)
+    });
+    toast('تم الحظر المؤقت حتى ' + untilDate.toLocaleString('ar-EG'));
+  }catch(e){
+    toast('غير مسموح — تحقق من صلاحياتك كمشرف');
+  }
+}
+async function unbanUser(uid){
+  try{
+    await db.collection('users').doc(uid).update({banned:false, banUntil:null});
+    toast('تم فك الحظر');
+  }catch(e){
+    toast('غير مسموح — تحقق من صلاحياتك كمشرف');
+  }
+}
+ 
+/* ---------------- ADMIN: CONTENT MODERATION QUEUE ---------------- */
+function listenAdminPending(){
+  if(pendingUnsub) pendingUnsub();
+  pendingUnsub = db.collection('videos').where('status','==','pending').onSnapshot(snap=>{
+    const box = document.getElementById('admin-pending-list');
+    box.innerHTML = '';
+    if(snap.empty){
+      box.innerHTML = '<div class="empty-hint">لا يوجد محتوى بانتظار المراجعة</div>';
+      return;
+    }
+    snap.forEach(doc=>{
+      const v = doc.data();
+      box.innerHTML += `
+        <div class="list-item" style="flex-direction:column; align-items:stretch; gap:8px;">
+          <div><b>@${escapeHtml(v.authorName)}</b> — ${escapeHtml(v.caption)}</div>
+          <div style="display:flex; gap:8px;">
+            <button style="flex:1; background:var(--accent); color:#fff; padding:8px; border-radius:10px; font-weight:700; font-size:12px;" onclick="approveVideo('${doc.id}')">✅ موافقة على النشر</button>
+            <button style="flex:1; background:var(--danger); color:#fff; padding:8px; border-radius:10px; font-weight:700; font-size:12px;" onclick="rejectVideo('${doc.id}')">🗑️ رفض / حذف</button>
+          </div>
+        </div>`;
+    });
+  });
+}
+async function approveVideo(videoId){
+  try{
+    await db.collection('videos').doc(videoId).update({status:'approved'});
+    toast('تمت الموافقة على الفيديو ونشره');
+  }catch(e){ toast('غير مسموح — تحقق من صلاحياتك كمشرف'); }
+}
+async function rejectVideo(videoId){
+  try{
+    await db.collection('videos').doc(videoId).delete();
+    toast('تم حذف الفيديو');
+  }catch(e){ toast('غير مسموح — تحقق من صلاحياتك كمشرف'); }
+}
+ 
+/* ---------------- ADMIN: AUTO-FILTER LOG ---------------- */
+function toggleAutoFilter(){
+  autoFilterOn = !autoFilterOn;
+  document.getElementById('filter-switch').classList.toggle('on', autoFilterOn);
+  toast(autoFilterOn ? 'تم تفعيل الفلترة التلقائية' : 'تم إيقاف الفلترة التلقائية (غير موصى به)');
+}
+function listenAdminFlagged(){
+  if(flaggedUnsub) flaggedUnsub();
+  flaggedUnsub = db.collection('flaggedComments').orderBy('createdAt','desc').limit(20).onSnapshot(snap=>{
+    const box = document.getElementById('admin-flagged-list');
+    box.innerHTML = '';
+    if(snap.empty) return;
+    box.innerHTML = '<div class="section-title" style="margin-top:14px;">سجل التعليقات المرفوضة تلقائياً</div>';
+    snap.forEach(doc=>{
+      const f = doc.data();
+      box.innerHTML += `<div class="list-item"><span>${escapeHtml(f.text)}</span><span class="meta">${escapeHtml(f.name)}</span></div>`;
+    });
+  }, ()=>{ /* collection may not exist yet — ignore */ });
+}
+ 
+/* ---------------- MESSAGES ---------------- */
+/* ---------------- MESSAGES: TABS ---------------- */
+function switchMsgTab(tab){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-btn-'+tab).classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+}
+ 
+let chatsUnsub = null;
+let requestsUnsub = null;
+function renderMessages(){
+  if(!CURRENT_UID) return;
+ 
+  // Incoming friend requests (pending, addressed to me)
+  if(requestsUnsub) requestsUnsub();
+  requestsUnsub = db.collection('friendRequests')
+    .where('toUid','==',CURRENT_UID).where('status','==','pending')
+    .onSnapshot(snap=>{
+      const box = document.getElementById('requests-list');
+      if(snap.empty){ box.innerHTML = '<div class="empty-hint">مفيش طلبات صداقة جديدة</div>'; return; }
+      box.innerHTML = '';
+      snap.forEach(doc=>{
+        const r = doc.data();
+        box.innerHTML += `
+          <div class="list-item" style="flex-direction:column; align-items:stretch; gap:8px;">
+            <div><b>${escapeHtml(r.fromName)}</b> <span class="meta">(${escapeHtml(r.fromHandle||'')})</span></div>
+            <div style="display:flex; gap:8px;">
+              <button style="flex:1; background:var(--accent); color:#fff; padding:8px; border-radius:10px; font-weight:700; font-size:12px;" onclick="respondFriendRequest('${doc.id}','accepted')">✅ قبول</button>
+              <button style="flex:1; background:var(--surface-alt); color:var(--text-dim); padding:8px; border-radius:10px; font-weight:700; font-size:12px;" onclick="respondFriendRequest('${doc.id}','rejected')">رفض</button>
+            </div>
+          </div>`;
+      });
+    }, ()=>{});
+ 
+  // Accepted friends → chat list. Two exact-match listeners (I'm the
+  // sender / I'm the receiver) merged client-side — a broad query with
+  // no uid filter would return other users' friendships too, which the
+  // security rules correctly reject.
+  if(chatsUnsub) chatsUnsub.forEach(u=>u());
+  let acceptedAsSender = [];
+  let acceptedAsReceiver = [];
+  function renderChatsList(){
+    const box = document.getElementById('chats-list');
+    const friends = [
+      ...acceptedAsSender.map(r=>({uid:r.toUid, name:r.toName})),
+      ...acceptedAsReceiver.map(r=>({uid:r.fromUid, name:r.fromName}))
+    ];
+    if(friends.length===0){ box.innerHTML = '<div class="empty-hint">لسه مفيش محادثات — اقبل طلب صداقة عشان تبدأ تتكلم</div>'; return; }
+    box.innerHTML = '';
+    friends.forEach(f=>{
+      box.innerHTML += `
+        <div class="chat-item" onclick='openChatThread(${JSON.stringify(f.uid)}, ${JSON.stringify(f.name)})'>
+          <div class="avatar">${escapeHtml((f.name||'?').trim().charAt(0).toUpperCase())}</div>
+          <div>
+            <div class="cname">${escapeHtml(f.name)}</div>
+            <div class="clast">اضغط عشان تفتح المحادثة</div>
+          </div>
+        </div>`;
+    });
+  }
+  const unsub1 = db.collection('friendRequests')
+    .where('fromUid','==',CURRENT_UID).where('status','==','accepted')
+    .onSnapshot(snap=>{
+      acceptedAsSender = snap.docs.map(d=>d.data());
+      renderChatsList();
+    }, ()=>{});
+  const unsub2 = db.collection('friendRequests')
+    .where('toUid','==',CURRENT_UID).where('status','==','accepted')
+    .onSnapshot(snap=>{
+      acceptedAsReceiver = snap.docs.map(d=>d.data());
+      renderChatsList();
+    }, ()=>{});
+  chatsUnsub = [unsub1, unsub2];
+}
+ 
+async function sendFriendRequest(){
+  if(!CURRENT_UID){ toast('سجّل الدخول الأول'); return; }
+  const handle = document.getElementById('add-friend-input').value.trim();
+  if(!handle){ toast('اكتب معرف المستخدم'); return; }
+  if(handle === CURRENT_PROFILE.handle){ toast('مينفعش تبعت طلب لنفسك'); return; }
+  try{
+    const snap = await db.collection('users').where('handle','==',handle).limit(1).get();
+    if(snap.empty){ toast('مفيش مستخدم بالمعرف ده'); return; }
+    const targetDoc = snap.docs[0];
+    const targetUid = targetDoc.id;
+    const targetData = targetDoc.data();
+ 
+    // Avoid duplicate pending/accepted requests between the same pair.
+    // Two exact queries (not a broad "in" query) so every returned doc
+    // always satisfies the security rule (auth.uid is fromUid or toUid).
+    const [sentByMe, sentToMe] = await Promise.all([
+      db.collection('friendRequests').where('fromUid','==',CURRENT_UID).where('toUid','==',targetUid).get(),
+      db.collection('friendRequests').where('fromUid','==',targetUid).where('toUid','==',CURRENT_UID).get()
+    ]);
+    if(!sentByMe.empty || !sentToMe.empty){ toast('في طلب صداقة بينكم بالفعل'); return; }
+ 
+    await db.collection('friendRequests').add({
+      fromUid: CURRENT_UID, fromName: CURRENT_PROFILE.name, fromHandle: CURRENT_PROFILE.handle,
+      toUid: targetUid, toName: targetData.name, toHandle: targetData.handle,
+      status: 'pending', createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('تم إرسال طلب الصداقة ✅');
     document.getElementById('add-friend-input').value = '';
-  } catch(err){
-    toast('خطأ في إرسال الطلب: ' + err.message);
+    switchMsgTab('chats');
+  }catch(e){
+    toast('حصل خطأ، حاول تاني');
   }
 }
-
-function loadFriendRequests(){
-  if(!CURRENT_UID) return;
-  db.collection('users').doc(CURRENT_UID).collection('friendRequests')
-    .onSnapshot(snapshot => {
-      const listEl = document.getElementById('requests-list');
-      if(!listEl) return;
-      let html = '';
-      snapshot.forEach(doc => {
-        const req = doc.data();
-        html += `
-          <div class="list-item">
-            <div>
-              <b>${req.fromName || ''}</b>
-              <div class="meta">@${req.fromHandle || ''}</div>
-            </div>
-            <button class="primary-btn" style="padding:6px 12px; margin-top:0;" onclick="acceptFriendRequest('${doc.id}', '${req.fromName}')">قبول</button>
-          </div>
-        `;
-      });
-      listEl.innerHTML = html || '<div class="empty-hint">مفيش طلبات صداقة جديدة</div>';
-    });
-}
-
-async function acceptFriendRequest(requesterUid, requesterName){
-  if(!CURRENT_UID) return;
-  try {
-    const chatId = [CURRENT_UID, requesterUid].sort().join('_');
-    await db.collection('chats').doc(chatId).set({
-      participants: [CURRENT_UID, requesterUid],
-      lastMessage: 'تم بدء المحادثة',
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    await db.collection('users').doc(CURRENT_UID).collection('friendRequests').doc(requesterUid).delete();
-    toast('تم قبول الطلب وبدء المحادثة!');
-    loadChats();
-  } catch(err){
-    toast('خطأ في قبول الطلب');
+async function respondFriendRequest(reqId, decision){
+  try{
+    await db.collection('friendRequests').doc(reqId).update({status: decision});
+    toast(decision === 'accepted' ? 'تم قبول طلب الصداقة 🎉' : 'تم رفض الطلب');
+  }catch(e){
+    toast('حصل خطأ، حاول تاني');
   }
 }
-
-function loadChats(){
-  if(!CURRENT_UID) return;
-  db.collection('chats')
-    .where('participants', 'array-contains', CURRENT_UID)
-    .onSnapshot(snapshot => {
-      const listEl = document.getElementById('chats-list');
-      if(!listEl) return;
-      let html = '';
-      snapshot.forEach(doc => {
-        const chat = doc.data();
-        const otherUid = chat.participants.find(id => id !== CURRENT_UID);
-        html += `
-          <div class="chat-item" onclick="openChatThread('${doc.id}', '${otherUid}')">
-            <div class="avatar">💬</div>
-            <div>
-              <div class="cname">محادثة نشطة</div>
-              <div class="clast">${chat.lastMessage || ''}</div>
-            </div>
-          </div>
-        `;
-      });
-      listEl.innerHTML = html || '<div class="empty-hint">لسه مفيش محادثات</div>';
-    });
+ 
+/* ---------------- CHAT THREAD ---------------- */
+let currentChatId = null;
+let currentChatUnsub = null;
+function chatIdFor(uidA, uidB){
+  return [uidA, uidB].sort().join('_');
 }
-
-let activeChatId = null;
-let chatMessagesUnsub = null;
-
-function openChatThread(chatId, otherUid){
-  activeChatId = chatId;
-  document.getElementById('screen-chat-thread').style.display = 'block';
-  loadChatMessages(chatId);
-}
-
-function closeChatThread(){
-  document.getElementById('screen-chat-thread').style.display = 'none';
-  activeChatId = null;
-  if(chatMessagesUnsub) chatMessagesUnsub();
-}
-
-function loadChatMessages(chatId){
-  if(chatMessagesUnsub) chatMessagesUnsub();
-  chatMessagesUnsub = db.collection('chats').doc(chatId).collection('messages')
-    .orderBy('createdAt', 'asc')
-    .onSnapshot(snapshot => {
-      const msgsEl = document.getElementById('chat-messages');
-      if(!msgsEl) return;
-      let html = '';
-      snapshot.forEach(doc => {
+function openChatThread(otherUid, otherName){
+  currentChatId = chatIdFor(CURRENT_UID, otherUid);
+  document.getElementById('chat-thread-name').textContent = otherName;
+  document.getElementById('chat-thread-avatar').textContent = (otherName||'?').trim().charAt(0).toUpperCase();
+  document.getElementById('chat-thread-avatar').dataset.otherUid = otherUid;
+ 
+  if(currentChatUnsub) currentChatUnsub();
+  currentChatUnsub = db.collection('chats').doc(currentChatId).collection('messages')
+    .orderBy('createdAt','asc')
+    .onSnapshot(snap=>{
+      const box = document.getElementById('chat-messages');
+      box.innerHTML = '';
+      snap.forEach(doc=>{
         const m = doc.data();
-        const isMine = m.senderUid === CURRENT_UID;
-        html += `
-          <div class="msg-bubble ${isMine ? 'mine' : 'theirs'}">${m.text || ''}</div>
-        `;
+        const mine = m.fromUid === CURRENT_UID;
+        box.innerHTML += `<div class="msg-bubble ${mine?'mine':'theirs'}">${escapeHtml(m.text)}</div>`;
       });
-      msgsEl.innerHTML = html;
-      msgsEl.scrollTop = msgsEl.scrollHeight;
-    });
+      box.scrollTop = box.scrollHeight;
+    }, ()=>{});
+ 
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-chat-thread').classList.add('active');
 }
-
+function closeChatThread(){
+  if(currentChatUnsub) currentChatUnsub();
+  currentChatId = null;
+  showScreen('messages');
+}
 async function sendChatMessage(){
-  if(!activeChatId || !CURRENT_UID) return;
+  if(!currentChatId){ return; }
   const input = document.getElementById('chat-input');
   const text = input.value.trim();
   if(!text) return;
-
-  try {
-    await db.collection('chats').doc(activeChatId).collection('messages').add({
-      senderUid: CURRENT_UID,
-      text: text,
+  if(autoFilterOn && containsProfanity(text)){
+    toast('الرسالة فيها لفظ غير لائق — عدّلها');
+    return;
+  }
+  input.value = '';
+  try{
+    await db.collection('chats').doc(currentChatId).collection('messages').add({
+      fromUid: CURRENT_UID, text, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }catch(e){
+    toast('تعذر إرسال الرسالة');
+  }
+}
+ 
+/* ---------------- UPLOAD / CAMERA ---------------- */
+function closeUpload(){ stopCamera(); showScreen('feed'); }
+ 
+async function startCamera(){
+  try{
+    mediaStream = await navigator.mediaDevices.getUserMedia({video:true, audio:true});
+    const box = document.getElementById('camera-box');
+    box.innerHTML = '<video id="cam-preview" autoplay muted playsinline></video>';
+    document.getElementById('cam-preview').srcObject = mediaStream;
+  }catch(e){
+    toast('تعذر الوصول للكاميرا — تأكد من إعطاء الإذن');
+  }
+}
+function stopCamera(){
+  if(mediaStream){
+    mediaStream.getTracks().forEach(t=>t.stop());
+    mediaStream = null;
+  }
+}
+function toggleRecord(){
+  const btn = document.getElementById('btn-record');
+  if(!mediaStream){ toast('شغّل الكاميرا الأول'); return; }
+  if(!mediaRecorder || mediaRecorder.state==='inactive'){
+    recordedChunks = [];
+    mediaRecorder = new MediaRecorder(mediaStream);
+    mediaRecorder.ondataavailable = e=>{ if(e.data.size>0) recordedChunks.push(e.data); };
+    mediaRecorder.onstop = ()=>{
+      currentUploadBlob = new Blob(recordedChunks, {type:'video/webm'});
+      const url = URL.createObjectURL(currentUploadBlob);
+      const box = document.getElementById('camera-box');
+      box.innerHTML = `<video src="${url}" controls loop></video>`;
+      toast('تم التسجيل، جاهز للإرسال للمراجعة');
+    };
+    mediaRecorder.start();
+    btn.textContent = 'إيقاف التصوير';
+    btn.classList.add('stop');
+  } else {
+    mediaRecorder.stop();
+    btn.textContent = 'ابدأ التصوير';
+    btn.classList.remove('stop');
+  }
+}
+async function publishVideo(){
+  if(!CURRENT_UID){ toast('سجّل الدخول الأول'); return; }
+  const caption = document.getElementById('in-caption').value.trim();
+  const song = document.getElementById('in-song').value.trim();
+  if(!caption){ toast('اكتب وصف للفيديو'); return; }
+ 
+  if(autoFilterOn && containsProfanity(caption)){
+    toast('الوصف يحتوي على لفظ غير لائق — من فضلك عدّله');
+    return;
+  }
+ 
+  toast('جاري الرفع...');
+  try{
+    let videoURL = null;
+    if(currentUploadBlob){
+      const path = `videos/${CURRENT_UID}_${Date.now()}.webm`;
+      const ref = storage.ref().child(path);
+      await ref.put(currentUploadBlob);
+      videoURL = await ref.getDownloadURL();
+    }
+    const docRef = await db.collection('videos').add({
+      authorUid: CURRENT_UID, authorName: CURRENT_PROFILE.name, authorPhotoURL: CURRENT_PROFILE.photoURL || null,
+      caption, song: song || 'صوت أصلي', videoURL,
+      status: 'pending', likes: 0, likedBy: [], comments: [],
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
-    await db.collection('chats').doc(activeChatId).update({
-      lastMessage: text,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    await db.collection('users').doc(CURRENT_UID).update({
+      myVideos: firebase.firestore.FieldValue.arrayUnion({id: docRef.id, caption, status:'pending'})
     });
-    input.value = '';
-  } catch(err){
-    toast('خطأ في إرسال الرسالة');
+ 
+    document.getElementById('in-caption').value = '';
+    document.getElementById('in-song').value = '';
+    document.getElementById('camera-box').innerHTML = '<div class="cam-off">اضغط "تشغيل الكاميرا" عشان تبدأ التصوير</div>';
+    currentUploadBlob = null;
+    stopCamera();
+    toast('تم الإرسال! هيظهر في الفيد بعد موافقة المشرف 🎉');
+    showScreen('feed');
+  }catch(e){
+    toast('حصل خطأ أثناء الرفع: ' + e.message);
   }
 }
-
-async function loadUserVideos(firebaseUid){
-  db.collection('videos').where('uid', '==', firebaseUid).onSnapshot(snapshot => {
-    const container = document.getElementById('profile-videos');
-    if(!container) return;
-    let count = 0;
-    let html = '';
-    snapshot.forEach(doc => {
-      count++;
-      const v = doc.data();
-      html += `<div class="list-item"><div><b>${v.song}</b><div class="meta">${v.caption}</div></div><span style="color:${v.status === 'approved' ? '#4CD964' : '#FFC145'}">${v.status === 'approved' ? 'منشور' : 'قيد المراجعة'}</span></div>`;
-    });
-    container.innerHTML = html || '<div class="empty-hint">لسه معملتش أي فيديو</div>';
-    document.getElementById('stat-videos').textContent = count;
-  });
-}
-
-async function loadUserLikes(firebaseUid){
-  const container = document.getElementById('profile-likes');
-  if(container) container.innerHTML = '<div class="empty-hint">الفيديوهات المعجب بها تظهر هنا</div>';
-}
-
-async function loadUserComments(firebaseUid){
-  const container = document.getElementById('profile-comments');
-  if(container) container.innerHTML = '<div class="empty-hint">تعليقاتك تظهر هنا</div>';
-}
-
-function initAdminPanel(){
-  const pendingList = document.getElementById('admin-pending-list');
-  if(pendingUnsub) pendingUnsub();
-
-  pendingUnsub = db.collection('videos').where('status', '==', 'pending').onSnapshot(snapshot => {
-    let html = '';
-    snapshot.forEach(doc => {
-      const v = doc.data();
-      html += `
-        <div class="list-item">
-          <div>
-            <b>${v.song}</b>
-            <div class="meta">بواسطة: @${v.authorHandle} | ${v.caption}</div>
-          </div>
-          <div style="display:flex; gap:6px;">
-            <button class="primary-btn" style="padding:4px 10px; margin-top:0;" onclick="approveVideo('${doc.id}')">موافقة</button>
-            <button class="primary-btn" style="padding:4px 10px; margin-top:0; background:var(--danger);" onclick="deleteVideo('${doc.id}')">رفض</button>
-          </div>
-        </div>
-      `;
-    });
-    pendingList.innerHTML = html || '<div class="empty-hint">لا يوجد محتوى بانتظار المراجعة</div>';
-  });
-}
-
-async function approveVideo(videoId){
-  try {
-    await db.collection('videos').doc(videoId).update({ status: 'approved' });
-    toast('تمت الموافقة على الفيديو ونشره!');
-  } catch(err){
-    toast('خطأ في الموافقة');
+ 
+/* ---------------- LIVE ---------------- */
+async function openLive(){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-live').classList.add('active');
+  try{
+    mediaStream = await navigator.mediaDevices.getUserMedia({video:true, audio:true});
+    document.getElementById('live-video').srcObject = mediaStream;
+    let viewers = Math.floor(Math.random()*40)+3;
+    document.getElementById('live-viewers').textContent = '👁 ' + viewers;
+    window._liveInterval = setInterval(()=>{
+      viewers += Math.floor(Math.random()*5)-1;
+      if(viewers<1) viewers=1;
+      document.getElementById('live-viewers').textContent = '👁 ' + viewers;
+    }, 2000);
+    toast('بدأ البث المباشر (محاكاة محلية للمعاينة)');
+  }catch(e){
+    toast('تعذر الوصول للكاميرا للبث المباشر');
   }
 }
-
-async function deleteVideo(videoId){
-  try {
-    await db.collection('videos').doc(videoId).delete();
-    toast('تم حذف الفيديو');
-  } catch(err){
-    toast('خطأ في الحذف');
-  }
+function closeLive(){ endLive(); }
+function endLive(){
+  stopCamera();
+  clearInterval(window._liveInterval);
+  showScreen('feed');
 }
-
-function toggleAutoFilter(){
-  autoFilterOn = !autoFilterOn;
-  const sw = document.getElementById('filter-switch');
-  if(autoFilterOn){
-    sw.classList.add('on');
-    toast('تم تفعيل الفلترة التلقائية');
-  } else {
-    sw.classList.remove('on');
-    toast('تم إيقاف الفلترة التلقائية');
-  }
+ 
+/* ---------------- utils ---------------- */
+function escapeHtml(str){
+  return String(str||'').replace(/[&<>"']/g, s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
 }
-
-async function handleAvatarUpload(event){
-  const file = event.target.files[0];
-  if(!file || !storage || !CURRENT_UID) return;
-  toast('جاري رفع الصورة الشخصية...');
-  try {
-    const ref = storage.ref().child('avatars/' + CURRENT_UID + '.jpg');
-    await ref.put(file);
-    const url = await ref.getDownloadURL();
-    await db.collection('users').doc(CURRENT_UID).update({ avatar: url });
-    toast('تم تحديث الصورة الشخصية بنجاح');
-  } catch(err){
-    toast('خطأ في رفع الصورة');
-  }
-}
-
-function toggleEditProfile(){
-  const box = document.getElementById('edit-profile-box');
-  box.style.display = box.style.display === 'none' ? 'block' : 'none';
-}
-
-async function saveProfileName(){
-  const nameInput = document.getElementById('edit-name-input');
-  const newName = nameInput.value.trim();
-  if(!newName || !CURRENT_UID) return;
-  try {
-    await db.collection('users').doc(CURRENT_UID).update({ name: newName });
-    toast('تم تحديث الاسم بنجاح');
-    document.getElementById('edit-profile-box').style.display = 'none';
-    loadUserProfile(CURRENT_UID);
-  } catch(err){
-    toast('خطأ في تحديث الاسم');
-  }
-}
+</script>
+</body>
+</html>
