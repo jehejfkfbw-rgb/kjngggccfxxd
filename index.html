@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#09031B">
-<link rel="icon" href="snapvibe-logo.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop stop-color=%22%23F10CFF%22/%3E%3Cstop offset=%22.5%22 stop-color=%22%238B35FF%22/%3E%3Cstop offset=%221%22 stop-color=%22%2300E7FF%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%2264%22 height=%2264%22 rx=%2217%22 fill=%22url(%23g)%22/%3E%3Ctext x=%2232%22 y=%2246%22 text-anchor=%22middle%22 font-family=%22Arial,sans-serif%22 font-size=%2240%22 font-weight=%22900%22 fill=%22white%22%3ES%3C/text%3E%3C/svg%3E">
 <title>SnapVibe | منصة التواصل الاجتماعي</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -177,10 +177,22 @@ border-radius:14px;padding:13px 15px;outline:none
 .admin-actions{display:flex;gap:5px;flex-wrap:wrap}
 .status{font-size:9px;border-radius:7px;padding:2px 6px;margin-right:4px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition:none!important}}
+
+.brand-s,.s-logo{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F10CFF 0%,#8B35FF 45%,#00E7FF 100%);color:#fff;font-weight:900;box-shadow:0 12px 35px rgba(181,28,255,.28);text-shadow:0 3px 18px rgba(0,0,0,.25)}
+.brand-s{width:82px;height:82px;border-radius:24px;font-size:48px;margin:0 auto 16px}.s-logo{width:118px;height:118px;border-radius:34px;font-size:76px;margin:0 auto 24px}.relation-tabs{display:flex;gap:6px;overflow:auto;padding:3px 0 8px;scrollbar-width:none}.relation-tabs::-webkit-scrollbar{display:none}.relation-tabs .btn{white-space:nowrap}.relation-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;padding:10px}.relation-main{display:flex;align-items:center;gap:9px;min-width:0}.relation-main>div:last-child{min-width:0}.relation-actions{display:flex;gap:6px;flex-shrink:0}.request-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;background:rgba(181,28,255,.14);color:var(--cyan);font-size:10px}.message-request{border:1px solid var(--line);background:var(--surface2);border-radius:14px;padding:11px;margin-bottom:8px}.message-request .request-actions{display:flex;gap:7px;margin-top:9px}.message-request .request-actions button{flex:1}.profile-relations{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}.profile-relations .btn{width:100%;min-width:0}@media(max-width:520px){.profile-relations{grid-template-columns:1fr 1fr}.relation-row{padding:9px}.relation-actions .btn{padding:7px 9px;font-size:10px}}
 </style>
 </head>
 <body>
-<div id="app"></div>
+<div id="app"><div id="bootSplash" class="screen splash" aria-label="SnapVibe"><div class="s-logo">S</div><div class="splash-welcome splash-title">أهلاً بيك 👋</div><div class="splash-welcome">مرحبًا بك في SnapVibe</div><div class="splash-desc">منصتك الاجتماعية لمشاركة الفيديوهات القصيرة، اكتشاف محتوى جديد والتواصل مع الآخرين.</div><div class="loader"><i></i></div></div></div>
+<script>
+/* حارس تشغيل بسيط: لو حصل خطأ في JavaScript الرئيسي، لا تظل الصفحة سوداء. */
+setTimeout(function(){
+  var a=document.getElementById('app');
+  if(a && a.querySelector('#bootSplash')){
+    a.querySelector('#bootSplash').setAttribute('data-boot-fallback','1');
+  }
+},1800);
+</script>
 
 <script>
 "use strict";
@@ -198,8 +210,13 @@ const ADMIN_PASS="ddee4dab";
 // اتركه فارغًا للتشغيل المحلي. لعرض فيديوهات المستخدمين عند المطور من جهاز آخر،
 // ضع هنا عنوان API حقيقي مثل: https://your-server.example.com
 const BACKEND_URL="";
-const syncChannel="BroadcastChannel" in window?new BroadcastChannel("snapvibe_sync"):null;
-if(syncChannel)syncChannel.onmessage=()=>{load();if(state.session&&!state.session.isAdmin&&isBanned(account())){state.session=null;save();state.screen="auth";state.ui.authMode="login";}render();};
+let syncChannel=null;
+// بعض نسخ Chrome عند فتح الملف من content:// لا تسمح بإنشاء BroadcastChannel.
+// أي خطأ هنا كان يوقف JavaScript بالكامل ويترك شاشة سوداء.
+try{
+  if("BroadcastChannel" in window) syncChannel=new BroadcastChannel("snapvibe_sync");
+}catch(e){ syncChannel=null; }
+if(syncChannel)syncChannel.onmessage=()=>{try{load();if(state.session&&!state.session.isAdmin&&isBanned(account())){state.session=null;clearSession();state.screen="auth";state.ui.authMode="login";}render();}catch(e){}};
 window.addEventListener("storage",e=>{if(e.key!=="viral_state")return;load();if(state.session&&!state.session.isAdmin&&isBanned(account())){state.session=null;save();state.screen="auth";state.ui.authMode="login";}render();});
 const SONGS=["بدون موسيقى","إيقاع هادي","حماس ورقص","شعبي مصري","بيانو حزين","تريند 🔥"];
 const MAX_VIDEO_SECONDS=300; // الحد الأقصى للفيديو: 5 دقائق
@@ -348,7 +365,7 @@ function load(){
       Object.entries(rawAccounts).forEach(([key,a])=>{
         const email=String(a?.email||key||'').trim().toLowerCase();
         if(!email)return;
-        normalizedAccounts[email]={...a,email,friends:Array.isArray(a.friends)?a.friends:[],banReason:("banReason" in a?a.banReason:null),lastModerationAction:("lastModerationAction" in a?a.lastModerationAction:null)};
+        normalizedAccounts[email]={...a,email,friends:Array.isArray(a.friends)?a.friends:[],followers:Array.isArray(a.followers)?a.followers:[],following:Array.isArray(a.following)?a.following:[],friendRequests:Array.isArray(a.friendRequests)?a.friendRequests:[],sentFriendRequests:Array.isArray(a.sentFriendRequests)?a.sentFriendRequests:[],messages:Array.isArray(a.messages)?a.messages:[],banReason:("banReason" in a?a.banReason:null),lastModerationAction:("lastModerationAction" in a?a.lastModerationAction:null)};
       });
       state.accounts=normalizedAccounts;
       state.videos=(x.videos||[]).map(v=>{
@@ -362,8 +379,8 @@ function load(){
   }catch(e){}
 }
 function ensureDemo(){
-  if(!state.accounts['sara@demo.app'])state.accounts['sara@demo.app']={name:'سارة',age:18,password:'demo12345',avatar:null,banned:false,bannedUntil:null,bannedPermanent:false,banHours:0,banStartedAt:null,banReason:null,lastModerationAction:null,friends:[],messages:[],trustScore:100,riskFlags:[],emailVerified:true,createdAt:Date.now()};
-  if(!state.accounts['ahmed@demo.app'])state.accounts['ahmed@demo.app']={name:'أحمد',age:18,password:'demo12345',avatar:null,banned:false,bannedUntil:null,bannedPermanent:false,banHours:0,banStartedAt:null,banReason:null,lastModerationAction:null,friends:[],messages:[],trustScore:100,riskFlags:[],emailVerified:true,createdAt:Date.now()};
+  if(!state.accounts['sara@demo.app'])state.accounts['sara@demo.app']={name:'سارة',age:18,password:'demo12345',avatar:null,banned:false,bannedUntil:null,bannedPermanent:false,banHours:0,banStartedAt:null,banReason:null,lastModerationAction:null,friends:[],followers:[],following:[],friendRequests:[],sentFriendRequests:[],messages:[],trustScore:100,riskFlags:[],emailVerified:true,createdAt:Date.now()};
+  if(!state.accounts['ahmed@demo.app'])state.accounts['ahmed@demo.app']={name:'أحمد',age:18,password:'demo12345',avatar:null,banned:false,bannedUntil:null,bannedPermanent:false,banHours:0,banStartedAt:null,banReason:null,lastModerationAction:null,friends:[],followers:[],following:[],friendRequests:[],sentFriendRequests:[],messages:[],trustScore:100,riskFlags:[],emailVerified:true,createdAt:Date.now()};
   if(!state.videos.length)state.videos=DEMO.map((x,i)=>({...x,createdAt:Date.now()-((2-i)*86400000),likes:[...x.likes],comments:x.comments.map(c=>({...c}))}));
  state.videos.forEach((v,i)=>{if(!v.createdAt)v.createdAt=Date.now()-i;});
 }
@@ -391,7 +408,7 @@ function renderSplash(){
 }
 function renderAuth(){
  if(state.ui.authMode==="choice") state.ui.authMode="login";
- return `<div class="screen auth fade"><div class="auth-head"><div class="logo" role="img" aria-label="SnapVibe"></div><h1>${state.ui.authMode==="signup"?"إنشاء حساب جديد":"تسجيل الدخول"}</h1><p class="muted">${state.ui.authMode==="signup"?"أنشئ حسابك مرة واحدة وسيتم حفظه على الجهاز.":"أدخل البريد الإلكتروني وكلمة السر للمتابعة."}</p></div>
+ return `<div class="screen auth fade"><div class="auth-head"><div class="brand-s" role="img" aria-label="حرف S شعار SnapVibe">S</div><h1>${state.ui.authMode==="signup"?"إنشاء حساب جديد":"تسجيل الدخول"}</h1><p class="muted">${state.ui.authMode==="signup"?"أنشئ حسابك مرة واحدة وسيتم حفظه على الجهاز.":"أدخل البريد الإلكتروني وكلمة السر للمتابعة."}</p></div>
  ${state.ui.banNotice?`<div class="error" style="display:block;text-align:center;margin:12px 0;line-height:1.8">🚫 ${esc(state.ui.banNotice)}</div>`:""}
  <div class="field"><label>البريد الإلكتروني</label><input id="email" type="email" autocomplete="email" placeholder="name@example.com"></div>
  <div class="field"><label>كلمة السر</label><input id="pass" type="password" autocomplete="${state.ui.authMode==="signup"?"new-password":"current-password"}" placeholder="••••••••"><div id="authErr" class="error"></div></div>
@@ -416,7 +433,7 @@ function startSignup(){
  state.pending={email:e,password:p,trustScore:Math.max(0,100-risk.score),riskFlags:risk.reasons};state.screen="onboarding";render();
 }
 function renderOnboarding(){
- return `<div class="screen auth fade"><div class="auth-head"><div class="logo" role="img" aria-label="SnapVibe"></div><h1>أهلاً بيك</h1><p class="muted">خلّي حسابك جاهز في خطوة واحدة.</p></div>
+ return `<div class="screen auth fade"><div class="auth-head"><div class="brand-s" role="img" aria-label="حرف S شعار SnapVibe">S</div><h1>أهلاً بيك</h1><p class="muted">خلّي حسابك جاهز في خطوة واحدة.</p></div>
  <div class="field"><label>الاسم</label><input id="name" placeholder="اكتب اسمك"></div>
  <div class="field"><label>السن</label><input id="age" type="number" min="13" max="100" placeholder="13 أو أكثر"><div id="obErr" class="error"></div></div>
  <button class="btn btn-primary full" onclick="finishSignup()">إنشاء الحساب</button></div>`
@@ -441,7 +458,7 @@ function finishSignup(){
  err.style.display="none";
  if(!n){err.textContent="اكتب اسمك";err.style.display="block";return}
  if(!Number.isInteger(a)||a<13||a>100){err.textContent="اكتب سنًا صحيحًا من 13 إلى 100";err.style.display="block";return}
- state.accounts[state.pending.email]={name:n,age:a,password:state.pending.password,avatar:null,bannedUntil:null,bannedPermanent:false,banHours:0,banStartedAt:null,banReason:null,lastModerationAction:null,friends:[],messages:[],trustScore:state.pending.trustScore??100,riskFlags:state.pending.riskFlags||[],emailVerified:false,createdAt:Date.now()};
+ state.accounts[state.pending.email]={name:n,age:a,password:state.pending.password,avatar:null,bannedUntil:null,bannedPermanent:false,banHours:0,banStartedAt:null,banReason:null,lastModerationAction:null,friends:[],followers:[],following:[],friendRequests:[],sentFriendRequests:[],messages:[],trustScore:state.pending.trustScore??100,riskFlags:state.pending.riskFlags||[],emailVerified:false,createdAt:Date.now()};
  state.session={email:state.pending.email};state.pending=null;save();saveSession();state.screen="home";render()
 }
 function nav(active){
@@ -457,95 +474,73 @@ function renderHome(){
  const list=feedVideos();
  return `<div class="screen fade"><div class="home-topbar"><b>SnapVibe</b><button class="top-search" type="button" onclick="openSearch()" aria-label="فتح البحث" title="بحث">🔍</button></div><div class="feed" id="feed">${list.length?list.map(videoCard).join(""):`<div class="empty">${ICON.camera}<div>لسه مفيش فيديوهات متاحة.<br>ابدأ أول فيديو من زر +.</div></div>`}</div>${nav("home")}${overlays()}${searchSheet()}${messagesSheet()}</div>`
 }
-function isFriend(email){
- const me=account();
- return !!(me&&email&&Array.isArray(me.friends)&&me.friends.includes(email));
+function addUnique(arr,email){arr=Array.isArray(arr)?arr:[];const e=accountKey(email)||String(email||'').trim().toLowerCase();if(e&&!arr.some(x=>String(x).toLowerCase()===e))arr.push(e);return arr}
+function removeEmail(arr,email){const e=String(accountKey(email)||email||'').trim().toLowerCase();return (Array.isArray(arr)?arr:[]).filter(x=>String(x).trim().toLowerCase()!==e)}
+function relList(a,key){return Array.isArray(a?.[key])?a[key]:[]}
+function isFriend(email){const me=account();const e=accountKey(email);return !!(me&&e&&relList(me,'friends').some(x=>accountKey(x)===e))}
+function isFollower(email){const me=account();const e=accountKey(email);return !!(me&&e&&relList(me,'followers').some(x=>accountKey(x)===e))}
+function isFollowing(email){const me=account();const e=accountKey(email);return !!(me&&e&&relList(me,'following').some(x=>accountKey(x)===e))}
+function hasIncomingRequest(email){const me=account();const e=accountKey(email);return !!(me&&e&&relList(me,'friendRequests').some(r=>accountKey(typeof r==='string'?r:r?.from)===e))}
+function hasSentRequest(email){const me=account();const e=accountKey(email);return !!(me&&e&&relList(me,'sentFriendRequests').some(x=>accountKey(x)===e))}
+function relationStatus(email){if(isFriend(email))return 'friends';if(hasIncomingRequest(email))return 'incoming';if(hasSentRequest(email))return 'sent';if(isFollowing(email))return 'following';return 'none'}
+function canMessage(email){return isFriend(email)}
+function sendFriendRequest(email){
+ if(!requireLogin())return;
+ const e=accountKey(email),me=account(),other=getAccount(e);if(!e||!me||!other||e===accountKey(me.email)||isDemoAccount(other))return;
+ if(isFriend(e)){toast('أنتما أصدقاء بالفعل');return}
+ if(hasIncomingRequest(e)){acceptFriendRequest(e);return}
+ if(hasSentRequest(e)){toast('طلب الصداقة مُرسل بالفعل');return}
+ me.following=addUnique(me.following,e);
+ other.followers=addUnique(other.followers,me.email);
+ me.sentFriendRequests=addUnique(me.sentFriendRequests,e);
+ other.friendRequests=relList(other,'friendRequests').filter(r=>accountKey(typeof r==='string'?r:r?.from)!==accountKey(me.email));
+ other.friendRequests.push({from:me.email,at:Date.now()});
+ save();render();toast('📩 تم إرسال طلب الصداقة');
 }
-function canViewVideo(v){
- if(!v||v.status!=="approved")return false;
- const me=state.session?.email;
- if(v.privacy==="public")return true;
- if(v.privacy==="private")return !!me&&me===v.ownerEmail;
- return !!me&&(me===v.ownerEmail||isFriend(v.ownerEmail));
+function cancelFriendRequest(email){
+ if(!requireLogin())return;const e=accountKey(email),me=account(),other=getAccount(e);if(!e||!me)return;
+ me.sentFriendRequests=removeEmail(me.sentFriendRequests,e);me.following=removeEmail(me.following,e);
+ if(other){other.friendRequests=relList(other,'friendRequests').filter(r=>accountKey(typeof r==='string'?r:r?.from)!==accountKey(me.email));other.followers=removeEmail(other.followers,me.email)}
+ save();render();toast('تم إلغاء طلب الصداقة');
 }
-function visibleVideos(){
- return state.videos.filter(v=>canViewVideo(v)&&!v.blockedByBan&&!isBanned(state.accounts[v.ownerEmail]));
+function acceptFriendRequest(email){
+ if(!requireLogin())return;const e=accountKey(email),me=account(),other=getAccount(e);if(!e||!me||!other)return;
+ me.friendRequests=relList(me,'friendRequests').filter(r=>accountKey(typeof r==='string'?r:r?.from)!==e);
+ other.sentFriendRequests=removeEmail(other.sentFriendRequests,me.email);
+ me.friends=addUnique(me.friends,e);other.friends=addUnique(other.friends,me.email);
+ me.following=addUnique(me.following,e);other.following=addUnique(other.following,me.email);
+ me.followers=removeEmail(me.followers,e);other.followers=removeEmail(other.followers,me.email);
+ save();render();toast('🤝 تم قبول طلب الصداقة — يمكن الآن المراسلة');
 }
-
-// خوارزمية تغذية عشوائية: لا تعيد نفس الفيديو حتى تمر على كل الفيديوهات المتاحة.
-// يتم عرض دفعات صغيرة فقط حتى لا نحمل آلاف الفيديوهات في الصفحة مرة واحدة.
-let feedQueue=[];
-let feedSeen=new Set();
-let feedVisibleIds=[];
-let feedIdentity="";
-const FEED_BATCH_SIZE=10;
-function shuffleArray(arr){
- const a=arr.slice();
- for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
- return a;
+function rejectFriendRequest(email){
+ if(!requireLogin())return;const e=accountKey(email),me=account(),other=getAccount(e);if(!e||!me)return;
+ me.friendRequests=relList(me,'friendRequests').filter(r=>accountKey(typeof r==='string'?r:r?.from)!==e);
+ if(other){other.sentFriendRequests=removeEmail(other.sentFriendRequests,me.email);other.following=removeEmail(other.following,me.email);other.followers=removeEmail(other.followers,me.email)}
+ save();render();toast('تم رفض طلب الصداقة');
 }
-function prepareFeed(){
- const pool=visibleVideos();
- const identity=(state.session?.email||"guest")+"|"+pool.map(v=>v.id).sort().join(",");
- if(identity!==feedIdentity){
-   feedIdentity=identity;
-   feedSeen=new Set();
-   feedVisibleIds=[];
-   feedQueue=shuffleArray(pool);
- }
- return pool;
-}
-function nextFeedBatch(){
- const pool=prepareFeed();
- if(!pool.length)return [];
- let available=feedQueue.filter(v=>!feedSeen.has(v.id));
- if(!available.length){
-   // مرّ المستخدم على كل الفيديوهات: ابدأ دورة جديدة بترتيب عشوائي مختلف.
-   feedSeen=new Set();
-   feedQueue=shuffleArray(pool);
-   available=feedQueue.slice();
- }
- const batch=available.slice(0,FEED_BATCH_SIZE);
- batch.forEach(v=>feedSeen.add(v.id));
- feedVisibleIds.push(...batch.map(v=>v.id));
- return batch;
-}
-function feedVideos(){
- prepareFeed();
- if(!feedVisibleIds.length)return nextFeedBatch();
- const map=new Map(visibleVideos().map(v=>[v.id,v]));
- let list=feedVisibleIds.map(id=>map.get(id)).filter(Boolean);
- if(!list.length)return nextFeedBatch();
- return list;
-}
-function loadMoreFeed(){
- if(state.screen!=="home")return;
- const feed=document.getElementById("feed");
- if(!feed)return;
- const batch=nextFeedBatch();
- if(!batch.length)return;
- const holder=document.createElement("div");
- holder.innerHTML=batch.map(videoCard).join("");
- while(holder.firstElementChild)feed.appendChild(holder.firstElementChild);
- setupFeedPlayback();
+function removeFriend(email){
+ if(!requireLogin())return;const e=accountKey(email),me=account(),other=getAccount(e);if(!e||!me)return;
+ me.friends=removeEmail(me.friends,e);me.following=removeEmail(me.following,e);me.followers=removeEmail(me.followers,e);
+ if(other){other.friends=removeEmail(other.friends,me.email);other.following=removeEmail(other.following,me.email);other.followers=removeEmail(other.followers,me.email)}
+ save();render();toast('تمت إزالة الصداقة');
 }
 function toggleFriend(email){
- if(!requireLogin())return;
- const e=accountKey(email);
- if(!e||e===state.session.email||isDemoAccount(getAccount(e)))return;
- const me=account(),other=getAccount(e);if(!me||!other)return;
- me.friends=Array.isArray(me.friends)?me.friends:[];
- const i=me.friends.indexOf(e);
- if(i>=0){me.friends.splice(i,1)}
- else{me.friends.push(e)}
- save();
- render();
- toast(i>=0?"تم إلغاء المتابعة":"تمت المتابعة وإضافة الشخص إلى قائمة الأصدقاء");
+ const status=relationStatus(email);
+ if(status==='friends'){removeFriend(email);return}
+ if(status==='incoming'){acceptFriendRequest(email);return}
+ if(status==='sent'){cancelFriendRequest(email);return}
+ sendFriendRequest(email);
 }
 function renderFriends(){
- const me=account(); if(!me)return "";
- const people=realPeople();
- return `<div class="overlay" onclick="if(event.target===this){state.ui.friends=false;render()}"><section class="sheet"><div class="handle"></div><h2>الأصدقاء</h2><p class="muted">فيديوهات «الأصدقاء فقط» تظهر للحسابات الموجودة هنا.</p><div class="admin-list" style="max-height:55vh;overflow:auto">${people.length?people.map(a=>{const yes=isFriend(a.email);return `<div class="admin-card" style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="display:flex;align-items:center;gap:9px"><div class="avatar sm">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}</div><div><b>${esc(a.name||"مستخدم")}</b><div class="muted" style="font-size:10px">${esc(a.email)}</div></div></div><div style="display:flex;gap:6px"><button class="btn btn-sm ${yes?"btn-danger":"btn-primary"}" onclick="toggleFriend('${esc(a.email)}')">${yes?"إلغاء المتابعة":"متابعة"}</button>${yes?`<button class="btn btn-sm btn-ghost" onclick="state.ui.friends=false;openChat('${esc(a.email)}')">💬</button>`:''}</div></div>`}).join(""):`<div class="empty">لا يوجد أشخاص آخرون حتى الآن.</div>`}</div><button class="btn btn-ghost full" style="margin-top:10px" onclick="state.ui.friends=false;render()">إغلاق</button></section></div>`;
+ const me=account();if(!me)return '';
+ const people=realPeople(),friends=people.filter(a=>isFriend(a.email)),followers=people.filter(a=>isFollower(a.email)),following=people.filter(a=>isFollowing(a.email)),incoming=relList(me,'friendRequests').map(r=>getAccount(typeof r==='string'?r:r?.from)).filter(a=>a&&!isDemoAccount(a)&&!isBanned(a));
+ const tab=state.ui.friendsTab||'friends';let content='';
+ const personRow=(a,kind)=>{const st=relationStatus(a.email);let action='';if(kind==='friends')action=`<button class="btn btn-sm btn-ghost" onclick="state.ui.friends=false;openChat('${esc(a.email)}')">💬</button><button class="btn btn-sm btn-danger" onclick="removeFriend('${esc(a.email)}')">إزالة</button>`;else if(kind==='followers')action=st==='friends'?`<button class="btn btn-sm btn-ghost" onclick="state.ui.friends=false;openChat('${esc(a.email)}')">💬</button>`:`<button class="btn btn-sm ${st==='sent'?'btn-danger':'btn-primary'}" onclick="toggleFriend('${esc(a.email)}')">${st==='sent'?'إلغاء الطلب':'متابعة'}</button>`;else action=`<button class="btn btn-sm btn-danger" onclick="cancelFriendRequest('${esc(a.email)}')">إلغاء</button>`;return `<div class="admin-card relation-row"><div class="relation-main"><div class="avatar sm">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}</div><div><b>${esc(a.name||'مستخدم')}</b><div class="muted" style="font-size:10px">@${esc(String(a.email).split('@')[0])}</div></div></div><div class="relation-actions">${action}</div></div>`};
+ if(tab==='friends')content=friends.length?friends.map(a=>personRow(a,'friends')).join(''):`<div class="empty">لا يوجد أصدقاء حتى الآن.</div>`;
+ if(tab==='followers')content=followers.length?followers.map(a=>personRow(a,'followers')).join(''):`<div class="empty">لا يوجد متابعون حتى الآن.</div>`;
+ if(tab==='following')content=following.length?following.map(a=>personRow(a,'following')).join(''):`<div class="empty">لا تتابع أحدًا حاليًا.</div>`;
+ if(tab==='requests')content=incoming.length?incoming.map(a=>`<div class="admin-card relation-row"><div class="relation-main"><div class="avatar sm">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}</div><div><b>${esc(a.name||'مستخدم')}</b><div class="muted" style="font-size:10px">أرسل لك طلب صداقة</div></div></div><div class="relation-actions"><button class="btn btn-sm btn-primary" onclick="acceptFriendRequest('${esc(a.email)}')">قبول</button><button class="btn btn-sm btn-danger" onclick="rejectFriendRequest('${esc(a.email)}')">رفض</button></div></div>`).join(''):`<div class="empty">لا توجد طلبات صداقة.</div>`;
+ return `<div class="overlay" onclick="if(event.target===this){state.ui.friends=false;render()}"><section class="sheet"><div class="handle"></div><h2>👥 العلاقات</h2><div class="relation-tabs"><button class="btn btn-sm ${tab==='friends'?'btn-primary':'btn-ghost'}" onclick="state.ui.friendsTab='friends';render()">الأصدقاء (${friends.length})</button><button class="btn btn-sm ${tab==='followers'?'btn-primary':'btn-ghost'}" onclick="state.ui.friendsTab='followers';render()">المتابعين (${followers.length})</button><button class="btn btn-sm ${tab==='following'?'btn-primary':'btn-ghost'}" onclick="state.ui.friendsTab='following';render()">أتابعهم (${following.length})</button><button class="btn btn-sm ${tab==='requests'?'btn-primary':'btn-ghost'}" onclick="state.ui.friendsTab='requests';render()">طلبات (${incoming.length})</button></div><p class="muted" style="margin:10px 0">المراسلة متاحة فقط بعد قبول طلب الصداقة.</p><div class="admin-list" style="max-height:55vh;overflow:auto">${content}</div><button class="btn btn-ghost full" style="margin-top:10px" onclick="state.ui.friends=false;render()">إغلاق</button></section></div>`;
 }
 function videoCard(v){
  const acc=state.accounts[v.ownerEmail], av=acc?.avatar?`<img src="${esc(acc.avatar)}">`:initials(v.ownerName);
@@ -672,29 +667,28 @@ async function copyLink(id){
 }
 
 function closeMessages(){state.ui.messages=false;state.ui.selectedChat=null;render()}
-function openChat(email){if(!requireLogin())return;state.ui.messages=true;state.ui.selectedChat=String(email||'').trim().toLowerCase();render()}
+function openChat(email){if(!requireLogin())return;const e=accountKey(email);if(!e||!canMessage(e)){toast('💬 لا يمكنك مراسلة هذا الشخص إلا بعد قبول طلب الصداقة');return}state.ui.messages=true;state.ui.selectedChat=e;render()}
 function getMessages(){const a=account();if(!a)return [];a.messages=Array.isArray(a.messages)?a.messages:[];return a.messages}
 function sendMessage(email){
- if(!requireLogin())return;
- const to=getAccount(email),me=account();if(!to||!me)return;
- const inp=app.querySelector('#messageText'),text=inp?.value.trim();if(!text)return;
- const now=Date.now();
- me.messages=Array.isArray(me.messages)?me.messages:[];to.messages=Array.isArray(to.messages)?to.messages:[];
- const msg={id:'m'+now+Math.random().toString(36).slice(2),from:me.email,to:to.email,text,at:now};
- me.messages.push(msg);to.messages.push(msg);save();render();
+ if(!requireLogin())return;const to=getAccount(email),me=account();if(!to||!me||!canMessage(to.email)){toast('لا يمكن إرسال الرسائل إلا بين الأصدقاء');return}
+ const inp=app.querySelector('#messageText'),text=inp?.value.trim();if(!text)return;const now=Date.now();me.messages=relList(me,'messages');to.messages=relList(to,'messages');const msg={id:'m'+now+Math.random().toString(36).slice(2),from:me.email,to:to.email,text,at:now};me.messages.push(msg);to.messages.push(msg);save();render();
+}
+function renderFriendRequestsInMessages(me){
+ const incoming=relList(me,'friendRequests').map(r=>getAccount(typeof r==='string'?r:r?.from)).filter(a=>a&&!isDemoAccount(a)&&!isBanned(a));
+ if(!incoming.length)return '';
+ return `<div class="message-request"><div class="request-badge">📩 طلب صداقة جديد (${incoming.length})</div>${incoming.map(a=>`<div class="relation-row" style="margin:8px 0 0;padding:0"><div class="relation-main"><div class="avatar sm">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}</div><div><b>${esc(a.name||'مستخدم')}</b><div class="muted" style="font-size:10px">@${esc(String(a.email).split('@')[0])} يريد إضافتك كصديق</div></div></div><div class="request-actions"><button class="btn btn-sm btn-primary" onclick="acceptFriendRequest('${esc(a.email)}')">قبول</button><button class="btn btn-sm btn-danger" onclick="rejectFriendRequest('${esc(a.email)}')">رفض</button></div></div>`).join('')}</div>`;
 }
 function messagesSheet(){
- if(!state.ui.messages)return '';
- const me=account();if(!me)return '';
- const friendPeople=(Array.isArray(me.friends)?me.friends:[]).map(e=>getAccount(e)).filter(a=>a&&a.email!==me.email&&!isDemoAccount(a)&&!isBanned(a));
+ if(!state.ui.messages)return '';const me=account();if(!me)return '';
+ const friendPeople=relList(me,'friends').map(e=>getAccount(e)).filter(a=>a&&a.email!==me.email&&!isDemoAccount(a)&&!isBanned(a));
  const selected=getAccount(state.ui.selectedChat);
  if(selected){
-   const allowed=friendPeople.some(a=>a.email===selected.email);
-   if(!allowed){state.ui.selectedChat=null;return messagesSheet()}
+   if(!canMessage(selected.email)){state.ui.selectedChat=null;return messagesSheet()}
    const msgs=getMessages().filter(m=>m.to===selected.email||m.from===selected.email).sort((a,b)=>a.at-b.at);
-   return `<div class="overlay" onclick="if(event.target===this)closeMessages()"><section class="sheet"><div class="handle"></div><div style="display:flex;align-items:center;gap:10px"><div class="avatar sm">${selected.avatar?`<img src="${esc(selected.avatar)}">`:initials(selected.name)}</div><div><h2 style="margin:0">💬 ${esc(selected.name||'مستخدم')}</h2><div class="muted">صديقك</div></div></div><div class="messages-list">${msgs.length?msgs.map(m=>`<div class="message-bubble" style="${m.from===me.email?'text-align:right':'text-align:left'}"><b>${m.from===me.email?'أنت':esc(selected.name||'مستخدم')}</b><br>${esc(m.text)}<div class="muted" style="font-size:9px;margin-top:3px">${new Date(m.at).toLocaleString('ar-EG')}</div></div>`).join(''):`<div class="empty" style="height:auto;padding:25px">ابدأ أول رسالة مع ${esc(selected.name||'صديق')}.</div>`}</div><div class="message-compose"><input id="messageText" placeholder="اكتب رسالة..." onkeydown="if(event.key==='Enter')sendMessage('${esc(selected.email)}')"><button class="send" onclick="sendMessage('${esc(selected.email)}')">${ICON.send}</button></div><button class="btn btn-ghost full" style="margin-top:10px" onclick="state.ui.selectedChat=null;render()">← قائمة الأصدقاء</button></section></div>`;
+   return `<div class="overlay" onclick="if(event.target===this)closeMessages()"><section class="sheet"><div class="handle"></div><div style="display:flex;align-items:center;gap:10px"><div class="avatar sm">${selected.avatar?`<img src="${esc(selected.avatar)}">`:initials(selected.name)}</div><div><h2 style="margin:0">💬 ${esc(selected.name||'مستخدم')}</h2><div class="muted">صديقك</div></div></div><div class="messages-list">${msgs.length?msgs.map(m=>`<div class="message-bubble" style="${m.from===me.email?'text-align:right':'text-align:left'}"><b>${m.from===me.email?'أنت':esc(selected.name||'مستخدم')}</b><br>${esc(m.text)}<div class="muted" style="font-size:9px;margin-top:3px">${new Date(m.at).toLocaleString('ar-EG')}</div></div>`).join(''):`<div class="empty" style="height:auto;padding:25px">ابدأ أول رسالة مع ${esc(selected.name||'صديق')}.</div>`}</div><div class="message-compose"><input id="messageText" placeholder="اكتب رسالة..." onkeydown="if(event.key==='Enter')sendMessage('${esc(selected.email)}')"><button class="send" onclick="sendMessage('${esc(selected.email)}')">${ICON.send}</button></div><button class="btn btn-ghost full" style="margin-top:10px" onclick="state.ui.selectedChat=null;render()">← قائمة الرسائل</button></section></div>`;
  }
- return `<div class="overlay" onclick="if(event.target===this)closeMessages()"><section class="sheet"><div class="handle"></div><h2>💬 الرسائل</h2><p class="muted">الرسائل متاحة مع الأصدقاء الذين تتابعهم وتظهر أسماؤهم وصورهم الحقيقية من حساباتهم.</p><div class="messages-list">${friendPeople.length?friendPeople.map(a=>`<button class="message-row" style="width:100%;text-align:right;color:inherit;display:flex;align-items:center;gap:10px" onclick="openChat('${esc(a.email)}')"><div class="avatar sm">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}</div><div style="flex:1"><b>${esc(a.name||'مستخدم')}</b><div class="muted">${esc(a.email)}</div></div><span>💬</span></button>`).join(''):`<div class="empty" style="height:auto;padding:25px">قائمة الرسائل فارغة.<br>ابحث عن مستخدم ثم اضغط «متابعة» لإضافته إلى الأصدقاء وبدء الرسائل.</div>`}</div><button class="btn btn-ghost full" style="margin-top:10px" onclick="closeMessages()">إغلاق</button></section></div>`;
+ const requests=renderFriendRequestsInMessages(me);
+ return `<div class="overlay" onclick="if(event.target===this)closeMessages()"><section class="sheet"><div class="handle"></div><h2>💬 الرسائل</h2>${requests}<p class="muted">تقدر تراسل أصدقاءك المقبولين فقط.</p><div class="messages-list">${friendPeople.length?friendPeople.map(a=>`<button class="message-row" style="width:100%;text-align:right;color:inherit;display:flex;align-items:center;gap:10px" onclick="openChat('${esc(a.email)}')"><div class="avatar sm">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}</div><div style="flex:1"><b>${esc(a.name||'مستخدم')}</b><div class="muted">@${esc(String(a.email).split('@')[0])}</div></div><span>💬</span></button>`).join(''):`<div class="empty" style="height:auto;padding:25px">لا توجد محادثات بعد.<br>عندما تقبل طلب صداقة ستظهر المحادثة هنا.</div>`}</div><button class="btn btn-ghost full" style="margin-top:10px" onclick="closeMessages()">إغلاق</button></section></div>`;
 }
 function openSearch(){state.ui.search=true;render();setTimeout(()=>{const input=document.getElementById('searchQuery');if(input){input.focus();input.select()}},60)}
 function closeSearch(){state.ui.search=false;render()}
@@ -726,9 +720,16 @@ function runSearch(q){
  if(people.length){
    html+='<div class="search-title">الأشخاص</div>';
    html+=people.map(a=>{
-     const following=!!(me&&isFriend(a.email));
+     const rel=me?relationStatus(a.email):'none';
      const avatar=a.avatar?`<img src="${esc(a.avatar)}" alt="${esc(a.name||'صورة الحساب')}">`:initials(a.name);
-     return `<div class="search-result person-result"><div class="avatar sm">${avatar}</div><div class="search-person-info"><b>${esc(a.name||'مستخدم')}</b><div class="muted">@${esc(String(a.email).split('@')[0])}</div></div>${me?`<button class="btn btn-sm ${following?'btn-danger':'btn-primary'}" onclick="toggleFriend('${esc(a.email)}');setTimeout(()=>runSearch(document.getElementById('searchQuery')?.value||''),0)">${following?'إلغاء المتابعة':'متابعة'}</button>`:''}${me&&following?`<button class="btn btn-sm btn-ghost" onclick="closeSearch();openChat('${esc(a.email)}')">💬</button>`:''}</div>`;
+     let action='';
+     if(me){
+       if(rel==='friends') action=`<button class="btn btn-sm btn-danger" onclick="toggleFriend('${esc(a.email)}');setTimeout(()=>runSearch(document.getElementById('searchQuery')?.value||''),0)">إزالة الصداقة</button><button class="btn btn-sm btn-ghost" onclick="closeSearch();openChat('${esc(a.email)}')">💬</button>`;
+       else if(rel==='sent') action=`<button class="btn btn-sm btn-danger" onclick="toggleFriend('${esc(a.email)}');setTimeout(()=>runSearch(document.getElementById('searchQuery')?.value||''),0)">إلغاء الطلب</button>`;
+       else if(rel==='incoming') action=`<button class="btn btn-sm btn-primary" onclick="acceptFriendRequest('${esc(a.email)}')">قبول الطلب</button>`;
+       else action=`<button class="btn btn-sm btn-primary" onclick="toggleFriend('${esc(a.email)}');setTimeout(()=>runSearch(document.getElementById('searchQuery')?.value||''),0)">متابعة</button>`;
+     }
+     return `<div class="search-result person-result"><div class="avatar sm">${avatar}</div><div class="search-person-info"><b>${esc(a.name||'مستخدم')}</b><div class="muted">@${esc(String(a.email).split('@')[0])}</div></div>${action}</div>`;
    }).join('');
  }
  if(vids.length){
@@ -748,7 +749,7 @@ function renderProfile(){
  return `<div class="screen fade"><div class="topbar"><button class="settings-btn" onclick="state.ui.settings=true;render()" aria-label="الإعدادات">⚙️</button><b>حسابي</b></div><div class="profile-head"><div class="avatar lg">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}<button class="avatar-edit" onclick="document.getElementById('avatar').click()">${ICON.pencil}</button><input id="avatar" type="file" accept="image/*" class="hidden" onchange="avatarChange(event)"></div>
  ${state.ui.editName?`<div style="display:flex;gap:6px;justify-content:center"><input id="newName" value="${esc(a.name)}" style="width:170px;background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:7px;text-align:center"><button class="btn btn-primary btn-sm" onclick="saveName()">حفظ</button></div>`:`<div class="profile-name">${esc(a.name)} <button class="icon-btn" onclick="state.ui.editName=true;render()">${ICON.pencil}</button></div>`}
  <div class="muted">${a.age} سنة</div><div class="stats"><div><b>${mine.length}</b><span>فيديو</span></div><div><b>${fmt(likes)}</b><span>إعجاب</span></div></div></div>
- <div class="account-box"><b>الحساب</b><div class="account-email">${esc(state.session.email)}</div><div class="account-actions"><button class="btn btn-ghost btn-sm" onclick="state.ui.settings=true;render()">⚙️ الإعدادات</button><button class="btn btn-ghost btn-sm" onclick="state.ui.friends=true;render()">👥 الأصدقاء (${Array.isArray(a.friends)?a.friends.length:0})</button><button class="btn btn-outline-danger btn-sm" onclick="logout()">تسجيل الخروج</button></div></div><div class="grid">${mine.length?mine.map(gridCell).join(""):`<div class="empty" style="grid-column:1/-1">لسه مفيش فيديوهات عندك.<br>دوس + وابدأ.</div>`}</div>${settingsSheet()}${state.ui.friends?renderFriends():""}${messagesSheet()}${nav("profile")}</div>`
+ <div class="account-box"><b>الحساب</b><div class="account-email">${esc(state.session.email)}</div><div class="account-actions"><button class="btn btn-ghost btn-sm" onclick="state.ui.settings=true;render()">⚙️ الإعدادات</button><button class="btn btn-ghost btn-sm" onclick="state.ui.friends=true;state.ui.friendsTab='friends';render()">👥 الأصدقاء (${Array.isArray(a.friends)?a.friends.length:0})</button><button class="btn btn-ghost btn-sm" onclick="state.ui.friends=true;state.ui.friendsTab='followers';render()">👤 المتابعين (${Array.isArray(a.followers)?a.followers.length:0})</button><button class="btn btn-ghost btn-sm" onclick="state.ui.friends=true;state.ui.friendsTab='following';render()">➡️ أتابعهم (${Array.isArray(a.following)?a.following.length:0})</button><button class="btn btn-outline-danger btn-sm" onclick="logout()">تسجيل الخروج</button></div></div><div class="grid">${mine.length?mine.map(gridCell).join(""):`<div class="empty" style="grid-column:1/-1">لسه مفيش فيديوهات عندك.<br>دوس + وابدأ.</div>`}</div>${settingsSheet()}${state.ui.friends?renderFriends():""}${messagesSheet()}${nav("profile")}</div>`
 }
 function gridCell(v){
  const label={pending:"قيد المراجعة",approved:"منشور",rejected:"مرفوض"}[v.status]||v.status;
@@ -1073,9 +1074,51 @@ async function deleteVideo(id){state.videos=state.videos.filter(x=>x.id!==id);aw
 function adminLogout(){state.session=null;clearSession();state.screen="auth";state.ui.authMode="login";render()}
 
 /* ---------- Init ---------- */
-async function init(){
- load();ensureDemo();await hydrateVideos();if(state.session&&!state.session.isAdmin&&isBanned(account())){state.session=null;save();state.screen="auth";state.ui.authMode="login";}render();
- setTimeout(()=>{if(state.session?.isAdmin)state.screen="admin";else if(state.session&&getAccount(state.session.email))state.screen="home";else state.screen="auth";render()},1100)
+function init(){
+  // مهم جدًا: لا ننفذ localStorage/IndexedDB قبل فتح شاشة الدخول.
+  // بعض الأجهزة قد تحتوي على بيانات قديمة كبيرة، وكان JSON.parse/JSON.stringify
+  // يجعل شاشة S تتأخر عشرات الثواني. شاشة الدخول الآن لها أولوية.
+  setTimeout(()=>{
+    try{
+      const sess=JSON.parse(localStorage.getItem("snapvibe_session")||"null");
+      if(sess&&sess.email) state.session=sess;
+    }catch(e){ state.session=null; }
+    try{
+      if(state.session?.isAdmin)state.screen="admin";
+      else if(state.session?.email)state.screen="home";
+      else state.screen="auth";
+    }catch(e){
+      state.session=null; state.screen="auth"; state.ui.authMode="login";
+    }
+    render();
+
+    // تحميل البيانات الثقيلة بعد ظهور الواجهة، وليس قبلها.
+    setTimeout(()=>{
+      try{
+        load();
+        ensureDemo();
+        Object.values(state.accounts).forEach(a=>{
+          a.friends=Array.isArray(a.friends)?a.friends:[];
+          a.followers=Array.isArray(a.followers)?a.followers:[];
+          a.following=Array.isArray(a.following)?a.following:[];
+          a.friendRequests=Array.isArray(a.friendRequests)?a.friendRequests:[];
+          a.sentFriendRequests=Array.isArray(a.sentFriendRequests)?a.sentFriendRequests:[];
+          a.messages=Array.isArray(a.messages)?a.messages:[];
+        });
+        // لا نعيد حفظ الحالة القديمة مباشرة عند فتح التطبيق؛ هذا يمنع تجميد الهاتف.
+        try{ if(!localStorage.getItem("viral_state")) save(); }catch(e){}
+      }catch(e){}
+      Promise.race([
+        hydrateVideos(),
+        new Promise(resolve=>setTimeout(resolve,1200))
+      ]).then(()=>{ if(state.screen==="home")render(); }).catch(()=>{});
+    },0);
+  },900);
+}
+// ارسم شاشة البداية فورًا؛ لا ننتظر أي تخزين أو IndexedDB أو مؤقت.
+// هذا مهم خصوصًا عند فتح الملف من content://downloads على الهاتف.
+try{render();}catch(e){
+  app.innerHTML='<div class="screen splash"><div class="s-logo">S</div><div class="splash-welcome splash-title">أهلاً بيك 👋</div><div class="splash-welcome">مرحبًا بك في SnapVibe</div><div class="loader"><i></i></div></div>';
 }
 init();
 </script>
