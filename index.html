@@ -216,6 +216,7 @@ border-radius:10px;padding:14px 15px;outline:none;font-size:14.5px
 <body>
 <div id="app"><div id="bootSplash" class="screen splash" aria-label="SnapVibe"><div class="s-logo">S</div><div class="splash-welcome splash-title">أهلاً بيك 👋</div><div class="splash-welcome">مرحبًا بك في SnapVibe</div><div class="splash-desc">منصتك الاجتماعية لمشاركة الفيديوهات القصيرة، اكتشاف محتوى جديد والتواصل مع الآخرين.</div><div class="loader"><i></i></div></div></div>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script>
@@ -258,19 +259,20 @@ const ADMIN_PASS="ddee4dab";
    لحد ما تتعبى الخانات دي، التطبيق هيشتغل محليًا على الجهاز بس زي الأول (مفيش أي كسر أو شاشة سودة).
    ========================================================================================= */
 const firebaseConfig={
-  apiKey:"",
-  authDomain:"",
-  projectId:"",
-  storageBucket:"",
-  messagingSenderId:"",
-  appId:""
+  apiKey:"AIzaSyAfqUdOD-Y2qMUwj6Hc749w9-2JCjPef6U",
+  authDomain:"snapvibe-df811.firebaseapp.com",
+  projectId:"snapvibe-df811",
+  storageBucket:"snapvibe-df811.firebasestorage.app",
+  messagingSenderId:"572071205713",
+  appId:"1:572071205713:web:3666dad3c5c5a9cd8b5170"
 };
-let FIREBASE_READY=false, db=null, storageRef=null;
+let FIREBASE_READY=false, db=null, storageRef=null, authApp=null;
 try{
   if(firebaseConfig.apiKey && firebaseConfig.projectId && typeof firebase!=="undefined"){
     firebase.initializeApp(firebaseConfig);
     db=firebase.firestore();
     storageRef=firebase.storage();
+    authApp=firebase.auth();
     FIREBASE_READY=true;
   }
 }catch(e){
@@ -591,6 +593,7 @@ function renderAuth(){
  <div class="field"><label>البريد الإلكتروني</label><input id="email" type="email" autocomplete="email" placeholder="name@example.com"></div>
  <div class="field"><label>كلمة السر</label><input id="pass" type="password" autocomplete="${state.ui.authMode==="signup"?"new-password":"current-password"}" placeholder="••••••••"><div id="authErr" class="error"></div></div>
  <button class="btn btn-primary full" onclick="${state.ui.authMode==="signup"?"startSignup()":"login()"}">${state.ui.authMode==="signup"?"متابعة وإنشاء الحساب":"دخول"}</button>
+ <button class="btn btn-ghost full" style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px" onclick="signInWithGoogle()"><span style="font-weight:700">G</span> تسجيل الدخول بحساب Google</button>
  ${state.ui.authMode==="signup"?`<button class="btn btn-ghost full" style="margin-top:10px" onclick="showLogin()">لديك حساب بالفعل؟ تسجيل الدخول</button>`:`<button class="auth-switch" onclick="showForgot()">نسيت كلمة السر؟</button><button class="auth-switch" onclick="showSignup()">ليس لديك حساب؟ <b>إنشاء حساب جديد</b></button>`}
  </div>`
 }
@@ -604,6 +607,7 @@ function submitForgotPassword(){
  if(e===ADMIN_EMAIL){if(err){err.textContent="لا يمكن استعادة كلمة سر حساب المطور من هنا";err.style.display="block";}return}
  const a=getAccount(e);
  if(!a){if(err){err.textContent="هذا الحساب غير موجود";err.style.display="block";}return}
+ if(a.authProvider==="google"){if(err){err.textContent="هذا الحساب مسجل بجوجل ومالوش كلمة سر. استخدم زر «تسجيل الدخول بجوجل»";err.style.display="block";}return}
  if(p1.length<8){if(err){err.textContent="كلمة السر يجب أن تكون 8 أحرف/أرقام على الأقل";err.style.display="block";}return}
  if(p1!==p2){if(err){err.textContent="كلمتا السر غير متطابقتين";err.style.display="block";}return}
  a.password=p1;
@@ -615,6 +619,38 @@ function submitForgotPassword(){
 function showAuthChoice(){state.pending=null;state.ui.authMode="login";render()}
 function showLogin(){state.pending=null;state.ui.authMode="login";render()}
 function showSignup(){state.pending=null;state.ui.authMode="signup";render()}
+async function signInWithGoogle(){
+ if(!FIREBASE_READY||!authApp){toast("⚠️ لازم تظبط إعدادات Firebase الأول");return}
+ try{
+   const provider=new firebase.auth.GoogleAuthProvider();
+   const result=await authApp.signInWithPopup(provider);
+   const user=result.user;
+   const email=String(user?.email||"").trim().toLowerCase();
+   if(!email){toast("تعذر الحصول على البريد من حساب جوجل");return}
+   if(email===ADMIN_EMAIL){toast("هذا البريد محجوز لحساب المطور");return}
+   try{ if(!Object.keys(state.accounts||{}).length){ load(); } }catch(ex){}
+   const existing=getAccount(email);
+   if(existing){
+     if(isBanned(existing)){
+       const permanent=existing.bannedPermanent===true||existing.banType==='permanent';
+       state.ui.banNotice=banText(existing);
+       state.ui.banPermanent=permanent;
+       state.ui.banUntil=permanent?null:(Number(existing.bannedUntil)||null);
+       state.screen="auth";state.ui.authMode="login";
+       render();
+       return;
+     }
+     state.session={email};saveSession();state.ui.banNotice=null;state.ui.banUntil=null;state.ui.banPermanent=false;state.screen="home";render();
+     return;
+   }
+   state.pending={email,password:null,authProvider:"google",googleName:user.displayName||"",trustScore:100,riskFlags:[]};
+   state.screen="onboarding";render();
+ }catch(e){
+   console.error("Google sign-in error",e);
+   if(e && (e.code==="auth/popup-closed-by-user"||e.code==="auth/cancelled-popup-request")) return;
+   toast("تعذر تسجيل الدخول بحساب جوجل. تأكد إنك فعّلت Google Sign-In في Firebase وحاول مرة أخرى.");
+ }
+}
 function startSignup(){
  const e=app.querySelector("#email").value.trim().toLowerCase(),p=app.querySelector("#pass").value,err=app.querySelector("#authErr");
  try{ if(!Object.keys(state.accounts||{}).length){ load(); } }catch(ex){ console.warn("Signup state load error",ex); }
@@ -627,7 +663,7 @@ function startSignup(){
 }
 function renderOnboarding(){
  return `<div class="screen auth fade"><div class="auth-head"><div class="brand-s" role="img" aria-label="حرف S شعار SnapVibe">S</div><h1>أهلاً بيك</h1><p class="muted">خلّي حسابك جاهز في خطوة واحدة.</p></div>
- <div class="field"><label>الاسم</label><input id="name" placeholder="اكتب اسمك"></div>
+ <div class="field"><label>الاسم</label><input id="name" placeholder="اكتب اسمك" value="${esc(state.pending?.googleName||"")}"></div>
  <div class="field"><label>السن</label><input id="age" type="number" min="13" max="100" placeholder="13 أو أكثر"><div id="obErr" class="error"></div></div>
  <button class="btn btn-primary full" onclick="finishSignup()">إنشاء الحساب</button></div>`
 }
@@ -644,6 +680,7 @@ async function login(){
  if(e===ADMIN_EMAIL&&p===ADMIN_PASS){state.session={email:e,isAdmin:true};saveSession();state.screen="admin";render();return}
  if(getAccount(e)){
    const existing=getAccount(e);
+   if(existing.authProvider==="google"){rememberLoginAttempt();err.textContent="هذا الحساب مسجل بجوجل. استخدم زر «تسجيل الدخول بجوجل» تحت.";err.style.display="block";return}
    if(existing.password!==p){rememberLoginAttempt();err.textContent="كلمة السر غير صحيحة";err.style.display="block";return}
    if(isBanned(existing)){
      const permanent=existing.bannedPermanent===true||existing.banType==='permanent';
@@ -670,7 +707,7 @@ function finishSignup(){
       return;
     }
     const email=String(state.pending.email).trim().toLowerCase();
-    state.accounts[email]={email,name:n,age:a,password:state.pending.password,code:generateUserCode(),avatar:null,bannedUntil:null,bannedPermanent:false,banHours:0,banStartedAt:null,banReason:null,lastModerationAction:null,friends:[],followers:[],following:[],friendRequests:[],sentFriendRequests:[],messages:[],trustScore:state.pending.trustScore??100,riskFlags:state.pending.riskFlags||[],emailVerified:false,createdAt:Date.now(),isPrivate:false,accountType:"personal",bizCategory:null,earningsWithdrawn:0};
+    state.accounts[email]={email,name:n,age:a,password:state.pending.password,authProvider:state.pending.authProvider||"password",code:generateUserCode(),avatar:null,bannedUntil:null,bannedPermanent:false,banHours:0,banStartedAt:null,banReason:null,lastModerationAction:null,friends:[],followers:[],following:[],friendRequests:[],sentFriendRequests:[],messages:[],trustScore:state.pending.trustScore??100,riskFlags:state.pending.riskFlags||[],emailVerified:false,createdAt:Date.now(),isPrivate:false,accountType:"personal",bizCategory:null,earningsWithdrawn:0};
     state.session={email};
     state.pending=null;
     // ننتقل فورًا للرئيسية، ثم نحاول الحفظ. حتى لو منع content:// التخزين، لا يعلق الزر.
