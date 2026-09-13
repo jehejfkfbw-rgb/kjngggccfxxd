@@ -218,7 +218,7 @@ border-radius:10px;padding:14px 15px;outline:none;font-size:14.5px
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 (function(){
   function fallback(){
@@ -266,18 +266,37 @@ const firebaseConfig={
   messagingSenderId:"572071205713",
   appId:"1:572071205713:web:3666dad3c5c5a9cd8b5170"
 };
-let FIREBASE_READY=false, db=null, storageRef=null, authApp=null;
+let FIREBASE_READY=false, db=null, authApp=null;
 try{
   if(firebaseConfig.apiKey && firebaseConfig.projectId && typeof firebase!=="undefined"){
     firebase.initializeApp(firebaseConfig);
     db=firebase.firestore();
-    storageRef=firebase.storage();
     authApp=firebase.auth();
     FIREBASE_READY=true;
   }
 }catch(e){
   console.warn("SnapVibe: Firebase غير متصل، التطبيق شغال محليًا على هذا الجهاز فقط.",e);
   FIREBASE_READY=false;
+}
+
+/* ============== إعدادات Supabase (تخزين ملفات الفيديو فقط) ==============
+   Supabase بيخزن ملفات الفيديو نفسها بدون الحاجة لبطاقة بنكية.
+   لو غيّرت المشروع، حدّث القيمتين دول من: Supabase Dashboard > Settings > API
+   ========================================================================= */
+const supabaseConfig={
+  url:"https://rerozkpfwhrnpbdxdxgr.supabase.co",
+  anonKey:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJlcm96a3Bmd2hybnBiZHhkeGdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMzkwNzAsImV4cCI6MjEwNDgxNTA3MH0.OuYxShwMb9ShXKQW6rVMM6EJB4MJ29-Y6UN-_-4Ee68"
+};
+const SUPABASE_BUCKET="videos";
+let SUPABASE_READY=false, supabaseClient=null;
+try{
+  if(supabaseConfig.url && supabaseConfig.anonKey && typeof window.supabase!=="undefined"){
+    supabaseClient=window.supabase.createClient(supabaseConfig.url,supabaseConfig.anonKey);
+    SUPABASE_READY=true;
+  }
+}catch(e){
+  console.warn("SnapVibe: Supabase غير متصل، رفع الفيديوهات لن يعمل حتى يتم ضبطه.",e);
+  SUPABASE_READY=false;
 }
 function remoteDoc(){return db.collection("snapvibe").doc("app_state")}
 // قاعدة بيانات جديدة ونظيفة: لا يتم استيراد أي حسابات تجريبية أو بيانات قديمة.
@@ -1299,16 +1318,19 @@ function switchAccount(){
 function saveName(){const n=app.querySelector("#newName").value.trim();if(n){state.accounts[state.session.email].name=n;save()}state.ui.editName=false;render()}
 
 /* ---------- IndexedDB for local video blobs ---------- */
-/* ---------- تخزين ملفات الفيديو الحقيقي على Firebase Storage (يشتغل من أي جهاز) ---------- */
+/* ---------- تخزين ملفات الفيديو على Supabase Storage (بدون بطاقة، يشتغل من أي جهاز) ---------- */
 async function uploadVideoFile(id,blob){
-  if(!FIREBASE_READY||!storageRef) throw new Error("firebase_not_configured");
-  const ref=storageRef.ref().child("videos/"+id);
-  await ref.put(blob,{contentType:blob.type||"video/webm"});
-  return await ref.getDownloadURL();
+  if(!SUPABASE_READY||!supabaseClient) throw new Error("supabase_not_configured");
+  const path=id;
+  const {error:upErr}=await supabaseClient.storage.from(SUPABASE_BUCKET).upload(path,blob,{contentType:blob.type||"video/webm",upsert:true});
+  if(upErr) throw upErr;
+  const {data}=supabaseClient.storage.from(SUPABASE_BUCKET).getPublicUrl(path);
+  if(!data?.publicUrl) throw new Error("no_public_url");
+  return data.publicUrl;
 }
 async function deleteVideoFile(id){
-  if(!FIREBASE_READY||!storageRef) return;
-  try{ await storageRef.ref().child("videos/"+id).delete(); }catch(e){ /* الملف مش موجود أو اتحذف قبل كده */ }
+  if(!SUPABASE_READY||!supabaseClient) return;
+  try{ await supabaseClient.storage.from(SUPABASE_BUCKET).remove([id]); }catch(e){ /* الملف مش موجود أو اتحذف قبل كده */ }
 }
 
 /* ---------- Create ---------- */
@@ -1511,7 +1533,7 @@ async function publish(){
  if(!state.ui.recorded){toast("لا يوجد فيديو للنشر");return}
  const a=account();if(!a||!state.session){toast("سجل الدخول أولًا");return}
  if(Number(state.ui.videoDuration)>MAX_VIDEO_SECONDS+0.2){toast("الحد الأقصى للفيديو 5 دقائق فقط");return}
- if(!FIREBASE_READY){toast("⚠️ لازم تظبط إعدادات Firebase الأول عشان الفيديو يظهر لباقي الأجهزة (راجع أعلى الكود)");return}
+ if(!SUPABASE_READY){toast("⚠️ لازم تظبط إعدادات Supabase الأول عشان الفيديو يترفع (راجع أعلى الكود)");return}
  const id="v"+Date.now(),file=state.ui.uploadFile||state.ui.recordedBlob;
  const v={id,ownerEmail:state.session.email,ownerName:a.name,caption:app.querySelector("#caption")?.value.trim()||"فيديو جديد على SnapVibe ✨",privacy:state.ui.privacy,status:"pending",song:state.ui.song,likes:[],comments:[],createdAt:Date.now()};
  toast("⏳ جاري رفع الفيديو على السيرفر...");
@@ -1539,6 +1561,7 @@ function renderAdmin(){
  const pendingWithdrawals=withdrawals.filter(w=>w.status==='pending').length;
  return `<div class="screen fade"><div class="topbar"><b>لوحة المطور</b><button class="topbar side left" onclick="adminLogout()">${ICON.close}</button></div>
  <div class="review-note" style="margin:10px 11px 0;${FIREBASE_READY?"":"border-color:#ff4d4f"}"><b>${FIREBASE_READY?"🟢 متصل بالسيرفر (Firebase)":"🔴 غير متصل بسيرفر — التطبيق شغال محليًا على هذا الجهاز بس"}</b><span>${FIREBASE_READY?"كل حساب وفيديو وطلب سحب بيتزامن فورًا مع كل الأجهزة.":"لازم تدخل إعدادات Firebase في أول الكود (firebaseConfig) عشان الحسابات والفيديوهات تظهر على أي جهاز تاني."}</span></div>
+ <div class="review-note" style="margin:10px 11px 0;${SUPABASE_READY?"":"border-color:#ff4d4f"}"><b>${SUPABASE_READY?"🟢 متصل بتخزين الفيديوهات (Supabase)":"🔴 غير متصل بتخزين الفيديوهات — رفع الفيديو لن يعمل"}</b><span>${SUPABASE_READY?"ملفات الفيديو بتترفع وتتشاف من أي جهاز.":"لازم تدخل إعدادات Supabase في أول الكود (supabaseConfig) وتعمل bucket اسمه videos."}</span></div>
  <div class="review-note" style="margin:10px 11px 0"><b>👁️ المراجعة قبل النشر</b><span>كل فيديو يرسله أي شخص يصل هنا أولًا، حتى لو اختار عام أو أصدقاء أو خاص. لا يظهر للناس إلا بعد موافقة المطور.</span></div><div style="padding:10px 11px 0;display:flex;gap:7px;flex-wrap:wrap"><button class="btn btn-sm ${state.ui.adminTab==='videos'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='videos';state.ui.adminOwner=null;render()">🎬 الفيديوهات (${state.videos.length}) · قيد المراجعة ${state.videos.filter(v=>v.status==="pending").length}</button><button class="btn btn-sm ${state.ui.adminTab==='users'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='users';render()">👥 الأشخاص (${users.length})</button><button class="btn btn-sm ${state.ui.adminTab==='withdrawals'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='withdrawals';render()">💳 طلبات السحب (${withdrawals.length}) · قيد المراجعة ${pendingWithdrawals}</button></div>
  <div style="padding:6px 11px 0"><button class="btn btn-sm btn-danger" onclick="openResetSystem()">♻️ إعادة ضبط النظام بالكامل</button></div>
  ${state.ui.adminTab==='users'?renderAdminUsers(users):state.ui.adminTab==='withdrawals'?renderAdminWithdrawals(withdrawals):`<div class="filters">${[["all","الكل"],["pending","قيد المراجعة"],["approved","مقبول"],["rejected","مرفوض"]].map(x=>`<button class="btn btn-sm ${f===x[0]?"btn-primary":"btn-ghost"}" onclick="state.ui.adminFilter='${x[0]}';render()">${x[1]}</button>`).join("")}</div><div class="admin-list">${list.length?list.map(adminCard).join(""):`<div class="empty">لا توجد فيديوهات في هذا التصنيف.</div>`}</div>`}
