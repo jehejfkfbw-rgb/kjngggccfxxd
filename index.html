@@ -215,6 +215,9 @@ border-radius:10px;padding:14px 15px;outline:none;font-size:14.5px
 </head>
 <body>
 <div id="app"><div id="bootSplash" class="screen splash" aria-label="SnapVibe"><div class="s-logo">S</div><div class="splash-welcome splash-title">أهلاً بيك 👋</div><div class="splash-welcome">مرحبًا بك في SnapVibe</div><div class="splash-desc">منصتك الاجتماعية لمشاركة الفيديوهات القصيرة، اكتشاف محتوى جديد والتواصل مع الآخرين.</div><div class="loader"><i></i></div></div></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 (function(){
@@ -243,31 +246,104 @@ border-radius:10px;padding:14px 15px;outline:none;font-size:14.5px
    ========================================================= */
 
 const ADMIN_EMAIL="jehejfkfbw@gmail.com";
-const ADMIN_PASS="ddee4dab";
+/* أمان متوسط: مش متخزنة نص عادي، متخزنة كـ hash (SHA-256). */
+const ADMIN_PASS_HASH="d43fb1434f358fa0d6843b5c1411dbc68a42d4f1b51c8c871802eaec70cedf51";
 
-/* ============== إعدادات Supabase — السيرفر الوحيد للتطبيق ==============
-   الفيديوهات -> Supabase Storage / bucket: videos
-   بيانات التطبيق -> Supabase Database / table: snapvibe_state
-   لا يوجد Supabase في هذه النسخة.
+/* ---------- تشفير كلمات السر (SHA-256) — أمان متوسط، أفضل بكثير من تخزينها نص عادي ---------- */
+async function hashPassword(pw){
+  try{
+    const enc=new TextEncoder().encode(String(pw||""));
+    const buf=await crypto.subtle.digest("SHA-256",enc);
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+  }catch(e){
+    console.warn("Hashing unavailable, falling back to plain (insecure)",e);
+    return String(pw||"");
+  }
+}
+function looksHashed(str){return typeof str==="string"&&/^[0-9a-f]{64}$/i.test(str)}
+
+/* ============== التخزين النهائي للتطبيق: Firebase Firestore ==============
+   الحسابات + التوكن + الهدايا + طلبات الشحن + طلبات السحب + الأخطاء
+   + بيانات الفيديو (العنوان/المالك/الحالة) = Firebase.
+   ملف الفيديو نفسه فقط = Supabase Storage.
    ======================================================================== */
+/* ==========================================================================
+   ⚠️ خطوة واحدة لازم تتعمل مرة واحدة بس عشان كل حاجة تشتغل (أمان متوسط):
+   الكود مبيقدرش يدخل بنفسه على حساباتك في Firebase/Supabase (مفيش وصول شبكة
+   من هنا)، فلازم تنسخ الإعدادات دي بنفسك، مرة واحدة، من لوحتي التحكم:
+
+   1) Firebase Console → مشروع snapvibe-df811 → Authentication → Sign-in method
+      → فعّل "Anonymous" (زر تفعيل بس، بدون أي إعداد إضافي).
+
+   2) Firebase Console → Firestore Database → Rules → الصق ده وانشر (Publish):
+      rules_version = '2';
+      service cloud.firestore {
+        match /databases/{database}/documents {
+          match /snapvibe/app_state {
+            allow read: if true;
+            allow write: if request.auth != null;
+          }
+        }
+      }
+
+   3) Supabase → مشروعك → Storage → bucket اسمه "videos" (اعمله لو مش موجود،
+      واختار Public bucket) → Policies → New Policy → الصق الكود ده في SQL
+      Editor بتاع Supabase وشغّله:
+      create policy "public read videos"
+        on storage.objects for select
+        using ( bucket_id = 'videos' );
+      create policy "anon upload videos"
+        on storage.objects for insert
+        with check ( bucket_id = 'videos' );
+
+   من غير الخطوتين 2 و3 هتفضل رسالة "تعذّر الحفظ" أو "فشل رفع الفيديو" تظهر
+   حتى لو الكود مظبوط 100%، لأن الرفض جاي من إعدادات السيرفر مش من الكود.
+   ========================================================================== */
+const firebaseConfig={
+  apiKey:"AIzaSyAfqUdOD-Y2qMUwj6C-hZ-9-2JCjPef6U",
+  authDomain:"snapvibe-df811.firebaseapp.com",
+  projectId:"snapvibe-df811",
+  storageBucket:"snapvibe-df811.firebasestorage.app",
+  messagingSenderId:"572071205713",
+  appId:"1:572071205713:web:3666dad3c5c5a9cd8b5170"
+};
+let FIREBASE_READY=false, db=null, authApp=null;
+/* هذا الـ Promise بيتحل لما يبقى فيه تسجيل دخول (ولو مجهول/anonymous) في Firebase Auth.
+   ضروري لأن أي Firestore Rules متوسطة الأمان لازم تشترط request.auth != null،
+   وبدون تسجيل دخول (حتى لو مجهول) كل قراءة/كتابة هترفض. */
+let firebaseAuthReady=Promise.resolve();
+try{
+  if(firebaseConfig.apiKey && firebaseConfig.projectId && typeof firebase!=="undefined"){
+    firebase.initializeApp(firebaseConfig);
+    db=firebase.firestore();
+    authApp=firebase.auth();
+    FIREBASE_READY=true;
+    firebaseAuthReady=authApp.signInAnonymously().catch(e=>{
+      console.warn("SnapVibe: تسجيل الدخول المجهول في Firebase فشل — راجع تفعيل Anonymous Sign-in في Firebase Console > Authentication > Sign-in method.",e);
+    });
+  }
+}catch(e){
+  console.warn("SnapVibe: Firebase غير متصل.",e);
+  FIREBASE_READY=false;
+}
+
+/* ============== Supabase: ملفات الفيديو فقط ============== */
 const supabaseConfig={
   url:"https://rerozkpfwhrnpbdxdxgr.supabase.co",
-  anonKey:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbGciOiJIUzI1NiIsInJlZiI6InJlcm96a3Bmd2hybnBiZHhkeGdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMzkwNzAsImV4cCI6MjEwNDgxNTA3MH0.OuYxShwMb9ShXKQW6rVMM6EJB4MJ29-Y6UN-_-4Ee68"
+  anonKey:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJlcm96a3Bmd2hybnBiZHhkeGdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMzkwNzAsImV4cCI6MjEwNDgxNTA3MH0.OuYxShwMb9ShXKQW6rVMM6EJB4MJ29-Y6UN-_-4Ee68"
 };
 const SUPABASE_BUCKET="videos";
-const SUPABASE_STATE_TABLE="snapvibe_state";
-const SUPABASE_STATE_ID=1;
 let SUPABASE_READY=false, supabaseClient=null;
-
 try{
   if(supabaseConfig.url && supabaseConfig.anonKey && typeof window.supabase!=="undefined"){
     supabaseClient=window.supabase.createClient(supabaseConfig.url,supabaseConfig.anonKey);
     SUPABASE_READY=true;
   }
 }catch(e){
-  console.warn("SnapVibe: Supabase غير متصل.",e);
+  console.warn("SnapVibe: Supabase غير متصل — رفع الفيديو لن يعمل.",e);
   SUPABASE_READY=false;
 }
+function remoteDoc(){return db.collection("snapvibe").doc("app_state")}
 
 const STORAGE_KEY="snapvibe_state_v2";
 const SESSION_KEY="snapvibe_session_v2";
@@ -344,9 +420,9 @@ const WALLETS=[
 ];
 
 const state={
-screen:"splash",session:null,accounts:{},videos:[],withdrawals:[],
+screen:"splash",session:null,accounts:{},videos:[],withdrawals:[],rechargeRequests:[],giftTransactions:[],systemErrors:[],
 pending:null,
-ui:{comments:null,share:null,messages:false,search:false,settings:false,selectedChat:null,publish:false,stage:"camera",recorded:null,recordedIsBlob:false,song:SONGS[0],privacy:"public",editName:false,adminFilter:"pending",adminTab:"videos",banTarget:null,toast:null,authMode:"login",banNotice:null,banUntil:null,banPermanent:false,viewProfile:null,viewProfileFrom:"home",settingsSection:null,editBiz:false,profileTab:"videos",withdrawSheet:false,withdrawWallet:"orange",withdrawPhone:"",resetConfirm:false}
+ui:{comments:null,share:null,messages:false,search:false,settings:false,selectedChat:null,publish:false,stage:"camera",recorded:null,recordedIsBlob:false,song:SONGS[0],privacy:"public",editName:false,adminFilter:"pending",adminTab:"videos",banTarget:null,toast:null,authMode:"login",banNotice:null,banUntil:null,banPermanent:false,viewProfile:null,viewProfileFrom:"home",settingsSection:null,editBiz:false,profileTab:"videos",withdrawSheet:false,withdrawWallet:"orange",withdrawPhone:"",tokenRecharge:false,rechargeMethod:"orange",rechargeAmount:"",rechargeNote:"",giftVideoId:null,resetConfirm:false}
 };
 
 let stream=null,recordStream=null,recorder=null,chunks=[],timer=null;
@@ -483,142 +559,66 @@ function loginRateLimited(){
 }
 function rememberLoginAttempt(){try{const a=(()=>{try{return JSON.parse(localStorage.getItem(LOGIN_ATTEMPTS_KEY)||"[]")}catch(e){return[]}})().filter(t=>Date.now()-t<10*60*1000);a.push(Date.now());localStorage.setItem(LOGIN_ATTEMPTS_KEY,JSON.stringify(a))}catch(e){}}
 let saveDebounce=null,remoteUnsub=null;
-
-function stripLocalOnly(v){
-  const x={...v};
-  delete x.fileId;
-  delete x.src;
-  return x;
-}
-
-async function saveToSupabase(){
-  if(!SUPABASE_READY || !supabaseClient) return false;
-  const payload={
-    id:SUPABASE_STATE_ID,
-    data:{
-      accounts:state.accounts,
-      videos:state.videos.map(stripLocalOnly),
-      withdrawals:state.withdrawals||[]
-    },
-    updated_at:new Date().toISOString()
-  };
-  const {error}=await supabaseClient
-    .from(SUPABASE_STATE_TABLE)
-    .upsert(payload,{onConflict:"id"});
-  if(error){
-    console.warn("Supabase database sync failed:",error);
-    toast("⚠️ تعذّر حفظ البيانات على Supabase");
-    return false;
-  }
-  return true;
-}
+function stripLocalOnly(v){const x={...v};delete x.fileId;delete x.src;return x}
 
 function save(){
-  // حفظ محلي فوري كنسخة احتياطية.
+  // Cache محلي سريع فقط؛ المصدر الأساسي لكل البيانات هو Firebase.
   try{
-    const videos=state.videos.map(stripLocalOnly);
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({accounts:state.accounts,videos,withdrawals:state.withdrawals||[]})
-    );
-  }catch(e){
-    console.warn("SnapVibe local storage unavailable",e);
-  }
-
+    const payload={accounts:state.accounts,videos:state.videos.map(stripLocalOnly),withdrawals:state.withdrawals||[],rechargeRequests:state.rechargeRequests||[],giftTransactions:state.giftTransactions||[],systemErrors:state.systemErrors||[]};
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(payload));
+  }catch(e){console.warn("Local cache unavailable",e)}
   try{syncChannel?.postMessage({type:"state-updated",at:Date.now()})}catch(e){}
-
-  // الحفظ الحقيقي على Supabase.
-  clearTimeout(saveDebounce);
-  if(SUPABASE_READY){
-    saveDebounce=setTimeout(()=>{saveToSupabase().catch(console.error)},250);
+  if(FIREBASE_READY){
+    clearTimeout(saveDebounce);
+    saveDebounce=setTimeout(()=>{
+      const payload={accounts:state.accounts,videos:state.videos.map(stripLocalOnly),withdrawals:state.withdrawals||[],rechargeRequests:state.rechargeRequests||[],giftTransactions:state.giftTransactions||[],systemErrors:state.systemErrors||[],updatedAt:Date.now()};
+      firebaseAuthReady.then(()=>remoteDoc().set(payload,{merge:false})).catch(e=>{
+        console.error("Firestore sync failed",e);
+        recordSystemError('firebase_save',e?.message||String(e));
+        toast("⚠️ تعذّر حفظ البيانات على Firebase");
+      });
+    },250);
   }
 }
-
-function saveSession(){
-  try{localStorage.setItem(SESSION_KEY,JSON.stringify(state.session||null))}catch(e){}
-}
-function clearSession(){
-  try{localStorage.removeItem(SESSION_KEY)}catch(e){}
-}
-
+function saveSession(){try{localStorage.setItem(SESSION_KEY,JSON.stringify(state.session||null))}catch(e){}}
+function clearSession(){try{localStorage.removeItem(SESSION_KEY)}catch(e){}}
 function applyLoadedState(x){
   const rawAccounts=x?.accounts||{};
   const normalizedAccounts={};
   Object.entries(rawAccounts).forEach(([key,a])=>{
-    const email=String(a?.email||key||'').trim().toLowerCase();
-    if(!email)return;
-    normalizedAccounts[email]={
-      ...a,email,
-      friends:Array.isArray(a.friends)?a.friends:[],
-      followers:Array.isArray(a.followers)?a.followers:[],
-      following:Array.isArray(a.following)?a.following:[],
-      friendRequests:Array.isArray(a.friendRequests)?a.friendRequests:[],
-      sentFriendRequests:Array.isArray(a.sentFriendRequests)?a.sentFriendRequests:[],
-      messages:Array.isArray(a.messages)?a.messages:[],
-      banReason:("banReason" in a?a.banReason:null),
-      lastModerationAction:("lastModerationAction" in a?a.lastModerationAction:null),
-      isPrivate:!!a.isPrivate,
-      accountType:a.accountType==="business"?"business":"personal",
-      bizCategory:a.bizCategory||null,
-      earningsWithdrawn:Number(a.earningsWithdrawn)||0
+    const email=String(a?.email||key||'').trim().toLowerCase(); if(!email)return;
+    normalizedAccounts[email]={...a,email,
+      friends:Array.isArray(a.friends)?a.friends:[],followers:Array.isArray(a.followers)?a.followers:[],following:Array.isArray(a.following)?a.following:[],
+      friendRequests:Array.isArray(a.friendRequests)?a.friendRequests:[],sentFriendRequests:Array.isArray(a.sentFriendRequests)?a.sentFriendRequests:[],messages:Array.isArray(a.messages)?a.messages:[],
+      banReason:("banReason" in a?a.banReason:null),lastModerationAction:("lastModerationAction" in a?a.lastModerationAction:null),isPrivate:!!a.isPrivate,
+      accountType:a.accountType==="business"?"business":"personal",bizCategory:a.bizCategory||null,earningsWithdrawn:Number(a.earningsWithdrawn)||0,
+      tokens:Math.max(0,Number(a.tokens)||0),totalTokensReceived:Math.max(0,Number(a.totalTokensReceived)||0),totalTokensSent:Math.max(0,Number(a.totalTokensSent)||0),
+      giftsReceived:Array.isArray(a.giftsReceived)?a.giftsReceived:[],giftsSent:Array.isArray(a.giftsSent)?a.giftsSent:[]
     };
   });
-  state.accounts=normalizedAccounts;
-  ensureUserCodes();
+  state.accounts=normalizedAccounts; ensureUserCodes();
   state.videos=Array.isArray(x?.videos)?x.videos.map(v=>({...v})):[];
   state.withdrawals=Array.isArray(x?.withdrawals)?x.withdrawals:[];
+  state.rechargeRequests=Array.isArray(x?.rechargeRequests)?x.rechargeRequests:[];
+  state.giftTransactions=Array.isArray(x?.giftTransactions)?x.giftTransactions:[];
+  state.systemErrors=Array.isArray(x?.systemErrors)?x.systemErrors:[];
 }
-
-async function loadFromSupabase(){
-  if(!SUPABASE_READY || !supabaseClient) return false;
-  const {data,error}=await supabaseClient
-    .from(SUPABASE_STATE_TABLE)
-    .select("data")
-    .eq("id",SUPABASE_STATE_ID)
-    .maybeSingle();
-
-  if(error){
-    console.warn("Supabase database load failed:",error);
-    return false;
-  }
-  if(data?.data){
-    applyLoadedState(data.data);
-    try{
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({
-          accounts:state.accounts,
-          videos:state.videos.map(stripLocalOnly),
-          withdrawals:state.withdrawals||[]
-        })
-      );
-    }catch(e){}
-  }
-  return true;
-}
-
 function load(){
-  // نبدأ من الكاش المحلي حتى تفتح الواجهة بسرعة.
   try{
-    const x=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null");
-    if(x) applyLoadedState(x);
-    if(!state.session){
-      const sess=JSON.parse(localStorage.getItem(SESSION_KEY)||"null");
-      if(sess) state.session=sess;
-    }
+    const x=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null"); if(x)applyLoadedState(x);
+    if(!state.session){const sess=JSON.parse(localStorage.getItem(SESSION_KEY)||"null");if(sess)state.session=sess}
   }catch(e){}
-
-  // ثم نجلب النسخة الأساسية من Supabase.
-  if(SUPABASE_READY){
-    loadFromSupabase().then(()=>{
-      if(state.session&&!state.session.isAdmin&&isBanned(account())){
-        state.session=null;
-        clearSession();
-        state.screen="auth";
-        state.ui.authMode="login";
-      }
-      render();
-    }).catch(e=>console.warn("Supabase load error",e));
+  if(FIREBASE_READY){
+    firebaseAuthReady.then(()=>{
+    try{
+      if(remoteUnsub)remoteUnsub();
+      remoteUnsub=remoteDoc().onSnapshot(snap=>{
+        if(snap.metadata.hasPendingWrites)return;
+        const x=snap.data(); if(!x)return;
+        applyLoadedState(x); render();
+      },err=>{console.error("Firestore listen error",err);recordSystemError('firebase_listen',err?.message||String(err));});
+    }catch(e){console.error("Firestore listener setup error",e)}
+    });
   }
 }
 
@@ -668,7 +668,7 @@ function renderAuth(){
  </div>`
 }
 function showForgot(){state.pending=null;state.ui.authMode="forgot";render()}
-function submitForgotPassword(){
+async function submitForgotPassword(){
  const eEl=app.querySelector("#femail"),p1El=app.querySelector("#fpass1"),p2El=app.querySelector("#fpass2"),err=app.querySelector("#authErr");
  const e=(eEl?.value||"").trim().toLowerCase(),p1=p1El?.value||"",p2=p2El?.value||"";
  if(err)err.style.display="none";
@@ -680,7 +680,7 @@ function submitForgotPassword(){
  if(a.authProvider==="google"){if(err){err.textContent="هذا الحساب يستخدم تسجيل دخولًا خارجيًا. استخدم البريد وكلمة السر المسجلين";err.style.display="block";}return}
  if(p1.length<8){if(err){err.textContent="كلمة السر يجب أن تكون 8 أحرف/أرقام على الأقل";err.style.display="block";}return}
  if(p1!==p2){if(err){err.textContent="كلمتا السر غير متطابقتين";err.style.display="block";}return}
- a.password=p1;
+ a.password=await hashPassword(p1);
  save();
  state.ui.authMode="login";
  render();
@@ -718,11 +718,19 @@ async function login(){
  if(loginRateLimited()){err.textContent="تم إيقاف محاولات الدخول مؤقتًا للحماية. جرّب بعد 10 دقائق.";err.style.display="block";return}
  if(!validEmail(e)){rememberLoginAttempt();err.textContent="اكتب بريدًا إلكترونيًا صحيحًا";err.style.display="block";return}
  if(p.length<4){rememberLoginAttempt();err.textContent="كلمة السر غير صحيحة";err.style.display="block";return}
- if(e===ADMIN_EMAIL&&p===ADMIN_PASS){state.session={email:e,isAdmin:true};saveSession();state.screen="admin";render();return}
+ if(e===ADMIN_EMAIL){
+   const adminHash=await hashPassword(p);
+   if(adminHash===ADMIN_PASS_HASH){state.session={email:e,isAdmin:true};saveSession();state.screen="admin";render();return}
+   rememberLoginAttempt();err.textContent="كلمة السر غير صحيحة";err.style.display="block";return;
+ }
  if(getAccount(e)){
    const existing=getAccount(e);
    if(existing.authProvider==="google"){rememberLoginAttempt();err.textContent="هذا الحساب يستخدم تسجيل دخولًا خارجيًا. استخدم طريقة الدخول الأصلية.";err.style.display="block";return}
-   if(existing.password!==p){rememberLoginAttempt();err.textContent="كلمة السر غير صحيحة";err.style.display="block";return}
+   const enteredHash=await hashPassword(p);
+   const storedIsHashed=looksHashed(existing.password);
+   const matches=storedIsHashed?(existing.password===enteredHash):(existing.password===p);
+   if(!matches){rememberLoginAttempt();err.textContent="كلمة السر غير صحيحة";err.style.display="block";return}
+   if(!storedIsHashed){ existing.password=enteredHash; /* ترقية تلقائية لكلمة سر قديمة غير مشفّرة */ }
    if(isBanned(existing)){
      const permanent=existing.bannedPermanent===true||existing.banType==='permanent';
      state.ui.banNotice=banText(existing);
@@ -731,11 +739,13 @@ async function login(){
      render();
      return;
    }
-   state.session={email:e};saveSession();state.ui.banNotice=null;state.ui.banUntil=null;state.ui.banPermanent=false;state.screen="home";render();return
+   state.session={email:e};saveSession();state.ui.banNotice=null;state.ui.banUntil=null;state.ui.banPermanent=false;state.screen="home";
+   if(!storedIsHashed) save(); /* يحفظ نسخة الـ hash الجديدة بدل النص العادي القديم */
+   render();return
  }
  err.textContent="هذا الحساب غير موجود. الحسابات الجديدة يجب أن تُنشأ من زر «إنشاء حساب جديد».";err.style.display="block"
 }
-function finishSignup(){
+async function finishSignup(){
   try{
     const nameEl=app.querySelector("#name"),ageEl=app.querySelector("#age"),err=app.querySelector("#obErr");
     const n=(nameEl?.value||"").trim(), a=Number(ageEl?.value);
@@ -748,7 +758,8 @@ function finishSignup(){
       return;
     }
     const email=String(state.pending.email).trim().toLowerCase();
-    state.accounts[email]={email,name:n,age:a,password:state.pending.password,authProvider:state.pending.authProvider||"password",code:generateUserCode(),avatar:null,bannedUntil:null,bannedPermanent:false,banHours:0,banStartedAt:null,banReason:null,lastModerationAction:null,friends:[],followers:[],following:[],friendRequests:[],sentFriendRequests:[],messages:[],trustScore:state.pending.trustScore??100,riskFlags:state.pending.riskFlags||[],emailVerified:false,createdAt:Date.now(),isPrivate:false,accountType:"personal",bizCategory:null,earningsWithdrawn:0};
+    const hashedPassword=await hashPassword(state.pending.password);
+    state.accounts[email]={email,name:n,age:a,password:hashedPassword,authProvider:state.pending.authProvider||"password",code:generateUserCode(),avatar:null,bannedUntil:null,bannedPermanent:false,banHours:0,banStartedAt:null,banReason:null,lastModerationAction:null,friends:[],followers:[],following:[],friendRequests:[],sentFriendRequests:[],messages:[],trustScore:state.pending.trustScore??100,riskFlags:state.pending.riskFlags||[],emailVerified:false,createdAt:Date.now(),isPrivate:false,accountType:"personal",bizCategory:null,earningsWithdrawn:0,tokens:0,totalTokensReceived:0,totalTokensSent:0,giftsReceived:[],giftsSent:[]};
     state.session={email};
     state.pending=null;
     // ننتقل فورًا للرئيسية، ثم نحاول الحفظ. حتى لو منع content:// التخزين، لا يعلق الزر.
@@ -874,6 +885,60 @@ function renderFriends(){
  if(tab==='requests')content=incoming.length?incoming.map(a=>`<div class="admin-card relation-row"><div class="relation-main"><div class="avatar sm">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}</div><div><b>${esc(a.name||'مستخدم')}</b><div class="muted" style="font-size:10px">أرسل لك طلب صداقة</div></div></div><div class="relation-actions"><button class="btn btn-sm btn-primary" onclick="acceptFriendRequest('${esc(a.email)}')">قبول</button><button class="btn btn-sm btn-danger" onclick="rejectFriendRequest('${esc(a.email)}')">رفض</button></div></div>`).join(''):`<div class="empty">لا توجد طلبات صداقة.</div>`;
  return `<div class="overlay" onclick="if(event.target===this){state.ui.friends=false;render()}"><section class="sheet"><div class="handle"></div><h2>👥 العلاقات</h2><div class="relation-tabs"><button class="btn btn-sm ${tab==='friends'?'btn-primary':'btn-ghost'}" onclick="state.ui.friendsTab='friends';render()">الأصدقاء (${friends.length})</button><button class="btn btn-sm ${tab==='followers'?'btn-primary':'btn-ghost'}" onclick="state.ui.friendsTab='followers';render()">المتابعين (${followers.length})</button><button class="btn btn-sm ${tab==='following'?'btn-primary':'btn-ghost'}" onclick="state.ui.friendsTab='following';render()">أتابعهم (${following.length})</button><button class="btn btn-sm ${tab==='requests'?'btn-primary':'btn-ghost'}" onclick="state.ui.friendsTab='requests';render()">طلبات (${incoming.length})</button></div><p class="muted" style="margin:10px 0">المراسلة متاحة فقط بعد قبول طلب الصداقة.</p><div class="admin-list" style="max-height:55vh;overflow:auto">${content}</div><button class="btn btn-ghost full" style="margin-top:10px" onclick="state.ui.friends=false;render()">إغلاق</button></section></div>`;
 }
+const GIFT_ITEMS=[
+ {id:"rose",name:"وردة",emoji:"🌹",cost:10},
+ {id:"heart",name:"قلب",emoji:"❤️",cost:50},
+ {id:"star",name:"نجمة",emoji:"⭐",cost:100},
+ {id:"crown",name:"تاج",emoji:"👑",cost:500}
+];
+function tokenBalance(a){return Math.max(0,Number(a?.tokens)||0)}
+function recordSystemError(type,message,extra={}){
+  state.systemErrors=Array.isArray(state.systemErrors)?state.systemErrors:[];
+  state.systemErrors.unshift({id:'err'+Date.now()+Math.random().toString(36).slice(2,7),type,message:String(message||'خطأ غير معروف'),at:Date.now(),...extra});
+  state.systemErrors=state.systemErrors.slice(0,100);
+  save();
+}
+function openTokenRecharge(){state.ui.tokenRecharge=true;state.ui.rechargeMethod='orange';state.ui.rechargeAmount='';state.ui.rechargeNote='';render()}
+function closeTokenRecharge(){state.ui.tokenRecharge=false;render()}
+function submitTokenRecharge(){
+ const a=account();if(!a)return;
+ const amount=Number(app.querySelector('#rechargeAmount')?.value||0);
+ const note=String(app.querySelector('#rechargeNote')?.value||'').trim();
+ const method=state.ui.rechargeMethod||'orange';
+ if(!Number.isFinite(amount)||amount<1||amount>100000){toast('اكتب عدد توكن صالحًا بين 1 و100000');return}
+ if(note.length<2){toast('اكتب رقم العملية/ملاحظة التحويل');return}
+ const names={orange:'Orange Cash',we:'WE Cash'};
+ state.rechargeRequests=state.rechargeRequests||[];
+ state.rechargeRequests.unshift({id:'r'+Date.now()+Math.random().toString(36).slice(2,7),ownerEmail:a.email,ownerName:a.name,method,methodName:names[method]||method,requestedTokens:amount,note,status:'pending',createdAt:Date.now()});
+ save();closeTokenRecharge();toast('✅ تم إرسال طلب الشحن للمطور. سيتم إضافة التوكن بعد المراجعة.');
+}
+function tokenRechargeSheet(){
+ if(!state.ui.tokenRecharge)return '';
+ const method=state.ui.rechargeMethod||'orange';
+ return `<div class="overlay" onclick="if(event.target===this)closeTokenRecharge()"><section class="sheet"><div class="handle"></div><h2>🪙 شحن التوكن</h2><div class="review-box"><b>الدفع يدوي</b><span>حوّل المبلغ بالطريقة المختارة ثم اكتب رقم العملية/ملاحظة التحويل. التوكن لا يُضاف تلقائيًا؛ المطور يراجع الطلب أولًا.</span></div><div class="field"><label>طريقة التحويل</label><div style="display:flex;gap:7px"><button class="btn btn-sm ${method==='orange'?'btn-primary':'btn-ghost'}" onclick="state.ui.rechargeMethod='orange';render()">Orange Cash</button><button class="btn btn-sm ${method==='we'?'btn-primary':'btn-ghost'}" onclick="state.ui.rechargeMethod='we';render()">WE Cash</button></div></div><div class="review-box" style="margin:8px 0;text-align:right"><b>${method==='orange'?'📱 01213783090':'📱 01503724381'}</b><span>${method==='orange'?'Orange Cash':'WE Cash'} — الرقم الظاهر للتحويل فقط</span></div><div class="field"><label>عدد التوكن المطلوب</label><input id="rechargeAmount" type="number" min="1" max="100000" placeholder="مثال: 100"></div><div class="field"><label>رقم العملية أو ملاحظة التحويل</label><input id="rechargeNote" placeholder="اكتب رقم العملية بعد التحويل"></div><button class="btn btn-primary full" onclick="submitTokenRecharge()">إرسال طلب الشحن</button><button class="btn btn-ghost full" style="margin-top:8px" onclick="closeTokenRecharge()">إلغاء</button></section></div>`;
+}
+function openGift(videoId){if(!requireLogin())return;const v=state.videos.find(x=>x.id===videoId);if(!v)return;if(accountKey(v.ownerEmail)===accountKey(account()?.email)){toast('لا يمكنك إرسال هدية لنفسك');return}state.ui.giftVideoId=videoId;render()}
+function closeGift(){state.ui.giftVideoId=null;render()}
+function giftSheet(){
+ const id=state.ui.giftVideoId;if(!id)return '';
+ const v=state.videos.find(x=>x.id===id);if(!v)return '';
+ const receiver=getAccount(v.ownerEmail),me=account();
+ return `<div class="overlay" onclick="if(event.target===this)closeGift()"><section class="sheet"><div class="handle"></div><h2>🎁 إرسال هدية</h2><p class="muted" style="margin-bottom:10px">إلى ${esc(receiver?.name||v.ownerName)} · رصيدك ${fmt(tokenBalance(me))} 🪙</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${GIFT_ITEMS.map(g=>`<button class="btn btn-ghost" style="padding:14px 8px" onclick="sendGift('${v.id}','${g.id}')"><span style="font-size:26px">${g.emoji}</span><br>${esc(g.name)}<br><b>${g.cost} 🪙</b></button>`).join('')}</div><button class="btn btn-primary full" style="margin-top:10px" onclick="closeGift();openTokenRecharge()">➕ شحن التوكن</button><button class="btn btn-ghost full" style="margin-top:8px" onclick="closeGift()">إلغاء</button></section></div>`;
+}
+function sendGift(videoId,giftId){
+ const me=account(),v=state.videos.find(x=>x.id===videoId),g=GIFT_ITEMS.find(x=>x.id===giftId);if(!me||!v||!g)return;
+ const receiver=getAccount(v.ownerEmail);if(!receiver){toast('الحساب غير موجود');return}
+ if(accountKey(me.email)===accountKey(receiver.email)){toast('لا يمكنك إرسال هدية لنفسك');return}
+ if(tokenBalance(me)<g.cost){toast('رصيد التوكن غير كافٍ — اشحن أولًا');return}
+ me.tokens=tokenBalance(me)-g.cost;me.totalTokensSent=(Number(me.totalTokensSent)||0)+g.cost;
+ receiver.tokens=tokenBalance(receiver)+g.cost;receiver.totalTokensReceived=(Number(receiver.totalTokensReceived)||0)+g.cost;
+ me.giftsSent=Array.isArray(me.giftsSent)?me.giftsSent:[];receiver.giftsReceived=Array.isArray(receiver.giftsReceived)?receiver.giftsReceived:[];
+ const tx={id:'g'+Date.now()+Math.random().toString(36).slice(2,7),fromEmail:me.email,fromName:me.name,toEmail:receiver.email,toName:receiver.name,videoId,giftId:g.id,giftName:g.name,emoji:g.emoji,tokens:g.cost,createdAt:Date.now()};
+ me.giftsSent.unshift(tx);receiver.giftsReceived.unshift(tx);state.giftTransactions=state.giftTransactions||[];state.giftTransactions.unshift(tx);state.giftTransactions=state.giftTransactions.slice(0,500);
+ save();state.ui.giftVideoId=null;render();toast(`🎁 تم إرسال ${g.emoji} ${g.name}`);
+}
+function tokenPanel(a){return `<div class="review-box" style="margin:10px 18px;text-align:center"><span>رصيد التوكن</span><b style="display:block;font-size:25px;margin:3px 0">${fmt(tokenBalance(a))} 🪙</b><button class="btn btn-primary btn-sm" onclick="openTokenRecharge()">➕ شحن التوكن</button></div>`}
+
 function videoCard(v){
  const acc=state.accounts[v.ownerEmail], av=acc?.avatar?`<img src="${esc(acc.avatar)}">`:initials(v.ownerName);
  const me=account(), isOwn=me&&accountKey(me.email)===accountKey(v.ownerEmail);
@@ -885,7 +950,7 @@ function videoCard(v){
  <div class="actions"><button class="avatar sm" style="border:0;padding:0" onclick="openUserProfile('${esc(v.ownerEmail)}')">${av}</button>
  <button class="action ${liked(v)?"liked":""}" onclick="likeVideo('${v.id}')">${ICON.heart}<span>${fmt(v.likes.length)}</span></button>
  <button class="action" onclick="openComments('${v.id}')">${ICON.comment}<span>${fmt(v.comments.length)}</span></button>
- <button class="action" onclick="openShare('${v.id}')">${ICON.share}<span>مشاركة</span></button></div></article>`
+ <button class="action" onclick="openGift('${v.id}')">🎁<span>هدية</span></button><button class="action" onclick="openShare('${v.id}')">${ICON.share}<span>مشاركة</span></button></div></article>`
 }
 function renderDiscover(){
  const cats=[{id:"all",label:"الكل"},{id:"trend",label:"🔥 تريند"},{id:"music",label:"🎵 موسيقى"},{id:"dance",label:"💃 رقص"},{id:"comedy",label:"😂 كوميديا"}];
@@ -990,6 +1055,8 @@ function overlays(){
   if(v)h+=`<div class="overlay" onclick="if(event.target===this)closeComments()"><section class="sheet comments"><div class="handle"></div><h2>التعليقات (${v.comments.length})</h2><div class="comment-list">${v.comments.length?v.comments.map(c=>`<div class="comment"><div class="cav">${initials(c.name)}</div><div><div class="comment-name">${esc(c.name)}</div><div class="comment-text">${esc(c.text)}</div></div></div>`).join(""):`<div class="empty" style="height:auto;padding:35px 5px">لسه مفيش تعليقات.</div>`}</div><div class="comment-input"><input id="commentText" placeholder="اكتب تعليقًا باحترام..." onkeydown="if(event.key==='Enter')addComment('${v.id}')"><button class="send" onclick="addComment('${v.id}')">${ICON.send}</button></div><div class="note" style="margin-top:6px">🛡️ التعليق المسيء لا يُنشر، ويُوقف حساب صاحبه تلقائيًا لمدة ساعة.</div></section></div>`
  }
  if(state.ui.share)h+=`<div class="overlay" onclick="if(event.target===this)closeShare()"><section class="sheet"><div class="handle"></div><h2>مشاركة الفيديو</h2><button class="btn btn-ghost full" onclick="copyLink('${state.ui.share}')">نسخ رابط الفيديو</button><button class="btn btn-ghost full" style="margin-top:8px" onclick="closeShare()">إلغاء</button></section></div>`;
+ if(state.ui.giftVideoId) h+=giftSheet();
+ if(state.ui.tokenRecharge) h+=tokenRechargeSheet();
  return h
 }
 function closeComments(){state.ui.comments=null;render()}
@@ -1243,6 +1310,7 @@ function renderEarnings(){
  const w=myWithdrawal(a);
  return `<div class="screen fade"><div class="topbar"><button class="side right" onclick="go('profile')">${ICON.close}</button><b>💰 الأرباح ومركز المبدعين</b></div>
  <div style="padding:18px;overflow:auto">
+ ${tokenPanel(a)}
  <div class="review-box" style="text-align:center;padding:22px"><span>الرصيد المتاح</span><b style="font-size:26px;display:block;margin-top:6px">${fmt(e.balance)} نقطة</b><div class="muted" style="margin-top:4px">≈ ${egp(e.balance)} ج.م</div>
  ${w?'':`<button class="btn btn-primary full" style="margin-top:14px" onclick="openWithdrawSheet()">طلب سحب الأرباح</button>`}</div>
  ${w?withdrawStatusBox(w):''}
@@ -1250,7 +1318,7 @@ function renderEarnings(){
  <div class="settings-group-label" style="margin-top:18px">تفاصيل كل فيديو</div>
  ${e.perVideo.length?e.perVideo.map(v=>`<div class="admin-card" style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;gap:8px"><span class="muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:65%">${esc(v.caption||'بدون وصف')}</span><b>${fmt(v.coins)} نقطة</b></div><div class="muted" style="font-size:10px;margin-top:4px">❤️ ${v.likes} · 💬 ${v.comments}</div></div>`).join(''):`<div class="empty" style="height:auto;padding:20px">لا توجد فيديوهات محتسبة بعد. انشر فيديو ليبدأ حساب أرباحك.</div>`}
  <p class="muted" style="margin-top:10px">تُحسب الأرباح تقديريًا بناءً على التفاعل (لايكات وتعليقات) على فيديوهاتك، بالإضافة لمكافأة عن كل متابع جديد (ما يعادل 5 ج.م لكل متابع داخل نظام النقاط). هذه قيمة تجريبية داخل التطبيق فقط وليست أموالًا حقيقية ولا وعدًا بالدفع.</p>
- </div>${withdrawSheet()}${nav("")}</div>`
+ </div>${withdrawSheet()}${tokenRechargeSheet()}${nav("")}</div>`
 }
 function renderProfile(){
  if(!state.session)return `<div class="screen auth"><p class="muted">سجل الدخول لعرض حسابك.</p><button class="btn btn-primary full" style="margin-top:14px" onclick="go('auth')">تسجيل الدخول</button>${nav("profile")}</div>`;
@@ -1303,7 +1371,7 @@ function renderUserProfile(){
  return `<div class="screen fade"><div class="topbar"><button class="side right" onclick="closeUserProfile()">${ICON.close}</button><b>@${esc(String(a.email).split("@")[0])}</b></div>
  <div class="profile-head"><div class="avatar lg">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}</div>
  <div class="profile-name">${esc(a.name||"مستخدم")} ${a.isPrivate?`<span title="حساب خاص">${ICON.lock}</span>`:""}</div>
- <div class="muted" style="text-align:center;font-size:11.5px">كود: ${esc(userCodeLabel(a))}</div>
+ <div class="muted" style="text-align:center;font-size:11.5px">كود: ${esc(userCodeLabel(a))}</div><div class="mini-badge" style="margin:6px auto 0">🪙 ${fmt(tokenBalance(a))} توكن</div>
  ${bizLine}
  <div class="stats"><div><b>${Array.isArray(a.followers)?a.followers.length:0}</b><span>متابعون</span></div><div><b>${Array.isArray(a.following)?a.following.length:0}</b><span>يتابع</span></div><div><b>${locked?"—":theirVideos.length}</b><span>فيديو</span></div></div>
  <div style="display:flex;gap:8px;justify-content:center;margin-top:14px">${followBtn}${msgBtn}</div></div>
@@ -1343,16 +1411,40 @@ function saveName(){const n=app.querySelector("#newName").value.trim();if(n){sta
 /* ---------- تخزين ملفات الفيديو على Supabase Storage (بدون بطاقة، يشتغل من أي جهاز) ---------- */
 async function uploadVideoFile(id,blob){
   if(!SUPABASE_READY||!supabaseClient) throw new Error("supabase_not_configured");
-  const path=id;
-  const {error:upErr}=await supabaseClient.storage.from(SUPABASE_BUCKET).upload(path,blob,{contentType:blob.type||"video/webm",upsert:true});
-  if(upErr) throw upErr;
+  if(!blob) throw new Error("no_file");
+
+  // اسم فريد + امتداد حقيقي للفيديو.
+  const mime=String(blob.type||"video/webm").toLowerCase();
+  const ext=mime.includes("mp4")?"mp4":mime.includes("quicktime")?"mov":"webm";
+  const path=`${id}.${ext}`;
+
+  // مهم: لا نستخدم upsert هنا؛ لأن upsert يحتاج صلاحيات إضافية
+  // (SELECT/UPDATE) وقد يمنع الرفع عند وجود سياسة INSERT فقط.
+  const {error:upErr}=await supabaseClient.storage
+    .from(SUPABASE_BUCKET)
+    .upload(path,blob,{
+      contentType:mime,
+      cacheControl:"3600",
+      upsert:false
+    });
+
+  if(upErr){
+    console.error("Supabase Storage upload error:",upErr);
+    const msg=upErr.message||upErr.error_description||"upload_failed";
+    throw new Error(`Supabase Storage: ${msg}`);
+  }
+
   const {data}=supabaseClient.storage.from(SUPABASE_BUCKET).getPublicUrl(path);
-  if(!data?.publicUrl) throw new Error("no_public_url");
+  if(!data?.publicUrl) throw new Error("Supabase Storage: public URL unavailable");
   return data.publicUrl;
 }
 async function deleteVideoFile(id){
   if(!SUPABASE_READY||!supabaseClient) return;
-  try{ await supabaseClient.storage.from(SUPABASE_BUCKET).remove([id]); }catch(e){ /* الملف مش موجود أو اتحذف قبل كده */ }
+  try{
+    await supabaseClient.storage.from(SUPABASE_BUCKET).remove([
+      id, `${id}.mp4`, `${id}.webm`, `${id}.mov`
+    ]);
+  }catch(e){ console.warn("Supabase delete error",e); }
 }
 
 /* ---------- Create ---------- */
@@ -1565,7 +1657,8 @@ async function publish(){
    v.videoURL=await uploadVideoFile(id,blob);
  }catch(e){
    console.error("SnapVibe publish error:",e);
-   toast("تعذر رفع الفيديو إلى Supabase. تأكد من Bucket videos وصلاحيات الرفع واتصال الإنترنت.");
+   recordSystemError('publish',e?.message||String(e),{ownerEmail:state.session?.email||'',videoId:id});
+   toast(`❌ فشل رفع الفيديو: ${String(e?.message||e).slice(0,140)}`);
    return;
  }
  state.videos.unshift(v);save();
@@ -1582,19 +1675,28 @@ function renderAdmin(){
  const withdrawals=(state.withdrawals||[]).slice().sort((x,y)=>y.createdAt-x.createdAt);
  const pendingWithdrawals=withdrawals.filter(w=>w.status==='pending').length;
  return `<div class="screen fade"><div class="topbar"><b>لوحة المطور</b><button class="topbar side left" onclick="adminLogout()">${ICON.close}</button></div>
- <div class="review-note" style="margin:10px 11px 0;${SUPABASE_READY?"":"border-color:#ff4d4f"}"><b>${SUPABASE_READY?"🟢 متصل بالسيرفر (Supabase)":"🔴 Supabase غير متصل"}</b><span>${SUPABASE_READY?"بيانات الحسابات والفيديوهات وطلبات السحب تُحفظ على Supabase.":"راجع supabaseConfig وأنشئ جدول snapvibe_state كما هو موضح في التعليمات."}</span></div>
+ <div class="review-note" style="margin:10px 11px 0;${SUPABASE_READY?"":"border-color:#ff4d4f"}"><b>${SUPABASE_READY?"🟢 متصل بقاعدة البيانات (Firebase)":"🔴 Supabase غير متصل"}</b><span>${SUPABASE_READY?"الحسابات والتوكن والهدايا والشحن والسحب والأخطاء وبيانات الفيديو تُحفظ على Firebase. ملفات الفيديو نفسها فقط تُرفع على Supabase Storage.":"راجع firebaseConfig وقواعد Firestore، وتأكد أن Supabase مضبوط فقط لتخزين الفيديو."}</span></div>
  <div class="review-note" style="margin:10px 11px 0;${SUPABASE_READY?"":"border-color:#ff4d4f"}"><b>${SUPABASE_READY?"🟢 متصل بتخزين الفيديوهات (Supabase)":"🔴 غير متصل بتخزين الفيديوهات — رفع الفيديو لن يعمل"}</b><span>${SUPABASE_READY?"ملفات الفيديو بتترفع وتتشاف من أي جهاز.":"لازم تدخل إعدادات Supabase في أول الكود (supabaseConfig) وتعمل bucket اسمه videos."}</span></div>
- <div class="review-note" style="margin:10px 11px 0"><b>👁️ المراجعة قبل النشر</b><span>كل فيديو يرسله أي شخص يصل هنا أولًا، حتى لو اختار عام أو أصدقاء أو خاص. لا يظهر للناس إلا بعد موافقة المطور.</span></div><div style="padding:10px 11px 0;display:flex;gap:7px;flex-wrap:wrap"><button class="btn btn-sm ${state.ui.adminTab==='videos'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='videos';state.ui.adminOwner=null;render()">🎬 الفيديوهات (${state.videos.length}) · قيد المراجعة ${state.videos.filter(v=>v.status==="pending").length}</button><button class="btn btn-sm ${state.ui.adminTab==='users'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='users';render()">👥 الأشخاص (${users.length})</button><button class="btn btn-sm ${state.ui.adminTab==='withdrawals'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='withdrawals';render()">💳 طلبات السحب (${withdrawals.length}) · قيد المراجعة ${pendingWithdrawals}</button></div>
+ <div class="review-note" style="margin:10px 11px 0"><b>👁️ المراجعة قبل النشر</b><span>كل فيديو يرسله أي شخص يصل هنا أولًا، حتى لو اختار عام أو أصدقاء أو خاص. لا يظهر للناس إلا بعد موافقة المطور.</span></div><div style="padding:10px 11px 0;display:flex;gap:7px;flex-wrap:wrap"><button class="btn btn-sm ${state.ui.adminTab==='videos'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='videos';state.ui.adminOwner=null;render()">🎬 الفيديوهات (${state.videos.length}) · قيد المراجعة ${state.videos.filter(v=>v.status==="pending").length}</button><button class="btn btn-sm ${state.ui.adminTab==='users'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='users';render()">👥 الأشخاص (${users.length})</button><button class="btn btn-sm ${state.ui.adminTab==='withdrawals'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='withdrawals';render()">💳 طلبات السحب (${withdrawals.length}) · قيد المراجعة ${pendingWithdrawals}</button><button class="btn btn-sm ${state.ui.adminTab==='recharges'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='recharges';render()">🪙 الشحن (${(state.rechargeRequests||[]).length}) · جديد ${(state.rechargeRequests||[]).filter(x=>x.status==='pending').length}</button><button class="btn btn-sm ${state.ui.adminTab==='errors'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='errors';render()">🐞 الأخطاء (${(state.systemErrors||[]).length})</button></div>
  <div style="padding:6px 11px 0"><button class="btn btn-sm btn-danger" onclick="openResetSystem()">♻️ إعادة ضبط النظام بالكامل</button></div>
  ${state.ui.adminTab==='users'?renderAdminUsers(users):state.ui.adminTab==='withdrawals'?renderAdminWithdrawals(withdrawals):`<div class="filters">${[["all","الكل"],["pending","قيد المراجعة"],["approved","مقبول"],["rejected","مرفوض"]].map(x=>`<button class="btn btn-sm ${f===x[0]?"btn-primary":"btn-ghost"}" onclick="state.ui.adminFilter='${x[0]}';render()">${x[1]}</button>`).join("")}</div><div class="admin-list">${list.length?list.map(adminCard).join(""):`<div class="empty">لا توجد فيديوهات في هذا التصنيف.</div>`}</div>`}
  ${adminBanSheet()}${resetConfirmSheet()}</div>`
 }
+function renderAdminRecharges(){
+ const list=(state.rechargeRequests||[]).slice().sort((a,b)=>b.createdAt-a.createdAt);
+ return `<div class="admin-list">${list.length?list.map(r=>`<div class="admin-card" style="display:block"><div class="admin-info"><b>${esc(r.ownerName||'مستخدم')} <span class="status ${r.status==='approved'?'approved':r.status==='rejected'?'rejected':'pending'}">${r.status==='approved'?'مقبول':r.status==='rejected'?'مرفوض':'قيد المراجعة'}</span></b><div class="admin-cap">${esc(r.ownerEmail)}<br>🪙 المطلوب: ${fmt(r.requestedTokens)} توكن<br>📱 ${esc(r.methodName||r.method)}<br>🧾 ${esc(r.note)}<br>${new Date(r.createdAt).toLocaleString('ar-EG')}</div></div><div class="admin-actions">${r.status==='pending'?`<button class="btn btn-sm btn-success" onclick="approveRecharge('${r.id}')">✅ تأكيد وإضافة</button><button class="btn btn-sm btn-danger" onclick="rejectRecharge('${r.id}')">رفض</button>`:''}</div></div>`).join(''):`<div class="empty">لا توجد طلبات شحن.</div>`}</div>`;
+}
+function renderAdminErrors(){
+ const list=state.systemErrors||[];
+ return `<div class="admin-list">${list.length?list.map(e=>`<div class="admin-card" style="display:block"><b>🐞 ${esc(e.type||'error')}</b><div class="admin-cap">${esc(e.message)}<br>${e.ownerEmail?`الحساب: ${esc(e.ownerEmail)}<br>`:''}${new Date(e.at||Date.now()).toLocaleString('ar-EG')}</div></div>`).join(''):`<div class="empty">لا توجد أخطاء مسجلة.</div>`}<button class="btn btn-danger full" style="margin:10px 0" onclick="state.systemErrors=[];save();render()">مسح سجل الأخطاء</button></div>`;
+}
+
 function renderAdminWithdrawals(withdrawals){
  return `<div class="admin-list">${withdrawals.length?withdrawals.map(adminWithdrawalCard).join(""):`<div class="empty">لا توجد طلبات سحب حتى الآن.</div>`}</div>`
 }
 function adminWithdrawalCard(w){
  const statusLabel={pending:"قيد المراجعة",approved:"مقبول",rejected:"مرفوض"}[w.status]||w.status;
- return `<div class="admin-card" style="display:block"><div class="admin-info"><b>@${esc(w.ownerName)} <span class="status ${w.status}">${esc(statusLabel)}</span></b><div class="admin-cap">📱 المحفظة: ${esc(w.walletName)}<br>☎️ الرقم: <b style="direction:ltr;display:inline-block">${esc(w.phone)}</b><br>💰 القيمة: ${fmt(w.coins)} نقطة (${w.amount} ج.م)<br>البريد: ${esc(w.ownerEmail)}</div></div><div class="admin-actions" style="margin-top:9px">${w.status==='pending'?`<button class="btn btn-sm btn-success" onclick="statusWithdrawal('${w.id}','approved')">${ICON.check} قبول</button><button class="btn btn-sm btn-danger" onclick="statusWithdrawal('${w.id}','rejected')">رفض</button>`:''}<button class="btn btn-sm btn-ghost" onclick="deleteWithdrawalRequest('${w.id}')">حذف</button></div></div>`
+ return `<div class="admin-card" style="display:block"><div class="admin-info"><b>👤 ${esc(w.ownerName)} <span class="status ${w.status}">${esc(statusLabel)}</span></b><div class="admin-cap">📱 المحفظة: ${esc(w.walletName)}<br>☎️ الرقم: <b style="direction:ltr;display:inline-block">${esc(w.phone)}</b><br>💰 القيمة: ${fmt(w.coins)} نقطة (${w.amount} ج.م)<br>البريد: ${esc(w.ownerEmail)}</div></div><div class="admin-actions" style="margin-top:9px">${w.status==='pending'?`<button class="btn btn-sm btn-success" onclick="statusWithdrawal('${w.id}','approved')">${ICON.check} قبول</button><button class="btn btn-sm btn-danger" onclick="statusWithdrawal('${w.id}','rejected')">رفض</button>`:''}<button class="btn btn-sm btn-ghost" onclick="deleteWithdrawalRequest('${w.id}')">حذف</button></div></div>`
 }
 function statusWithdrawal(id,status){
  const w=(state.withdrawals||[]).find(x=>x.id===id);
@@ -1625,8 +1727,17 @@ function adminUserCard(a){
  const blocked=isBanned(a);
  const mine=state.videos.filter(v=>v.ownerEmail===a.email);
  const status=banDetail(a);
- return `<div class="admin-card" style="display:block"><div style="display:flex;align-items:center;gap:10px"><div class="avatar sm">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}</div><div class="admin-info"><b>${esc(a.name||'مستخدم')} <span class="mini-badge">${esc(userCodeLabel(a))}</span></b><div class="admin-cap">${esc(a.email)}<br>العمر: ${esc(a.age||'—')} سنة · الفيديوهات: ${mine.length}</div></div></div><div style="margin-top:8px"><span class="status ${blocked?'rejected':'approved'}">${blocked?'غير نشط · '+esc(status):'نشط'}</span>${blocked&&a.banReason?`<div class="admin-cap" style="margin-top:5px">السبب: ${esc(a.banReason)}</div>`:""}</div><div class="admin-actions" style="margin-top:9px">${blocked?`<button class="btn btn-sm btn-success" onclick="unbanUser('${esc(a.email)}')">🔓 رفع الحظر</button>`:`<button class="btn btn-sm btn-danger" onclick="openBan('${esc(a.email)}')">🚫 حظر الحساب</button>`}<button class="btn btn-sm btn-ghost" onclick="adminUserVideos('${esc(a.email)}')">🎬 فيديوهات الشخص</button></div></div>`
+ return `<div class="admin-card" style="display:block"><div style="display:flex;align-items:center;gap:10px"><div class="avatar sm">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}</div><div class="admin-info"><b>${esc(a.name||'مستخدم')} <span class="mini-badge">${esc(userCodeLabel(a))}</span></b><div class="admin-cap">${esc(a.email)}<br>العمر: ${esc(a.age||'—')} سنة · الفيديوهات: ${mine.length}<br>🪙 التوكن: <b>${fmt(tokenBalance(a))}</b> · مرسل: ${fmt(a.totalTokensSent||0)} · مستلم: ${fmt(a.totalTokensReceived||0)}</div></div></div><div style="margin-top:8px"><div class="admin-actions" style="margin-bottom:8px"><button class="btn btn-sm btn-primary" onclick="adminAddTokens('${esc(a.email)}')">🪙 إضافة توكن</button></div><span class="status ${blocked?'rejected':'approved'}">${blocked?'غير نشط · '+esc(status):'نشط'}</span>${blocked&&a.banReason?`<div class="admin-cap" style="margin-top:5px">السبب: ${esc(a.banReason)}</div>`:""}</div><div class="admin-actions" style="margin-top:9px">${blocked?`<button class="btn btn-sm btn-success" onclick="unbanUser('${esc(a.email)}')">🔓 رفع الحظر</button>`:`<button class="btn btn-sm btn-danger" onclick="openBan('${esc(a.email)}')">🚫 حظر الحساب</button>`}<button class="btn btn-sm btn-ghost" onclick="adminUserVideos('${esc(a.email)}')">🎬 فيديوهات الشخص</button></div></div>`
 }
+function adminAddTokens(email){
+ const e=accountKey(email),a=getAccount(e);if(!a)return;
+ const amount=Number(prompt('عدد التوكن الذي تريد إضافته للحساب:','100'));
+ if(!Number.isFinite(amount)||amount<=0||amount>1000000){toast('قيمة التوكن غير صحيحة');return}
+ a.tokens=tokenBalance(a)+Math.floor(amount);a.totalTokensReceived=(Number(a.totalTokensReceived)||0)+Math.floor(amount);a.lastTokenGrant={amount:Math.floor(amount),at:Date.now(),by:'admin'};save();render();toast(`✅ تمت إضافة ${Math.floor(amount)} توكن للحساب`);
+}
+function approveRecharge(id){const r=(state.rechargeRequests||[]).find(x=>x.id===id);if(!r||r.status!=='pending')return;const a=getAccount(r.ownerEmail);if(!a){toast('الحساب غير موجود');return}const amount=Math.floor(Number(r.requestedTokens)||0);a.tokens=tokenBalance(a)+amount;a.totalTokensReceived=(Number(a.totalTokensReceived)||0)+amount;r.status='approved';r.reviewedAt=Date.now();save();render();toast(`✅ تمت إضافة ${amount} توكن`)}
+function rejectRecharge(id){const r=(state.rechargeRequests||[]).find(x=>x.id===id);if(!r||r.status!=='pending')return;r.status='rejected';r.reviewedAt=Date.now();save();render();toast('تم رفض طلب الشحن')}
+
 function adminUserVideos(email){state.ui.adminTab='videos';state.ui.adminFilter='all';state.ui.adminOwner=email;render()}
 function adminCard(v){
  const p={public:"عام",friends:"أصدقاء",private:"خاص"}[v.privacy];
@@ -1689,7 +1800,7 @@ function openResetSystem(){state.ui.resetConfirm=true;render()}
 function closeResetSystem(){state.ui.resetConfirm=false;render()}
 function downloadBackup(){
  try{
-   const backup={exportedAt:Date.now(),accounts:state.accounts,videos:state.videos.map(stripLocalOnly),withdrawals:state.withdrawals||[]};
+   const backup={exportedAt:Date.now(),accounts:state.accounts,videos:state.videos.map(stripLocalOnly),withdrawals:state.withdrawals||[],rechargeRequests:state.rechargeRequests||[],giftTransactions:state.giftTransactions||[],systemErrors:state.systemErrors||[]};
    const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"});
    const url=URL.createObjectURL(blob);
    const link=document.createElement("a");
@@ -1704,6 +1815,9 @@ function resetSystem(){
  state.accounts={};
  state.videos=[];
  state.withdrawals=[];
+ state.rechargeRequests=[];
+ state.giftTransactions=[];
+ state.systemErrors=[];
  state.pending=null;
  try{localStorage.removeItem(STORAGE_KEY)}catch(e){}
  save();
