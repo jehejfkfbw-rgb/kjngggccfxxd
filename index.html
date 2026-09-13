@@ -215,9 +215,6 @@ border-radius:10px;padding:14px 15px;outline:none;font-size:14.5px
 </head>
 <body>
 <div id="app"><div id="bootSplash" class="screen splash" aria-label="SnapVibe"><div class="s-logo">S</div><div class="splash-welcome splash-title">أهلاً بيك 👋</div><div class="splash-welcome">مرحبًا بك في SnapVibe</div><div class="splash-desc">منصتك الاجتماعية لمشاركة الفيديوهات القصيرة، اكتشاف محتوى جديد والتواصل مع الآخرين.</div><div class="loader"><i></i></div></div></div>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 (function(){
@@ -240,7 +237,7 @@ border-radius:10px;padding:14px 15px;outline:none;font-size:14.5px
 "use strict";
 
 /* =========================================================
-   SnapVibe — نسخة HTML واحدة، متصلة الآن بقاعدة بيانات Firebase حقيقية
+   SnapVibe — نسخة HTML واحدة، متصلة الآن بقاعدة بيانات Supabase حقيقية
    عشان أي حساب/فيديو/تفاعل يظهر فورًا على كل الأجهزة (موبايل، لابتوب... إلخ)
    مش بس على الجهاز اللي اتعمل منه.
    ========================================================= */
@@ -248,58 +245,30 @@ border-radius:10px;padding:14px 15px;outline:none;font-size:14.5px
 const ADMIN_EMAIL="jehejfkfbw@gmail.com";
 const ADMIN_PASS="ddee4dab";
 
-/* ============== إعدادات Firebase (لازم تتعبى قبل ما التطبيق يشتغل عالميًا) ==============
-   1) روح على https://console.firebase.google.com وسجّل دخول بحساب Google، واعمل "Add project" (مجاني).
-   2) من القائمة الجانبية: Build > Firestore Database > Create database
-      → اختر أي موقع سيرفر قريب → ابدأ في "Test mode" مبدئيًا (تقدر تشدد الصلاحيات بعدين).
-   3) من القائمة الجانبية: Build > Storage > Get started (ده اللي هيخزن ملفات الفيديو نفسها).
-   4) من ⚙️ (Project settings) بجانب "Project Overview" → انزل لـ "Your apps" → اعمل تطبيق ويب جديد (أيقونة </>).
-      هيديك كائن اسمه firebaseConfig فيه apiKey و projectId و... إلخ.
-   5) انسخ القيم دي بالظبط والصقها في الخانات الفاضية تحت (بين علامتي التنصيص "").
-   لحد ما تتعبى الخانات دي، التطبيق هيشتغل محليًا على الجهاز بس زي الأول (مفيش أي كسر أو شاشة سودة).
-   ========================================================================================= */
-const firebaseConfig={
-  apiKey:"AIzaSyAfqUdOD-Y2qMUwj6Hc749w9-2JCjPef6U",
-  authDomain:"snapvibe-df811.firebaseapp.com",
-  projectId:"snapvibe-df811",
-  storageBucket:"snapvibe-df811.firebasestorage.app",
-  messagingSenderId:"572071205713",
-  appId:"1:572071205713:web:3666dad3c5c5a9cd8b5170"
-};
-let FIREBASE_READY=false, db=null, authApp=null;
-try{
-  if(firebaseConfig.apiKey && firebaseConfig.projectId && typeof firebase!=="undefined"){
-    firebase.initializeApp(firebaseConfig);
-    db=firebase.firestore();
-    authApp=firebase.auth();
-    FIREBASE_READY=true;
-  }
-}catch(e){
-  console.warn("SnapVibe: Firebase غير متصل، التطبيق شغال محليًا على هذا الجهاز فقط.",e);
-  FIREBASE_READY=false;
-}
-
-/* ============== إعدادات Supabase (تخزين ملفات الفيديو فقط) ==============
-   Supabase بيخزن ملفات الفيديو نفسها بدون الحاجة لبطاقة بنكية.
-   لو غيّرت المشروع، حدّث القيمتين دول من: Supabase Dashboard > Settings > API
-   ========================================================================= */
+/* ============== إعدادات Supabase — السيرفر الوحيد للتطبيق ==============
+   الفيديوهات -> Supabase Storage / bucket: videos
+   بيانات التطبيق -> Supabase Database / table: snapvibe_state
+   لا يوجد Supabase في هذه النسخة.
+   ======================================================================== */
 const supabaseConfig={
   url:"https://rerozkpfwhrnpbdxdxgr.supabase.co",
-  anonKey:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJlcm96a3Bmd2hybnBiZHhkeGdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMzkwNzAsImV4cCI6MjEwNDgxNTA3MH0.OuYxShwMb9ShXKQW6rVMM6EJB4MJ29-Y6UN-_-4Ee68"
+  anonKey:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbGciOiJIUzI1NiIsInJlZiI6InJlcm96a3Bmd2hybnBiZHhkeGdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMzkwNzAsImV4cCI6MjEwNDgxNTA3MH0.OuYxShwMb9ShXKQW6rVMM6EJB4MJ29-Y6UN-_-4Ee68"
 };
 const SUPABASE_BUCKET="videos";
+const SUPABASE_STATE_TABLE="snapvibe_state";
+const SUPABASE_STATE_ID=1;
 let SUPABASE_READY=false, supabaseClient=null;
+
 try{
   if(supabaseConfig.url && supabaseConfig.anonKey && typeof window.supabase!=="undefined"){
     supabaseClient=window.supabase.createClient(supabaseConfig.url,supabaseConfig.anonKey);
     SUPABASE_READY=true;
   }
 }catch(e){
-  console.warn("SnapVibe: Supabase غير متصل، رفع الفيديوهات لن يعمل حتى يتم ضبطه.",e);
+  console.warn("SnapVibe: Supabase غير متصل.",e);
   SUPABASE_READY=false;
 }
-function remoteDoc(){return db.collection("snapvibe").doc("app_state")}
-// قاعدة بيانات جديدة ونظيفة: لا يتم استيراد أي حسابات تجريبية أو بيانات قديمة.
+
 const STORAGE_KEY="snapvibe_state_v2";
 const SESSION_KEY="snapvibe_session_v2";
 const LOGIN_ATTEMPTS_KEY="snapvibe_login_attempts_v2";
@@ -514,63 +483,145 @@ function loginRateLimited(){
 }
 function rememberLoginAttempt(){try{const a=(()=>{try{return JSON.parse(localStorage.getItem(LOGIN_ATTEMPTS_KEY)||"[]")}catch(e){return[]}})().filter(t=>Date.now()-t<10*60*1000);a.push(Date.now());localStorage.setItem(LOGIN_ATTEMPTS_KEY,JSON.stringify(a))}catch(e){}}
 let saveDebounce=null,remoteUnsub=null;
-function stripLocalOnly(v){const x={...v};delete x.fileId;delete x.src;return x}
+
+function stripLocalOnly(v){
+  const x={...v};
+  delete x.fileId;
+  delete x.src;
+  return x;
+}
+
+async function saveToSupabase(){
+  if(!SUPABASE_READY || !supabaseClient) return false;
+  const payload={
+    id:SUPABASE_STATE_ID,
+    data:{
+      accounts:state.accounts,
+      videos:state.videos.map(stripLocalOnly),
+      withdrawals:state.withdrawals||[]
+    },
+    updated_at:new Date().toISOString()
+  };
+  const {error}=await supabaseClient
+    .from(SUPABASE_STATE_TABLE)
+    .upsert(payload,{onConflict:"id"});
+  if(error){
+    console.warn("Supabase database sync failed:",error);
+    toast("⚠️ تعذّر حفظ البيانات على Supabase");
+    return false;
+  }
+  return true;
+}
+
 function save(){
-  // 1) حفظ محلي فوري (نسخة احتياطية سريعة على الجهاز، تشتغل حتى بدون إنترنت)
+  // حفظ محلي فوري كنسخة احتياطية.
   try{
     const videos=state.videos.map(stripLocalOnly);
-    localStorage.setItem(STORAGE_KEY,JSON.stringify({accounts:state.accounts,videos,withdrawals:state.withdrawals||[]}));
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({accounts:state.accounts,videos,withdrawals:state.withdrawals||[]})
+    );
   }catch(e){
-    console.warn("SnapVibe storage unavailable",e);
+    console.warn("SnapVibe local storage unavailable",e);
   }
+
   try{syncChannel?.postMessage({type:"state-updated",at:Date.now()})}catch(e){}
-  // 2) مزامنة حقيقية مع Firebase عشان أي جهاز تاني يشوف نفس البيانات فورًا
-  if(FIREBASE_READY){
-    clearTimeout(saveDebounce);
-    saveDebounce=setTimeout(()=>{
-      const videos=state.videos.map(stripLocalOnly);
-      remoteDoc().set({accounts:state.accounts,videos,withdrawals:state.withdrawals||[],updatedAt:Date.now()})
-        .catch(e=>{console.warn("Firestore sync failed",e);toast("⚠️ تعذّر الاتصال بالسيرفر، تم الحفظ محليًا على هذا الجهاز فقط")});
-    },250);
+
+  // الحفظ الحقيقي على Supabase.
+  clearTimeout(saveDebounce);
+  if(SUPABASE_READY){
+    saveDebounce=setTimeout(()=>{saveToSupabase().catch(console.error)},250);
   }
 }
+
 function saveSession(){
   try{localStorage.setItem(SESSION_KEY,JSON.stringify(state.session||null))}catch(e){}
 }
-function clearSession(){try{localStorage.removeItem(SESSION_KEY)}catch(e){}}
+function clearSession(){
+  try{localStorage.removeItem(SESSION_KEY)}catch(e){}
+}
+
 function applyLoadedState(x){
-  const rawAccounts=x.accounts||{};
+  const rawAccounts=x?.accounts||{};
   const normalizedAccounts={};
   Object.entries(rawAccounts).forEach(([key,a])=>{
     const email=String(a?.email||key||'').trim().toLowerCase();
     if(!email)return;
-    normalizedAccounts[email]={...a,email,friends:Array.isArray(a.friends)?a.friends:[],followers:Array.isArray(a.followers)?a.followers:[],following:Array.isArray(a.following)?a.following:[],friendRequests:Array.isArray(a.friendRequests)?a.friendRequests:[],sentFriendRequests:Array.isArray(a.sentFriendRequests)?a.sentFriendRequests:[],messages:Array.isArray(a.messages)?a.messages:[],banReason:("banReason" in a?a.banReason:null),lastModerationAction:("lastModerationAction" in a?a.lastModerationAction:null),isPrivate:!!a.isPrivate,accountType:a.accountType==="business"?"business":"personal",bizCategory:a.bizCategory||null,earningsWithdrawn:Number(a.earningsWithdrawn)||0};
+    normalizedAccounts[email]={
+      ...a,email,
+      friends:Array.isArray(a.friends)?a.friends:[],
+      followers:Array.isArray(a.followers)?a.followers:[],
+      following:Array.isArray(a.following)?a.following:[],
+      friendRequests:Array.isArray(a.friendRequests)?a.friendRequests:[],
+      sentFriendRequests:Array.isArray(a.sentFriendRequests)?a.sentFriendRequests:[],
+      messages:Array.isArray(a.messages)?a.messages:[],
+      banReason:("banReason" in a?a.banReason:null),
+      lastModerationAction:("lastModerationAction" in a?a.lastModerationAction:null),
+      isPrivate:!!a.isPrivate,
+      accountType:a.accountType==="business"?"business":"personal",
+      bizCategory:a.bizCategory||null,
+      earningsWithdrawn:Number(a.earningsWithdrawn)||0
+    };
   });
   state.accounts=normalizedAccounts;
   ensureUserCodes();
-  state.videos=Array.isArray(x.videos)?x.videos.map(v=>({...v})):[];
-  state.withdrawals=Array.isArray(x.withdrawals)?x.withdrawals:[];
+  state.videos=Array.isArray(x?.videos)?x.videos.map(v=>({...v})):[];
+  state.withdrawals=Array.isArray(x?.withdrawals)?x.withdrawals:[];
 }
+
+async function loadFromSupabase(){
+  if(!SUPABASE_READY || !supabaseClient) return false;
+  const {data,error}=await supabaseClient
+    .from(SUPABASE_STATE_TABLE)
+    .select("data")
+    .eq("id",SUPABASE_STATE_ID)
+    .maybeSingle();
+
+  if(error){
+    console.warn("Supabase database load failed:",error);
+    return false;
+  }
+  if(data?.data){
+    applyLoadedState(data.data);
+    try{
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          accounts:state.accounts,
+          videos:state.videos.map(stripLocalOnly),
+          withdrawals:state.withdrawals||[]
+        })
+      );
+    }catch(e){}
+  }
+  return true;
+}
+
 function load(){
+  // نبدأ من الكاش المحلي حتى تفتح الواجهة بسرعة.
   try{
     const x=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null");
     if(x) applyLoadedState(x);
-    if(!state.session){const sess=JSON.parse(localStorage.getItem(SESSION_KEY)||"null");if(sess)state.session=sess}
+    if(!state.session){
+      const sess=JSON.parse(localStorage.getItem(SESSION_KEY)||"null");
+      if(sess) state.session=sess;
+    }
   }catch(e){}
-  // الاتصال الحقيقي: أي تغيير يحصل من أي جهاز تاني هيوصل هنا لحظيًا
-  if(FIREBASE_READY){
-    try{
-      if(remoteUnsub) remoteUnsub();
-      remoteUnsub=remoteDoc().onSnapshot(snap=>{
-        if(snap.metadata.hasPendingWrites) return; // ده صدى لحفظنا إحنا، عندنا نسخة أحدث محليًا بالفعل
-        const x=snap.data();
-        if(!x) return;
-        applyLoadedState(x);
-        render();
-      },err=>console.warn("Firestore listen error",err));
-    }catch(e){console.warn("Firestore listener setup error",e)}
+
+  // ثم نجلب النسخة الأساسية من Supabase.
+  if(SUPABASE_READY){
+    loadFromSupabase().then(()=>{
+      if(state.session&&!state.session.isAdmin&&isBanned(account())){
+        state.session=null;
+        clearSession();
+        state.screen="auth";
+        state.ui.authMode="login";
+      }
+      render();
+    }).catch(e=>console.warn("Supabase load error",e));
   }
 }
+
 function go(screen){stopCamera();state.screen=screen;render()}
 
 function render(){
@@ -626,7 +677,7 @@ function submitForgotPassword(){
  if(e===ADMIN_EMAIL){if(err){err.textContent="لا يمكن استعادة كلمة سر حساب المطور من هنا";err.style.display="block";}return}
  const a=getAccount(e);
  if(!a){if(err){err.textContent="هذا الحساب غير موجود";err.style.display="block";}return}
- if(a.authProvider==="google"){if(err){err.textContent="هذا الحساب مسجل بجوجل ومالوش كلمة سر. استخدم زر «تسجيل الدخول بجوجل»";err.style.display="block";}return}
+ if(a.authProvider==="google"){if(err){err.textContent="هذا الحساب يستخدم تسجيل دخولًا خارجيًا. استخدم البريد وكلمة السر المسجلين";err.style.display="block";}return}
  if(p1.length<8){if(err){err.textContent="كلمة السر يجب أن تكون 8 أحرف/أرقام على الأقل";err.style.display="block";}return}
  if(p1!==p2){if(err){err.textContent="كلمتا السر غير متطابقتين";err.style.display="block";}return}
  a.password=p1;
@@ -639,36 +690,7 @@ function showAuthChoice(){state.pending=null;state.ui.authMode="login";render()}
 function showLogin(){state.pending=null;state.ui.authMode="login";render()}
 function showSignup(){state.pending=null;state.ui.authMode="signup";render()}
 async function signInWithGoogle(){
- if(!FIREBASE_READY||!authApp){toast("⚠️ لازم تظبط إعدادات Firebase الأول");return}
- try{
-   const provider=new firebase.auth.GoogleAuthProvider();
-   const result=await authApp.signInWithPopup(provider);
-   const user=result.user;
-   const email=String(user?.email||"").trim().toLowerCase();
-   if(!email){toast("تعذر الحصول على البريد من حساب جوجل");return}
-   if(email===ADMIN_EMAIL){toast("هذا البريد محجوز لحساب المطور");return}
-   try{ if(!Object.keys(state.accounts||{}).length){ load(); } }catch(ex){}
-   const existing=getAccount(email);
-   if(existing){
-     if(isBanned(existing)){
-       const permanent=existing.bannedPermanent===true||existing.banType==='permanent';
-       state.ui.banNotice=banText(existing);
-       state.ui.banPermanent=permanent;
-       state.ui.banUntil=permanent?null:(Number(existing.bannedUntil)||null);
-       state.screen="auth";state.ui.authMode="login";
-       render();
-       return;
-     }
-     state.session={email};saveSession();state.ui.banNotice=null;state.ui.banUntil=null;state.ui.banPermanent=false;state.screen="home";render();
-     return;
-   }
-   state.pending={email,password:null,authProvider:"google",googleName:user.displayName||"",trustScore:100,riskFlags:[]};
-   state.screen="onboarding";render();
- }catch(e){
-   console.error("Google sign-in error",e);
-   if(e && (e.code==="auth/popup-closed-by-user"||e.code==="auth/cancelled-popup-request")) return;
-   toast("تعذر تسجيل الدخول بحساب جوجل. تأكد إنك فعّلت Google Sign-In في Firebase وحاول مرة أخرى.");
- }
+  toast("تسجيل Google غير مستخدم في نسخة Supabase فقط");
 }
 function startSignup(){
  const e=app.querySelector("#email").value.trim().toLowerCase(),p=app.querySelector("#pass").value,err=app.querySelector("#authErr");
@@ -699,7 +721,7 @@ async function login(){
  if(e===ADMIN_EMAIL&&p===ADMIN_PASS){state.session={email:e,isAdmin:true};saveSession();state.screen="admin";render();return}
  if(getAccount(e)){
    const existing=getAccount(e);
-   if(existing.authProvider==="google"){rememberLoginAttempt();err.textContent="هذا الحساب مسجل بجوجل. استخدم زر «تسجيل الدخول بجوجل» تحت.";err.style.display="block";return}
+   if(existing.authProvider==="google"){rememberLoginAttempt();err.textContent="هذا الحساب يستخدم تسجيل دخولًا خارجيًا. استخدم طريقة الدخول الأصلية.";err.style.display="block";return}
    if(existing.password!==p){rememberLoginAttempt();err.textContent="كلمة السر غير صحيحة";err.style.display="block";return}
    if(isBanned(existing)){
      const permanent=existing.bannedPermanent===true||existing.banType==='permanent';
@@ -1543,7 +1565,7 @@ async function publish(){
    v.videoURL=await uploadVideoFile(id,blob);
  }catch(e){
    console.error("SnapVibe publish error:",e);
-   toast("تعذر رفع الفيديو للسيرفر. تأكد من اتصال الإنترنت وإعدادات Firebase وحاول مرة أخرى.");
+   toast("تعذر رفع الفيديو إلى Supabase. تأكد من Bucket videos وصلاحيات الرفع واتصال الإنترنت.");
    return;
  }
  state.videos.unshift(v);save();
@@ -1560,7 +1582,7 @@ function renderAdmin(){
  const withdrawals=(state.withdrawals||[]).slice().sort((x,y)=>y.createdAt-x.createdAt);
  const pendingWithdrawals=withdrawals.filter(w=>w.status==='pending').length;
  return `<div class="screen fade"><div class="topbar"><b>لوحة المطور</b><button class="topbar side left" onclick="adminLogout()">${ICON.close}</button></div>
- <div class="review-note" style="margin:10px 11px 0;${FIREBASE_READY?"":"border-color:#ff4d4f"}"><b>${FIREBASE_READY?"🟢 متصل بالسيرفر (Firebase)":"🔴 غير متصل بسيرفر — التطبيق شغال محليًا على هذا الجهاز بس"}</b><span>${FIREBASE_READY?"كل حساب وفيديو وطلب سحب بيتزامن فورًا مع كل الأجهزة.":"لازم تدخل إعدادات Firebase في أول الكود (firebaseConfig) عشان الحسابات والفيديوهات تظهر على أي جهاز تاني."}</span></div>
+ <div class="review-note" style="margin:10px 11px 0;${SUPABASE_READY?"":"border-color:#ff4d4f"}"><b>${SUPABASE_READY?"🟢 متصل بالسيرفر (Supabase)":"🔴 Supabase غير متصل"}</b><span>${SUPABASE_READY?"بيانات الحسابات والفيديوهات وطلبات السحب تُحفظ على Supabase.":"راجع supabaseConfig وأنشئ جدول snapvibe_state كما هو موضح في التعليمات."}</span></div>
  <div class="review-note" style="margin:10px 11px 0;${SUPABASE_READY?"":"border-color:#ff4d4f"}"><b>${SUPABASE_READY?"🟢 متصل بتخزين الفيديوهات (Supabase)":"🔴 غير متصل بتخزين الفيديوهات — رفع الفيديو لن يعمل"}</b><span>${SUPABASE_READY?"ملفات الفيديو بتترفع وتتشاف من أي جهاز.":"لازم تدخل إعدادات Supabase في أول الكود (supabaseConfig) وتعمل bucket اسمه videos."}</span></div>
  <div class="review-note" style="margin:10px 11px 0"><b>👁️ المراجعة قبل النشر</b><span>كل فيديو يرسله أي شخص يصل هنا أولًا، حتى لو اختار عام أو أصدقاء أو خاص. لا يظهر للناس إلا بعد موافقة المطور.</span></div><div style="padding:10px 11px 0;display:flex;gap:7px;flex-wrap:wrap"><button class="btn btn-sm ${state.ui.adminTab==='videos'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='videos';state.ui.adminOwner=null;render()">🎬 الفيديوهات (${state.videos.length}) · قيد المراجعة ${state.videos.filter(v=>v.status==="pending").length}</button><button class="btn btn-sm ${state.ui.adminTab==='users'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='users';render()">👥 الأشخاص (${users.length})</button><button class="btn btn-sm ${state.ui.adminTab==='withdrawals'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='withdrawals';render()">💳 طلبات السحب (${withdrawals.length}) · قيد المراجعة ${pendingWithdrawals}</button></div>
  <div style="padding:6px 11px 0"><button class="btn btn-sm btn-danger" onclick="openResetSystem()">♻️ إعادة ضبط النظام بالكامل</button></div>
@@ -1733,5 +1755,15 @@ try{render();}catch(e){
 }
 init();
 </script>
+
+<script>
+/* فحص إعدادات Supabase عند تشغيل الصفحة */
+window.addEventListener("load",()=>{
+  if(!SUPABASE_READY){
+    console.warn("SnapVibe: Supabase غير جاهز.");
+  }
+});
+</script>
+
 </body>
 </html>
