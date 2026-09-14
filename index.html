@@ -516,14 +516,51 @@ function notifyLocal(title,body){
   }catch(e){console.warn("Notification display failed",e)}
 }
 function notifIsOn(){return typeof Notification!=="undefined"&&Notification.permission==="granted"}
-async function enableNotifications(){
-  if(!("Notification" in window)){toast("المتصفح ده مش بيدعم الإشعارات");return}
-  if(Notification.permission==="granted"){toast("🔔 الإشعارات مفعّلة بالفعل");return}
-  try{
-    const perm=await Notification.requestPermission();
-    toast(perm==="granted"?"✅ الإشعارات اتفعّلت":"تم رفض إذن الإشعارات");
-  }catch(e){toast("تعذّر تفعيل الإشعارات")}
+function notifInfo(){
+  const supported="Notification" in window;
+  const permission=supported?Notification.permission:"unsupported";
+  const protocol=location.protocol; /* https: / http: / file: */
+  const secure=window.isSecureContext===true;
+  return{supported,permission,protocol,secure};
+}
+function openNotifSheet(){state.ui.notifSheet=true;render()}
+function closeNotifSheet(){state.ui.notifSheet=false;render()}
+async function requestNotifNow(){
+  if(!("Notification" in window)){render();return}
+  try{ await Notification.requestPermission(); }catch(e){ console.warn("Notification request failed",e); }
   render();
+}
+async function enableNotifications(){ openNotifSheet(); }
+function notifSheet(){
+  if(!state.ui.notifSheet)return "";
+  const info=notifInfo();
+  let statusLine="",helpLine="";
+  if(!info.supported){
+    statusLine="🔕 المتصفح/المتصفح المصغّر ده مش بيدعم الإشعارات خالص";
+    helpLine="ده قيد من المتصفح نفسه مش من التطبيق — جرب افتح نفس الرابط من متصفح Chrome الأساسي في الجهاز (مش من جوه تطبيق تاني زي فيسبوك أو انستجرام بيفتح روابط جواه)، وتأكد إن الرابط بيبدأ بـ https://";
+  } else if(!info.secure){
+    statusLine="🔕 الصفحة مش شغالة على اتصال آمن (HTTPS)";
+    helpLine=`البروتوكول الحالي: ${esc(info.protocol)} — الإشعارات محتاجة رابط https:// حقيقي عشان تشتغل، مش ملف مفتوح من الجهاز مباشرة.`;
+  } else if(info.permission==="granted"){
+    statusLine="✅ الإشعارات مفعّلة وشغالة تمام";
+    helpLine="هتوصلك إشعارات فورية لما حد يليقلك، يتابعك، يبعتلك هدية، أو يعمل كومنت — حتى لو التطبيق مقفول.";
+  } else if(info.permission==="denied"){
+    statusLine="🚫 الإذن مرفوض من إعدادات المتصفح";
+    helpLine="لازم تفعّله يدويًا: افتح قائمة كروم (⋮) ← معلومات الموقع (أيقونة القفل بجانب الرابط) ← الإشعارات ← اختار «السماح».";
+  } else {
+    statusLine="🔔 لسه محتاج إذنك";
+    helpLine="دوس الزرار تحت وهيظهرلك طلب إذن حقيقي من المتصفح — دوس «سماح».";
+  }
+  return `<div class="overlay" onclick="if(event.target===this)closeNotifSheet()"><section class="sheet"><div class="handle"></div><h2>🔔 حالة الإشعارات</h2>
+   <div class="review-box"><b>${statusLine}</b><span>${esc(helpLine)}</span></div>
+   <div class="muted" style="font-size:11px;line-height:2;margin-top:10px">
+     الدعم في المتصفح: ${info.supported?'✅ موجود':'❌ غير موجود'}<br>
+     اتصال آمن (HTTPS): ${info.secure?'✅ نعم':'❌ لا — البروتوكول: '+esc(info.protocol)}<br>
+     حالة الإذن: ${esc(info.permission)}
+   </div>
+   ${(info.supported&&info.secure&&info.permission==="default")?`<button class="btn btn-primary full" style="margin-top:14px" onclick="requestNotifNow()">🔔 اطلب الإذن الآن</button>`:''}
+   <button class="btn btn-ghost full" style="margin-top:8px" onclick="closeNotifSheet()">إغلاق</button>
+  </section></div>`;
 }
 function engagementSnapshot(a){
   if(!a)return null;
@@ -892,7 +929,7 @@ function feedVideos(){
 }
 function renderHome(){
  const list=feedVideos();
- return `<div class="screen fade"><div class="home-topbar"><b>SnapVibe</b><button class="top-search" type="button" onclick="openSearch()" aria-label="فتح البحث" title="بحث">🔍</button><button class="top-notif ${notifIsOn()?'':'is-off'}" type="button" onclick="enableNotifications()" aria-label="الإشعارات" title="الإشعارات">${notifIsOn()?'🔔':'🔕'}</button></div><div class="feed" id="feed">${list.length?list.map(videoCard).join(""):`<div class="empty">${ICON.camera}<div>لسه مفيش فيديوهات متاحة.<br>ابدأ أول فيديو من زر +.</div></div>`}</div>${nav("home")}${overlays()}${searchSheet()}${messagesSheet()}</div>`
+ return `<div class="screen fade"><div class="home-topbar"><b>SnapVibe</b><button class="top-search" type="button" onclick="openSearch()" aria-label="فتح البحث" title="بحث">🔍</button><button class="top-notif ${notifIsOn()?'':'is-off'}" type="button" onclick="openNotifSheet()" aria-label="الإشعارات" title="الإشعارات">${notifIsOn()?'🔔':'🔕'}</button></div><div class="feed" id="feed">${list.length?list.map(videoCard).join(""):`<div class="empty">${ICON.camera}<div>لسه مفيش فيديوهات متاحة.<br>ابدأ أول فيديو من زر +.</div></div>`}</div>${nav("home")}${overlays()}${searchSheet()}${messagesSheet()}${notifSheet()}</div>`
 }
 function addUnique(arr,email){arr=Array.isArray(arr)?arr:[];const e=accountKey(email)||String(email||'').trim().toLowerCase();if(e&&!arr.some(x=>String(x).toLowerCase()===e))arr.push(e);return arr}
 function removeEmail(arr,email){const e=String(accountKey(email)||email||'').trim().toLowerCase();return (Array.isArray(arr)?arr:[]).filter(x=>String(x).trim().toLowerCase()!==e)}
@@ -1332,7 +1369,7 @@ function settingsSheet(){
  return `<div class="overlay" onclick="if(event.target===this)closeSettings()"><section class="sheet settings-sheet"><div class="handle"></div><h2>⚙️ إعدادات الحساب</h2><div class="account-email" style="margin-bottom:8px">${esc(state.session?.email||"")}</div>
  <div class="settings-group-label">الحساب</div>
  <button class="setting-item" onclick="state.ui.settings='privacy';render()"><span>🔒 الخصوصية والأمان</span><span>›</span></button>
- <button class="setting-item" onclick="enableNotifications()"><span>🔔 تفعيل الإشعارات</span><span>${notifIsOn()?"✅":"›"}</span></button>
+ <button class="setting-item" onclick="closeSettings();openNotifSheet()"><span>🔔 حالة الإشعارات</span><span>${notifIsOn()?"✅":"›"}</span></button>
  ${deferredInstallPrompt?`<button class="setting-item" onclick="installApp()"><span>📲 تثبيت التطبيق على الجهاز</span><span>›</span></button>`:''}
  <button class="setting-item" onclick="state.ui.editBiz=false;state.ui.settings='business';render()"><span>🏢 ${a?.accountType==='business'?'الحساب التجاري':'التحويل لحساب تجاري'}</span><span>›</span></button>
  <button class="setting-item" onclick="closeSettings();go('earnings')"><span>💰 الأرباح ومركز المبدعين</span><span>›</span></button>
@@ -1440,7 +1477,7 @@ function renderProfile(){
  ${bizLine}
  <div class="muted">${a.age} سنة</div><div class="stats"><div><b>${Array.isArray(a.followers)?a.followers.length:0}</b><span>متابعون</span></div><div><b>${Array.isArray(a.following)?a.following.length:0}</b><span>يتابع</span></div><div><b>${mine.length}</b><span>فيديو</span></div><div><b>${fmt(likes)}</b><span>إعجاب</span></div></div>
  <button class="edit-profile-btn" onclick="state.ui.editName=true;render()">${ICON.pencil} تعديل الملف الشخصي</button></div>
- <div class="account-box"><b>الحساب</b><div class="account-email">${esc(state.session.email)}</div><div class="muted" style="margin-top:5px">🔑 كودك التعريفي (شاركه مع أصدقائك للتأكد إنهم بيلاقوا حسابك بالظبط): <b style="color:var(--cyan)">${esc(userCodeLabel(a))}</b></div><div class="account-actions"><button class="btn btn-ghost btn-sm" onclick="state.ui.settings=true;render()">⚙️ الإعدادات</button><button class="btn btn-ghost btn-sm" onclick="go('earnings')">💰 الأرباح</button><button class="btn btn-ghost btn-sm" onclick="state.ui.friends=true;state.ui.friendsTab='friends';render()">👥 الأصدقاء (${Array.isArray(a.friends)?a.friends.length:0})</button><button class="btn btn-ghost btn-sm" onclick="state.ui.friends=true;state.ui.friendsTab='followers';render()">👤 المتابعين (${Array.isArray(a.followers)?a.followers.length:0})</button><button class="btn btn-ghost btn-sm" onclick="state.ui.friends=true;state.ui.friendsTab='following';render()">➡️ أتابعهم (${Array.isArray(a.following)?a.following.length:0})</button><button class="btn btn-outline-danger btn-sm" onclick="logout()">تسجيل الخروج</button></div></div><div class="grid">${mine.length?mine.map(gridCell).join(""):`<div class="empty" style="grid-column:1/-1">لسه مفيش فيديوهات عندك.<br>دوس + وابدأ.</div>`}</div>${settingsSheet()}${state.ui.friends?renderFriends():""}${messagesSheet()}${nav("profile")}</div>`
+ <div class="account-box"><b>الحساب</b><div class="account-email">${esc(state.session.email)}</div><div class="muted" style="margin-top:5px">🔑 كودك التعريفي (شاركه مع أصدقائك للتأكد إنهم بيلاقوا حسابك بالظبط): <b style="color:var(--cyan)">${esc(userCodeLabel(a))}</b></div><div class="account-actions"><button class="btn btn-ghost btn-sm" onclick="state.ui.settings=true;render()">⚙️ الإعدادات</button><button class="btn btn-ghost btn-sm" onclick="go('earnings')">💰 الأرباح</button><button class="btn btn-ghost btn-sm" onclick="state.ui.friends=true;state.ui.friendsTab='friends';render()">👥 الأصدقاء (${Array.isArray(a.friends)?a.friends.length:0})</button><button class="btn btn-ghost btn-sm" onclick="state.ui.friends=true;state.ui.friendsTab='followers';render()">👤 المتابعين (${Array.isArray(a.followers)?a.followers.length:0})</button><button class="btn btn-ghost btn-sm" onclick="state.ui.friends=true;state.ui.friendsTab='following';render()">➡️ أتابعهم (${Array.isArray(a.following)?a.following.length:0})</button><button class="btn btn-outline-danger btn-sm" onclick="logout()">تسجيل الخروج</button></div></div><div class="grid">${mine.length?mine.map(gridCell).join(""):`<div class="empty" style="grid-column:1/-1">لسه مفيش فيديوهات عندك.<br>دوس + وابدأ.</div>`}</div>${settingsSheet()}${state.ui.friends?renderFriends():""}${messagesSheet()}${notifSheet()}${nav("profile")}</div>`
 }
 function gridCell(v){
  const label={pending:"قيد المراجعة",approved:"منشور",rejected:"مرفوض"}[v.status]||v.status;
