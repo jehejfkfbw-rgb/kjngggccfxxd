@@ -178,7 +178,7 @@ border-radius:10px;padding:14px 15px;outline:none;font-size:14.5px
 .timer{position:absolute;top:17px;left:0;right:0;text-align:center;z-index:5;color:var(--pink);font-weight:700}
 
 /* Sheets / modals */
-.overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);z-index:30;display:flex;align-items:flex-end}
+.overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);z-index:100;display:flex;align-items:flex-end;pointer-events:auto}
 .sheet{width:100%;max-height:88%;overflow:auto;background:var(--surface2);border-radius:20px 20px 0 0;padding:16px 18px max(18px,env(safe-area-inset-bottom));animation:up .2s ease}
 @keyframes up{from{transform:translateY(20px)}to{transform:none}}
 .handle{width:34px;height:4px;background:var(--line);border-radius:4px;margin:0 auto 14px}
@@ -265,7 +265,7 @@ input:focus,textarea:focus,.field input:focus,.field textarea:focus{border-color
 
 
 /* ===== Notification Center ===== */
-.notification-bell{position:absolute;right:8px;top:8px;width:38px;height:38px;border:1px solid rgba(144,160,190,.14);border-radius:12px;background:#0D1524;color:#F7F9FF;display:grid;place-items:center;font-size:18px;z-index:20;cursor:pointer}
+.notification-bell{position:absolute;right:8px;top:8px;width:38px;height:38px;border:1px solid rgba(144,160,190,.14);border-radius:12px;background:#0D1524;color:#F7F9FF;display:grid;place-items:center;font-size:18px;z-index:20;cursor:pointer;pointer-events:auto}
 .notification-bell span{position:absolute;top:-3px;right:-3px;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:#FF5F72;color:#fff;font:700 9px/17px system-ui;text-align:center;border:2px solid #080D1A}
 .notifications-sheet{max-height:82%;padding-top:14px}
 .notif-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
