@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#09031B">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop stop-color=%22%23F10CFF%22/%3E%3Cstop offset=%22.5%22 stop-color=%22%238B35FF%22/%3E%3Cstop offset=%221%22 stop-color=%22%2300E7FF%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%2264%22 height=%2264%22 rx=%2217%22 fill=%22url(%23g)%22/%3E%3Ctext x=%2232%22 y=%2246%22 text-anchor=%22middle%22 font-family=%22Arial,sans-serif%22 font-size=%2240%22 font-weight=%22900%22 fill=%22white%22%3ES%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#0A0A0F">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop stop-color=%22%237C5CFF%22/%3E%3Cstop offset=%22.5%22 stop-color=%22%23FF5C7A%22/%3E%3Cstop offset=%221%22 stop-color=%22%232FE6C9%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%2264%22 height=%2264%22 rx=%2217%22 fill=%22url(%23g)%22/%3E%3Cpath d=%22M20 13 Q20 9 24 11 L48 30 Q51 32 48 34 L24 53 Q20 55 20 51 Z%22 fill=%22white%22/%3E%3Ccircle cx=%2250%22 cy=%2215%22 r=%225.5%22 fill=%22white%22 opacity=%22.85%22/%3E%3C/svg%3E">
 <title>SnapVibe | منصة التواصل الاجتماعي</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,13 +12,13 @@
 <style>
 :root{
   --icon:url("snapvibe-logo.png");
-  --bg:#000000;--surface:#151517;--surface2:#1c1c20;--line:#28282c;
-  --text:#FFFFFF;--muted:#8b8b92;--purple:#B51CFF;--cyan:#25F4EE;--pink:#FE2C55;
-  --danger:#FF3B5C;--success:#2ECC71;--warning:#FFC531;
-  --grad:linear-gradient(135deg,#F10CFF 0%,#8B35FF 45%,#00E7FF 100%);
+  --bg:#0A0A0F;--surface:#15151C;--surface2:#1D1D26;--line:#2A2A35;
+  --text:#FFFFFF;--muted:#9494A0;--purple:#7C5CFF;--cyan:#2FE6C9;--pink:#FF5C7A;
+  --danger:#FF4D6A;--success:#3DDC84;--warning:#FFB020;
+  --grad:linear-gradient(135deg,#7C5CFF 0%,#FF5C7A 50%,#2FE6C9 100%);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;min-height:100%;background:#000}
+html,body{margin:0;min-height:100%;background:#0A0A0F}
 body{font-family:Cairo,system-ui,sans-serif;color:var(--text);display:flex;justify-content:center;letter-spacing:-.1px}
 button,input,textarea{font:inherit}
 input,textarea{background:var(--surface);color:var(--text);border:1px solid transparent;border-radius:10px;padding:11px 13px;outline:none;width:100%}
@@ -118,7 +118,7 @@ border-radius:10px;padding:14px 15px;outline:none;font-size:14.5px
 .nav.active{color:var(--pink)}
 .nav.active svg{filter:drop-shadow(0 0 8px rgba(254,44,85,.85))}
 .nav.active span{text-shadow:0 0 8px rgba(254,44,85,.55)}
-.nav-icon{width:22px;height:22px;display:grid;place-items:center;font-size:19px}.top-search{position:absolute;left:8px;top:9px;width:36px;height:36px;border:0;border-radius:10px;background:transparent;color:var(--text);font-size:19px;display:grid;place-items:center;pointer-events:auto;z-index:20;cursor:pointer}.home-topbar{position:absolute;left:0;right:0;top:0;height:54px;z-index:5;display:flex;align-items:center;justify-content:center;pointer-events:none}.home-topbar b{pointer-events:auto;font-weight:800;font-size:17px;letter-spacing:.2px;text-shadow:0 0 14px rgba(254,44,85,.55),0 0 26px rgba(37,244,238,.3),0 1px 8px rgba(0,0,0,.6)}.search-title{font-weight:700;margin:16px 2px 7px;color:var(--muted);font-size:12px}.person-result{min-height:64px}.search-person-info{flex:1;min-width:0;overflow:hidden}.search-person-info b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.video-result{align-items:flex-start}.video-result video{flex:0 0 60px}
+.nav-icon{width:22px;height:22px;display:grid;place-items:center;font-size:19px}.top-search{position:absolute;left:8px;top:9px;width:36px;height:36px;border:0;border-radius:10px;background:transparent;color:var(--text);font-size:19px;display:grid;place-items:center;pointer-events:auto;z-index:20;cursor:pointer}.top-notif{position:absolute;right:8px;top:9px;width:36px;height:36px;border:0;border-radius:10px;background:rgba(0,229,255,.12);color:var(--cyan);font-size:18px;display:grid;place-items:center;pointer-events:auto;z-index:20;cursor:pointer;box-shadow:0 0 0 1px rgba(0,229,255,.35) inset}.top-notif.is-off{background:transparent;color:var(--text);box-shadow:none;opacity:.8}.home-topbar{position:absolute;left:0;right:0;top:0;height:54px;z-index:5;display:flex;align-items:center;justify-content:center;pointer-events:none}.home-topbar b{pointer-events:auto;font-weight:800;font-size:17px;letter-spacing:.2px;text-shadow:0 0 14px rgba(254,44,85,.55),0 0 26px rgba(37,244,238,.3),0 1px 8px rgba(0,0,0,.6)}.search-title{font-weight:700;margin:16px 2px 7px;color:var(--muted);font-size:12px}.person-result{min-height:64px}.search-person-info{flex:1;min-width:0;overflow:hidden}.search-person-info b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.video-result{align-items:flex-start}.video-result video{flex:0 0 60px}
 .search-panel{max-height:75vh;overflow:auto}.search-result{display:flex;align-items:center;gap:10px;padding:12px 0;border:0;border-bottom:1px solid var(--line);background:none;border-radius:0;margin-top:0}.search-result video{width:58px;height:74px;object-fit:cover;border-radius:8px}.messages-list{max-height:58vh;overflow:auto}.message-row{padding:12px 0;border:0;border-bottom:1px solid var(--line);background:none;border-radius:0;margin-top:0}.message-bubble{padding:9px 12px;border-radius:14px;background:var(--surface2);margin-top:6px;line-height:1.6}.message-compose{display:flex;gap:7px;margin-top:10px}.message-compose input{flex:1}.terms{line-height:1.9;text-align:right;color:#eee;font-size:13px}.terms strong{color:var(--pink)}
 .add{position:relative;width:46px;height:32px;border:0;border-radius:8px;background:#fff;color:#0a0a0a;display:grid;place-items:center;margin-top:-2px;z-index:1;box-shadow:0 0 18px rgba(254,44,85,.45),0 0 18px rgba(37,244,238,.3)}
 .add:before,.add:after{content:"";position:absolute;top:0;bottom:0;width:100%;border-radius:8px;z-index:-1}
@@ -214,7 +214,7 @@ border-radius:10px;padding:14px 15px;outline:none;font-size:14.5px
 </style>
 </head>
 <body>
-<div id="app"><div id="bootSplash" class="screen splash" aria-label="SnapVibe"><div class="s-logo">S</div><div class="splash-welcome splash-title">أهلاً بيك 👋</div><div class="splash-welcome">مرحبًا بك في SnapVibe</div><div class="splash-desc">منصتك الاجتماعية لمشاركة الفيديوهات القصيرة، اكتشاف محتوى جديد والتواصل مع الآخرين.</div><div class="loader"><i></i></div></div></div>
+<div id="app"><div id="bootSplash" class="screen splash" aria-label="SnapVibe"><div class="s-logo" role="img" aria-label="حرف S شعار SnapVibe">S</div><div class="splash-welcome splash-title">أهلاً بيك 👋</div><div class="splash-welcome">مرحبًا بك في SnapVibe</div><div class="splash-desc">منصتك الاجتماعية لمشاركة الفيديوهات القصيرة، اكتشاف محتوى جديد والتواصل مع الآخرين.</div><div class="loader"><i></i></div></div></div>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -224,7 +224,7 @@ border-radius:10px;padding:14px 15px;outline:none;font-size:14.5px
   function fallback(){
     var a=document.getElementById('app');
     if(!a || !a.querySelector('#bootSplash')) return;
-    a.innerHTML='<div class="screen auth fade"><div class="auth-head"><div class="brand-s">S</div><h1>تسجيل الدخول</h1><p class="muted">أهلاً بيك في SnapVibe 👋</p></div><div class="field"><label>البريد الإلكتروني</label><input id="bootEmail" type="email" autocomplete="email" placeholder="name@example.com"></div><div class="field"><label>كلمة السر</label><input id="bootPass" type="password" autocomplete="current-password" placeholder="••••••••"></div><button id="bootLogin" class="btn btn-primary full">دخول</button><div id="bootMsg" class="error" style="display:none"></div><p class="muted" style="text-align:center;margin-top:14px;font-size:12px">جارٍ تشغيل التطبيق… إذا لم يستجب الزر أعد تحميل الصفحة.</p></div>';
+    a.innerHTML='<div class="screen auth fade"><div class="auth-head"><div class="brand-s" role="img" aria-label="شعار SnapVibe"><svg viewBox="0 0 100 100" width="60%" height="60%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M30 20 Q30 14 36 17 L76 46 Q80 50 76 54 L36 83 Q30 86 30 80 Z" fill="#fff"/><circle cx="78" cy="24" r="9" fill="#fff" opacity=".85"/></svg></div><h1>تسجيل الدخول</h1><p class="muted">أهلاً بيك في SnapVibe 👋</p></div><div class="field"><label>البريد الإلكتروني</label><input id="bootEmail" type="email" autocomplete="email" placeholder="name@example.com"></div><div class="field"><label>كلمة السر</label><input id="bootPass" type="password" autocomplete="current-password" placeholder="••••••••"></div><button id="bootLogin" class="btn btn-primary full">دخول</button><div id="bootMsg" class="error" style="display:none"></div><p class="muted" style="text-align:center;margin-top:14px;font-size:12px">جارٍ تشغيل التطبيق… إذا لم يستجب الزر أعد تحميل الصفحة.</p></div>';
     var b=document.getElementById('bootLogin');
     if(b) b.onclick=function(){
       var m=document.getElementById('bootMsg');
@@ -500,6 +500,76 @@ function adminUsers(){return Object.entries(state.accounts).map(([email,a])=>({e
 function liked(v){return !!state.session&&v.likes.includes(state.session.email)}
 function toast(msg){state.ui.toast=msg;render();setTimeout(()=>{state.ui.toast=null;render()},1900)}
 
+/* ================= إشعارات حقيقية على مستوى النظام (Notifications API) =================
+   دي ميزة "native" فعلية غير موجودة في مجرد فتح صفحة ويب: إشعار بيظهر من برّه التطبيق
+   (في شريط الإشعارات بتاع الجهاز) لما حد يعمل لايك/تعليق/متابعة/هدية، حتى لو التطبيق
+   شغّال في الخلفية. لما التطبيق يتغلف بـ Capacitor لاحقًا، نفس الكود ده يشتغل زي ما هو
+   ويضاف عليه فقط قدرة الوصول للإشعار وقت إغلاق التطبيق تمامًا عن طريق Capacitor Push plugin. */
+const APP_ICON_DATA_URI="data:image/svg+xml;base64,"+btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" rx="28" fill="%230A0A0F"/><path d="M42 30 Q42 22 50 26 L92 60 Q98 64 92 68 L50 102 Q42 106 42 98 Z" fill="%237C5CFF"/><circle cx="96" cy="32" r="10" fill="%23FF5C7A"/></svg>'.replace(/%23/g,"#"));
+
+function notifyLocal(title,body){
+  try{
+    if(!("Notification" in window))return;
+    if(Notification.permission!=="granted")return;
+    if(document.visibilityState==="visible")return; /* التطبيق مفتوح وشغال قدامه أصلًا، مفيش داعي نزعجه بإشعار خارجي */
+    new Notification(title,{body,icon:APP_ICON_DATA_URI,badge:APP_ICON_DATA_URI});
+  }catch(e){console.warn("Notification display failed",e)}
+}
+function notifIsOn(){return typeof Notification!=="undefined"&&Notification.permission==="granted"}
+async function enableNotifications(){
+  if(!("Notification" in window)){toast("المتصفح ده مش بيدعم الإشعارات");return}
+  if(Notification.permission==="granted"){toast("🔔 الإشعارات مفعّلة بالفعل");return}
+  try{
+    const perm=await Notification.requestPermission();
+    toast(perm==="granted"?"✅ الإشعارات اتفعّلت":"تم رفض إذن الإشعارات");
+  }catch(e){toast("تعذّر تفعيل الإشعارات")}
+  render();
+}
+function engagementSnapshot(a){
+  if(!a)return null;
+  const myVideos=state.videos.filter(v=>v.ownerEmail===a.email&&v.status==="approved");
+  const likes=myVideos.reduce((s,v)=>s+(v.likes?.length||0),0);
+  const comments=myVideos.reduce((s,v)=>s+(v.comments?.length||0),0);
+  return{
+    followers:Array.isArray(a.followers)?a.followers.length:0,
+    friendRequests:Array.isArray(a.friendRequests)?a.friendRequests.length:0,
+    giftCoins:Number(a.giftCoinsEarned)||0,
+    likes,comments
+  };
+}
+function notifyEngagementDiff(before,after){
+  if(!before||!after)return;
+  if(after.followers>before.followers) notifyLocal("👤 متابع جديد!",`عندك ${after.followers-before.followers} متابع جديد على SnapVibe`);
+  if(after.friendRequests>before.friendRequests) notifyLocal("👥 طلب صداقة جديد",`عندك طلب صداقة جديد في انتظار ردك`);
+  if(after.giftCoins>before.giftCoins) notifyLocal("🎁 هدية جديدة!",`حد بعتلك هدية وأضيفت لرصيدك القابل للسحب`);
+  if(after.likes>before.likes || after.comments>before.comments) notifyLocal("❤️ تفاعل جديد",`فيه لايكات/تعليقات جديدة على فيديوهاتك`);
+}
+
+/* ================= تثبيت التطبيق كـ PWA (Add to Home Screen) =================
+   ميزة "native" تانية: المستخدم يقدر يثبّت التطبيق بأيقونة على شاشته الرئيسية
+   ويفتحه بدون شريط عنوان متصفح، بدل ما يفضل مجرد رابط في المتصفح. */
+let deferredInstallPrompt=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstallPrompt=e;render();});
+window.addEventListener("appinstalled",()=>{deferredInstallPrompt=null;toast("✅ تم تثبيت التطبيق على جهازك");render();});
+async function installApp(){
+  if(!deferredInstallPrompt){toast("التثبيت كتطبيق غير متاح على هذا المتصفح/الجهاز حاليًا");return}
+  deferredInstallPrompt.prompt();
+  try{await deferredInstallPrompt.userChoice}catch(e){}
+  deferredInstallPrompt=null;render();
+}
+try{
+  const manifest={
+    name:"SnapVibe",short_name:"SnapVibe",start_url:".",display:"standalone",
+    background_color:"#0A0A0F",theme_color:"#0A0A0F",
+    icons:[{src:APP_ICON_DATA_URI,sizes:"128x128",type:"image/svg+xml"}]
+  };
+  const manifestBlob=new Blob([JSON.stringify(manifest)],{type:"application/manifest+json"});
+  const link=document.createElement("link");
+  link.rel="manifest"; link.href=URL.createObjectURL(manifestBlob);
+  document.head.appendChild(link);
+}catch(e){console.warn("PWA manifest setup failed",e)}
+
+
 /* ---------- عد تنازلي حي لانتهاء الحظر المؤقت (24 ساعة) ---------- */
 let banCountdownTimer=null;
 function formatCountdown(ms){
@@ -593,6 +663,7 @@ function applyLoadedState(x){
       banReason:("banReason" in a?a.banReason:null),lastModerationAction:("lastModerationAction" in a?a.lastModerationAction:null),isPrivate:!!a.isPrivate,
       accountType:a.accountType==="business"?"business":"personal",bizCategory:a.bizCategory||null,earningsWithdrawn:Number(a.earningsWithdrawn)||0,
       tokens:Math.max(0,Number(a.tokens)||0),totalTokensReceived:Math.max(0,Number(a.totalTokensReceived)||0),totalTokensSent:Math.max(0,Number(a.totalTokensSent)||0),
+      giftCoinsEarned:Math.max(0,Number(a.giftCoinsEarned)||0),
       giftsReceived:Array.isArray(a.giftsReceived)?a.giftsReceived:[],giftsSent:Array.isArray(a.giftsSent)?a.giftsSent:[]
     };
   });
@@ -615,7 +686,13 @@ function load(){
       remoteUnsub=remoteDoc().onSnapshot(snap=>{
         if(snap.metadata.hasPendingWrites)return;
         const x=snap.data(); if(!x)return;
+        const myEmail=state.session&&!state.session.isAdmin?state.session.email:null;
+        const before=myEmail?engagementSnapshot(state.accounts?.[myEmail]):null;
         applyLoadedState(x); render();
+        if(myEmail){
+          const after=engagementSnapshot(state.accounts?.[myEmail]);
+          if(before) notifyEngagementDiff(before,after);
+        }
       },err=>{console.error("Firestore listen error",err);recordSystemError('firebase_listen',err?.message||String(err));});
     }catch(e){console.error("Firestore listener setup error",e)}
     });
@@ -650,7 +727,7 @@ function renderSplash(){
 function renderAuth(){
  if(state.ui.authMode==="choice") state.ui.authMode="login";
  if(state.ui.authMode==="forgot"){
-   return `<div class="screen auth fade"><div class="auth-head"><div class="brand-s" role="img" aria-label="حرف S شعار SnapVibe">S</div><h1>استعادة كلمة السر</h1><p class="muted">اكتب بريدك الإلكتروني وكلمة السر الجديدة. (تطبيق تجريبي بدون سيرفر بريد حقيقي، فالتحديث يتم مباشرة بعد التأكد من وجود الحساب.)</p></div>
+   return `<div class="screen auth fade"><div class="auth-head"><div class="brand-s" role="img" aria-label="شعار SnapVibe"><svg viewBox="0 0 100 100" width="60%" height="60%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M30 20 Q30 14 36 17 L76 46 Q80 50 76 54 L36 83 Q30 86 30 80 Z" fill="#fff"/><circle cx="78" cy="24" r="9" fill="#fff" opacity=".85"/></svg></div><h1>استعادة كلمة السر</h1><p class="muted">اكتب بريدك الإلكتروني وكلمة السر الجديدة. (تطبيق تجريبي بدون سيرفر بريد حقيقي، فالتحديث يتم مباشرة بعد التأكد من وجود الحساب.)</p></div>
    <div class="field"><label>البريد الإلكتروني</label><input id="femail" type="email" autocomplete="email" placeholder="name@example.com"></div>
    <div class="field"><label>كلمة السر الجديدة</label><input id="fpass1" type="password" autocomplete="new-password" placeholder="••••••••"></div>
    <div class="field"><label>تأكيد كلمة السر الجديدة</label><input id="fpass2" type="password" autocomplete="new-password" placeholder="••••••••"><div id="authErr" class="error"></div></div>
@@ -658,7 +735,7 @@ function renderAuth(){
    <button class="auth-switch" onclick="showLogin()">رجوع لتسجيل الدخول</button>
    </div>`
  }
- return `<div class="screen auth fade"><div class="auth-head"><div class="brand-s" role="img" aria-label="حرف S شعار SnapVibe">S</div><h1>${state.ui.authMode==="signup"?"إنشاء حساب جديد":"تسجيل الدخول"}</h1><p class="muted">${state.ui.authMode==="signup"?"أنشئ حسابك مرة واحدة وسيتم حفظه على الجهاز.":"أدخل البريد الإلكتروني وكلمة السر للمتابعة."}</p></div>
+ return `<div class="screen auth fade"><div class="auth-head"><div class="brand-s" role="img" aria-label="شعار SnapVibe"><svg viewBox="0 0 100 100" width="60%" height="60%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M30 20 Q30 14 36 17 L76 46 Q80 50 76 54 L36 83 Q30 86 30 80 Z" fill="#fff"/><circle cx="78" cy="24" r="9" fill="#fff" opacity=".85"/></svg></div><h1>${state.ui.authMode==="signup"?"إنشاء حساب جديد":"تسجيل الدخول"}</h1><p class="muted">${state.ui.authMode==="signup"?"أنشئ حسابك مرة واحدة وسيتم حفظه على الجهاز.":"أدخل البريد الإلكتروني وكلمة السر للمتابعة."}</p></div>
  ${state.ui.banNotice?`<div class="error" style="display:block;text-align:center;margin:12px 0;line-height:1.9">🚫 ${esc(state.ui.banNotice)}${(!state.ui.banPermanent&&state.ui.banUntil)?`<br><span class="muted" style="font-size:11px">الوقت المتبقي حتى يرجع الحساب نشط تلقائيًا</span><br><b id="banCountdownVal" style="font-size:21px;letter-spacing:1.5px;color:var(--warning);display:inline-block;margin-top:5px;direction:ltr">${formatCountdown(state.ui.banUntil-Date.now())}</b>`:""}</div>`:""}
  <div class="field"><label>البريد الإلكتروني</label><input id="email" type="email" autocomplete="email" placeholder="name@example.com"></div>
  <div class="field"><label>كلمة السر</label><input id="pass" type="password" autocomplete="${state.ui.authMode==="signup"?"new-password":"current-password"}" placeholder="••••••••"><div id="authErr" class="error"></div></div>
@@ -703,7 +780,7 @@ function startSignup(){
  state.pending={email:e,password:p,trustScore:100,riskFlags:[]};state.screen="onboarding";render();
 }
 function renderOnboarding(){
- return `<div class="screen auth fade"><div class="auth-head"><div class="brand-s" role="img" aria-label="حرف S شعار SnapVibe">S</div><h1>أهلاً بيك</h1><p class="muted">خلّي حسابك جاهز في خطوة واحدة.</p></div>
+ return `<div class="screen auth fade"><div class="auth-head"><div class="brand-s" role="img" aria-label="شعار SnapVibe"><svg viewBox="0 0 100 100" width="60%" height="60%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M30 20 Q30 14 36 17 L76 46 Q80 50 76 54 L36 83 Q30 86 30 80 Z" fill="#fff"/><circle cx="78" cy="24" r="9" fill="#fff" opacity=".85"/></svg></div><h1>أهلاً بيك</h1><p class="muted">خلّي حسابك جاهز في خطوة واحدة.</p></div>
  <div class="field"><label>الاسم</label><input id="name" placeholder="اكتب اسمك" value="${esc(state.pending?.googleName||"")}"></div>
  <div class="field"><label>السن</label><input id="age" type="number" min="13" max="100" placeholder="13 أو أكثر"><div id="obErr" class="error"></div></div>
  <button class="btn btn-primary full" onclick="finishSignup()">إنشاء الحساب</button></div>`
@@ -759,7 +836,7 @@ async function finishSignup(){
     }
     const email=String(state.pending.email).trim().toLowerCase();
     const hashedPassword=await hashPassword(state.pending.password);
-    state.accounts[email]={email,name:n,age:a,password:hashedPassword,authProvider:state.pending.authProvider||"password",code:generateUserCode(),avatar:null,bannedUntil:null,bannedPermanent:false,banHours:0,banStartedAt:null,banReason:null,lastModerationAction:null,friends:[],followers:[],following:[],friendRequests:[],sentFriendRequests:[],messages:[],trustScore:state.pending.trustScore??100,riskFlags:state.pending.riskFlags||[],emailVerified:false,createdAt:Date.now(),isPrivate:false,accountType:"personal",bizCategory:null,earningsWithdrawn:0,tokens:0,totalTokensReceived:0,totalTokensSent:0,giftsReceived:[],giftsSent:[]};
+    state.accounts[email]={email,name:n,age:a,password:hashedPassword,authProvider:state.pending.authProvider||"password",code:generateUserCode(),avatar:null,bannedUntil:null,bannedPermanent:false,banHours:0,banStartedAt:null,banReason:null,lastModerationAction:null,friends:[],followers:[],following:[],friendRequests:[],sentFriendRequests:[],messages:[],trustScore:state.pending.trustScore??100,riskFlags:state.pending.riskFlags||[],emailVerified:false,createdAt:Date.now(),isPrivate:false,accountType:"personal",bizCategory:null,earningsWithdrawn:0,tokens:0,totalTokensReceived:0,totalTokensSent:0,giftCoinsEarned:0,giftsReceived:[],giftsSent:[]};
     state.session={email};
     state.pending=null;
     // ننتقل فورًا للرئيسية، ثم نحاول الحفظ. حتى لو منع content:// التخزين، لا يعلق الزر.
@@ -815,7 +892,7 @@ function feedVideos(){
 }
 function renderHome(){
  const list=feedVideos();
- return `<div class="screen fade"><div class="home-topbar"><b>SnapVibe</b><button class="top-search" type="button" onclick="openSearch()" aria-label="فتح البحث" title="بحث">🔍</button></div><div class="feed" id="feed">${list.length?list.map(videoCard).join(""):`<div class="empty">${ICON.camera}<div>لسه مفيش فيديوهات متاحة.<br>ابدأ أول فيديو من زر +.</div></div>`}</div>${nav("home")}${overlays()}${searchSheet()}${messagesSheet()}</div>`
+ return `<div class="screen fade"><div class="home-topbar"><b>SnapVibe</b><button class="top-search" type="button" onclick="openSearch()" aria-label="فتح البحث" title="بحث">🔍</button><button class="top-notif ${notifIsOn()?'':'is-off'}" type="button" onclick="enableNotifications()" aria-label="الإشعارات" title="الإشعارات">${notifIsOn()?'🔔':'🔕'}</button></div><div class="feed" id="feed">${list.length?list.map(videoCard).join(""):`<div class="empty">${ICON.camera}<div>لسه مفيش فيديوهات متاحة.<br>ابدأ أول فيديو من زر +.</div></div>`}</div>${nav("home")}${overlays()}${searchSheet()}${messagesSheet()}</div>`
 }
 function addUnique(arr,email){arr=Array.isArray(arr)?arr:[];const e=accountKey(email)||String(email||'').trim().toLowerCase();if(e&&!arr.some(x=>String(x).toLowerCase()===e))arr.push(e);return arr}
 function removeEmail(arr,email){const e=String(accountKey(email)||email||'').trim().toLowerCase();return (Array.isArray(arr)?arr:[]).filter(x=>String(x).trim().toLowerCase()!==e)}
@@ -885,11 +962,31 @@ function renderFriends(){
  if(tab==='requests')content=incoming.length?incoming.map(a=>`<div class="admin-card relation-row"><div class="relation-main"><div class="avatar sm">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}</div><div><b>${esc(a.name||'مستخدم')}</b><div class="muted" style="font-size:10px">أرسل لك طلب صداقة</div></div></div><div class="relation-actions"><button class="btn btn-sm btn-primary" onclick="acceptFriendRequest('${esc(a.email)}')">قبول</button><button class="btn btn-sm btn-danger" onclick="rejectFriendRequest('${esc(a.email)}')">رفض</button></div></div>`).join(''):`<div class="empty">لا توجد طلبات صداقة.</div>`;
  return `<div class="overlay" onclick="if(event.target===this){state.ui.friends=false;render()}"><section class="sheet"><div class="handle"></div><h2>👥 العلاقات</h2><div class="relation-tabs"><button class="btn btn-sm ${tab==='friends'?'btn-primary':'btn-ghost'}" onclick="state.ui.friendsTab='friends';render()">الأصدقاء (${friends.length})</button><button class="btn btn-sm ${tab==='followers'?'btn-primary':'btn-ghost'}" onclick="state.ui.friendsTab='followers';render()">المتابعين (${followers.length})</button><button class="btn btn-sm ${tab==='following'?'btn-primary':'btn-ghost'}" onclick="state.ui.friendsTab='following';render()">أتابعهم (${following.length})</button><button class="btn btn-sm ${tab==='requests'?'btn-primary':'btn-ghost'}" onclick="state.ui.friendsTab='requests';render()">طلبات (${incoming.length})</button></div><p class="muted" style="margin:10px 0">المراسلة متاحة فقط بعد قبول طلب الصداقة.</p><div class="admin-list" style="max-height:55vh;overflow:auto">${content}</div><button class="btn btn-ghost full" style="margin-top:10px" onclick="state.ui.friends=false;render()">إغلاق</button></section></div>`;
 }
+/* ---------- أسعار شحن التوكن (جنيه مصري) — يظهر للمستخدم كم يحوّل مقابل كام توكن ---------- */
+const RECHARGE_PACKAGES=[
+ {id:"p1",tokens:60,price:15},
+ {id:"p2",tokens:130,price:30},
+ {id:"p3",tokens:300,price:65},
+ {id:"p4",tokens:650,price:130},
+ {id:"p5",tokens:1400,price:250},
+ {id:"p6",tokens:3200,price:500}
+];
+const EGP_PER_TOKEN=0.22; /* سعر تقريبي للتوكن عند إدخال كمية مخصّصة بخلاف الباقات */
+function estimatePrice(tokens){return Math.max(1,Math.round(Number(tokens||0)*EGP_PER_TOKEN))}
+
 const GIFT_ITEMS=[
+ {id:"kiss",name:"بوسة",emoji:"😘",cost:5},
  {id:"rose",name:"وردة",emoji:"🌹",cost:10},
+ {id:"balloon",name:"بالونة",emoji:"🎈",cost:20},
  {id:"heart",name:"قلب",emoji:"❤️",cost:50},
+ {id:"cake",name:"تورتة",emoji:"🎂",cost:80},
  {id:"star",name:"نجمة",emoji:"⭐",cost:100},
- {id:"crown",name:"تاج",emoji:"👑",cost:500}
+ {id:"ring",name:"خاتم",emoji:"💍",cost:250},
+ {id:"crown",name:"تاج",emoji:"👑",cost:500},
+ {id:"diamond",name:"ألماسة",emoji:"💎",cost:1000},
+ {id:"car",name:"عربية",emoji:"🚗",cost:2000},
+ {id:"rocket",name:"صاروخ",emoji:"🚀",cost:5000},
+ {id:"lion",name:"أسد",emoji:"🦁",cost:10000}
 ];
 function tokenBalance(a){return Math.max(0,Number(a?.tokens)||0)}
 function recordSystemError(type,message,extra={}){
@@ -898,24 +995,35 @@ function recordSystemError(type,message,extra={}){
   state.systemErrors=state.systemErrors.slice(0,100);
   save();
 }
-function openTokenRecharge(){state.ui.tokenRecharge=true;state.ui.rechargeMethod='orange';state.ui.rechargeAmount='';state.ui.rechargeNote='';render()}
+function openTokenRecharge(){state.ui.tokenRecharge=true;state.ui.rechargeMethod='orange';state.ui.rechargePackage=RECHARGE_PACKAGES[0].id;state.ui.rechargeAmount=String(RECHARGE_PACKAGES[0].tokens);state.ui.rechargeNote='';render()}
 function closeTokenRecharge(){state.ui.tokenRecharge=false;render()}
+function selectRechargePackage(id){
+ state.ui.rechargePackage=id;
+ if(id!=='custom'){const p=RECHARGE_PACKAGES.find(x=>x.id===id);if(p)state.ui.rechargeAmount=String(p.tokens);}
+ render();
+}
 function submitTokenRecharge(){
  const a=account();if(!a)return;
- const amount=Number(app.querySelector('#rechargeAmount')?.value||0);
+ const amount=Number(app.querySelector('#rechargeAmount')?.value||state.ui.rechargeAmount||0);
  const note=String(app.querySelector('#rechargeNote')?.value||'').trim();
  const method=state.ui.rechargeMethod||'orange';
  if(!Number.isFinite(amount)||amount<1||amount>100000){toast('اكتب عدد توكن صالحًا بين 1 و100000');return}
  if(note.length<2){toast('اكتب رقم العملية/ملاحظة التحويل');return}
  const names={orange:'Orange Cash',we:'WE Cash'};
+ const pkg=RECHARGE_PACKAGES.find(p=>p.tokens===amount);
+ const priceEGP=pkg?pkg.price:estimatePrice(amount);
  state.rechargeRequests=state.rechargeRequests||[];
- state.rechargeRequests.unshift({id:'r'+Date.now()+Math.random().toString(36).slice(2,7),ownerEmail:a.email,ownerName:a.name,method,methodName:names[method]||method,requestedTokens:amount,note,status:'pending',createdAt:Date.now()});
- save();closeTokenRecharge();toast('✅ تم إرسال طلب الشحن للمطور. سيتم إضافة التوكن بعد المراجعة.');
+ state.rechargeRequests.unshift({id:'r'+Date.now()+Math.random().toString(36).slice(2,7),ownerEmail:a.email,ownerName:a.name,method,methodName:names[method]||method,requestedTokens:amount,priceEGP,note,status:'pending',createdAt:Date.now()});
+ save();closeTokenRecharge();toast(`✅ تم إرسال طلب شحن ${fmt(amount)} توكن (${fmt(priceEGP)} جنيه). سيتم إضافة التوكن بعد المراجعة.`);
 }
 function tokenRechargeSheet(){
  if(!state.ui.tokenRecharge)return '';
  const method=state.ui.rechargeMethod||'orange';
- return `<div class="overlay" onclick="if(event.target===this)closeTokenRecharge()"><section class="sheet"><div class="handle"></div><h2>🪙 شحن التوكن</h2><div class="review-box"><b>الدفع يدوي</b><span>حوّل المبلغ بالطريقة المختارة ثم اكتب رقم العملية/ملاحظة التحويل. التوكن لا يُضاف تلقائيًا؛ المطور يراجع الطلب أولًا.</span></div><div class="field"><label>طريقة التحويل</label><div style="display:flex;gap:7px"><button class="btn btn-sm ${method==='orange'?'btn-primary':'btn-ghost'}" onclick="state.ui.rechargeMethod='orange';render()">Orange Cash</button><button class="btn btn-sm ${method==='we'?'btn-primary':'btn-ghost'}" onclick="state.ui.rechargeMethod='we';render()">WE Cash</button></div></div><div class="review-box" style="margin:8px 0;text-align:right"><b>${method==='orange'?'📱 01213783090':'📱 01503724381'}</b><span>${method==='orange'?'Orange Cash':'WE Cash'} — الرقم الظاهر للتحويل فقط</span></div><div class="field"><label>عدد التوكن المطلوب</label><input id="rechargeAmount" type="number" min="1" max="100000" placeholder="مثال: 100"></div><div class="field"><label>رقم العملية أو ملاحظة التحويل</label><input id="rechargeNote" placeholder="اكتب رقم العملية بعد التحويل"></div><button class="btn btn-primary full" onclick="submitTokenRecharge()">إرسال طلب الشحن</button><button class="btn btn-ghost full" style="margin-top:8px" onclick="closeTokenRecharge()">إلغاء</button></section></div>`;
+ const pkgId=state.ui.rechargePackage||RECHARGE_PACKAGES[0].id;
+ const isCustom=pkgId==='custom';
+ const amountNow=Number(state.ui.rechargeAmount)||0;
+ const priceNow=isCustom?estimatePrice(amountNow):(RECHARGE_PACKAGES.find(p=>p.id===pkgId)?.price||0);
+ return `<div class="overlay" onclick="if(event.target===this)closeTokenRecharge()"><section class="sheet"><div class="handle"></div><h2>🪙 شحن التوكن</h2><div class="review-box"><b>الدفع يدوي</b><span>اختَر باقة أو اكتب كمية مخصّصة، حوّل السعر الظاهر بالطريقة المختارة، ثم اكتب رقم العملية. التوكن لا يُضاف تلقائيًا؛ المطور يراجع الطلب أولًا.</span></div><div class="field"><label>اختر باقة</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${RECHARGE_PACKAGES.map(p=>`<button class="btn ${pkgId===p.id?'btn-primary':'btn-ghost'}" style="padding:10px 6px;line-height:1.5" onclick="selectRechargePackage('${p.id}')">🪙 ${fmt(p.tokens)}<br><b>${fmt(p.price)} جنيه</b></button>`).join('')}</div><button class="btn ${isCustom?'btn-primary':'btn-ghost'} full" style="margin-top:8px" onclick="selectRechargePackage('custom')">✏️ كمية مخصّصة</button></div>${isCustom?`<div class="field"><label>عدد التوكن المطلوب</label><input id="rechargeAmount" type="number" min="1" max="100000" value="${amountNow||''}" placeholder="مثال: 100" oninput="state.ui.rechargeAmount=this.value" onchange="render()"></div>`:''}<div class="review-box" style="margin:8px 0;text-align:center"><b>المطلوب تحويله: ${fmt(priceNow)} جنيه</b><span>مقابل ${fmt(amountNow)} توكن</span></div><div class="field"><label>طريقة التحويل</label><div style="display:flex;gap:7px"><button class="btn btn-sm ${method==='orange'?'btn-primary':'btn-ghost'}" onclick="state.ui.rechargeMethod='orange';render()">Orange Cash</button><button class="btn btn-sm ${method==='we'?'btn-primary':'btn-ghost'}" onclick="state.ui.rechargeMethod='we';render()">WE Cash</button></div></div><div class="review-box" style="margin:8px 0;text-align:right"><b>${method==='orange'?'📱 01213783090':'📱 01503724381'}</b><span>${method==='orange'?'Orange Cash':'WE Cash'} — الرقم الظاهر للتحويل فقط</span></div><div class="field"><label>رقم العملية أو ملاحظة التحويل</label><input id="rechargeNote" placeholder="اكتب رقم العملية بعد التحويل"></div><button class="btn btn-primary full" onclick="submitTokenRecharge()">إرسال طلب الشحن</button><button class="btn btn-ghost full" style="margin-top:8px" onclick="closeTokenRecharge()">إلغاء</button></section></div>`;
 }
 function openGift(videoId){if(!requireLogin())return;const v=state.videos.find(x=>x.id===videoId);if(!v)return;if(accountKey(v.ownerEmail)===accountKey(account()?.email)){toast('لا يمكنك إرسال هدية لنفسك');return}state.ui.giftVideoId=videoId;render()}
 function closeGift(){state.ui.giftVideoId=null;render()}
@@ -923,7 +1031,7 @@ function giftSheet(){
  const id=state.ui.giftVideoId;if(!id)return '';
  const v=state.videos.find(x=>x.id===id);if(!v)return '';
  const receiver=getAccount(v.ownerEmail),me=account();
- return `<div class="overlay" onclick="if(event.target===this)closeGift()"><section class="sheet"><div class="handle"></div><h2>🎁 إرسال هدية</h2><p class="muted" style="margin-bottom:10px">إلى ${esc(receiver?.name||v.ownerName)} · رصيدك ${fmt(tokenBalance(me))} 🪙</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${GIFT_ITEMS.map(g=>`<button class="btn btn-ghost" style="padding:14px 8px" onclick="sendGift('${v.id}','${g.id}')"><span style="font-size:26px">${g.emoji}</span><br>${esc(g.name)}<br><b>${g.cost} 🪙</b></button>`).join('')}</div><button class="btn btn-primary full" style="margin-top:10px" onclick="closeGift();openTokenRecharge()">➕ شحن التوكن</button><button class="btn btn-ghost full" style="margin-top:8px" onclick="closeGift()">إلغاء</button></section></div>`;
+ return `<div class="overlay" onclick="if(event.target===this)closeGift()"><section class="sheet"><div class="handle"></div><h2>🎁 إرسال هدية</h2><p class="muted" style="margin-bottom:6px">إلى ${esc(receiver?.name||v.ownerName)} · رصيدك ${fmt(tokenBalance(me))} 🪙</p><div class="review-box" style="margin-bottom:10px"><b>💵 الهدايا = فلوس حقيقية</b><span>أي هدية توصل لصاحب الفيديو بتتحول لرصيد قابل للسحب فورًا، زي أرباح الفيديوهات بالظبط.</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${GIFT_ITEMS.map(g=>`<button class="btn btn-ghost" style="padding:14px 8px" onclick="sendGift('${v.id}','${g.id}')"><span style="font-size:26px">${g.emoji}</span><br>${esc(g.name)}<br><b>${g.cost} 🪙</b></button>`).join('')}</div><button class="btn btn-primary full" style="margin-top:10px" onclick="closeGift();openTokenRecharge()">➕ شحن التوكن</button><button class="btn btn-ghost full" style="margin-top:8px" onclick="closeGift()">إلغاء</button></section></div>`;
 }
 function sendGift(videoId,giftId){
  const me=account(),v=state.videos.find(x=>x.id===videoId),g=GIFT_ITEMS.find(x=>x.id===giftId);if(!me||!v||!g)return;
@@ -931,7 +1039,7 @@ function sendGift(videoId,giftId){
  if(accountKey(me.email)===accountKey(receiver.email)){toast('لا يمكنك إرسال هدية لنفسك');return}
  if(tokenBalance(me)<g.cost){toast('رصيد التوكن غير كافٍ — اشحن أولًا');return}
  me.tokens=tokenBalance(me)-g.cost;me.totalTokensSent=(Number(me.totalTokensSent)||0)+g.cost;
- receiver.tokens=tokenBalance(receiver)+g.cost;receiver.totalTokensReceived=(Number(receiver.totalTokensReceived)||0)+g.cost;
+ receiver.giftCoinsEarned=(Number(receiver.giftCoinsEarned)||0)+g.cost;receiver.totalTokensReceived=(Number(receiver.totalTokensReceived)||0)+g.cost;
  me.giftsSent=Array.isArray(me.giftsSent)?me.giftsSent:[];receiver.giftsReceived=Array.isArray(receiver.giftsReceived)?receiver.giftsReceived:[];
  const tx={id:'g'+Date.now()+Math.random().toString(36).slice(2,7),fromEmail:me.email,fromName:me.name,toEmail:receiver.email,toName:receiver.name,videoId,giftId:g.id,giftName:g.name,emoji:g.emoji,tokens:g.cost,createdAt:Date.now()};
  me.giftsSent.unshift(tx);receiver.giftsReceived.unshift(tx);state.giftTransactions=state.giftTransactions||[];state.giftTransactions.unshift(tx);state.giftTransactions=state.giftTransactions.slice(0,500);
@@ -1224,6 +1332,8 @@ function settingsSheet(){
  return `<div class="overlay" onclick="if(event.target===this)closeSettings()"><section class="sheet settings-sheet"><div class="handle"></div><h2>⚙️ إعدادات الحساب</h2><div class="account-email" style="margin-bottom:8px">${esc(state.session?.email||"")}</div>
  <div class="settings-group-label">الحساب</div>
  <button class="setting-item" onclick="state.ui.settings='privacy';render()"><span>🔒 الخصوصية والأمان</span><span>›</span></button>
+ <button class="setting-item" onclick="enableNotifications()"><span>🔔 تفعيل الإشعارات</span><span>${notifIsOn()?"✅":"›"}</span></button>
+ ${deferredInstallPrompt?`<button class="setting-item" onclick="installApp()"><span>📲 تثبيت التطبيق على الجهاز</span><span>›</span></button>`:''}
  <button class="setting-item" onclick="state.ui.editBiz=false;state.ui.settings='business';render()"><span>🏢 ${a?.accountType==='business'?'الحساب التجاري':'التحويل لحساب تجاري'}</span><span>›</span></button>
  <button class="setting-item" onclick="closeSettings();go('earnings')"><span>💰 الأرباح ومركز المبدعين</span><span>›</span></button>
  <button class="setting-item" onclick="closeSettings();switchAccount()"><span>👤 تغيير الحساب</span><span>›</span></button>
@@ -1242,10 +1352,11 @@ function computeEarnings(a){
  const videoCoins=perVideo.reduce((s,v)=>s+v.coins,0);
  const followerCount=Array.isArray(a.followers)?a.followers.length:0;
  const followerCoins=followerCount*100;
- const totalCoins=videoCoins+followerCoins;
+ const giftCoins=Math.max(0,Number(a.giftCoinsEarned)||0);
+ const totalCoins=videoCoins+followerCoins+giftCoins;
  const withdrawn=Number(a.earningsWithdrawn)||0;
  const balance=Math.max(0,totalCoins-withdrawn);
- return {perVideo,videoCoins,followerCount,followerCoins,totalCoins,withdrawn,balance};
+ return {perVideo,videoCoins,followerCount,followerCoins,giftCoins,totalCoins,withdrawn,balance};
 }
 function myWithdrawal(a){
  if(!a)return null;
@@ -1314,7 +1425,7 @@ function renderEarnings(){
  <div class="review-box" style="text-align:center;padding:22px"><span>الرصيد المتاح</span><b style="font-size:26px;display:block;margin-top:6px">${fmt(e.balance)} نقطة</b><div class="muted" style="margin-top:4px">≈ ${egp(e.balance)} ج.م</div>
  ${w?'':`<button class="btn btn-primary full" style="margin-top:14px" onclick="openWithdrawSheet()">طلب سحب الأرباح</button>`}</div>
  ${w?withdrawStatusBox(w):''}
- <div class="stats" style="margin-top:18px"><div><b>${fmt(e.totalCoins)}</b><span>إجمالي النقاط</span></div><div><b>${fmt(e.followerCoins)}</b><span>من المتابعين (${e.followerCount})</span></div><div><b>${fmt(e.withdrawn)}</b><span>تم سحبه</span></div><div><b>${e.perVideo.length}</b><span>فيديو محتسب</span></div></div>
+ <div class="stats" style="margin-top:18px"><div><b>${fmt(e.totalCoins)}</b><span>إجمالي النقاط</span></div><div><b>${fmt(e.followerCoins)}</b><span>من المتابعين (${e.followerCount})</span></div><div><b>${fmt(e.giftCoins)}</b><span>من الهدايا 🎁</span></div><div><b>${fmt(e.withdrawn)}</b><span>تم سحبه</span></div><div><b>${e.perVideo.length}</b><span>فيديو محتسب</span></div></div>
  <div class="settings-group-label" style="margin-top:18px">تفاصيل كل فيديو</div>
  ${e.perVideo.length?e.perVideo.map(v=>`<div class="admin-card" style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;gap:8px"><span class="muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:65%">${esc(v.caption||'بدون وصف')}</span><b>${fmt(v.coins)} نقطة</b></div><div class="muted" style="font-size:10px;margin-top:4px">❤️ ${v.likes} · 💬 ${v.comments}</div></div>`).join(''):`<div class="empty" style="height:auto;padding:20px">لا توجد فيديوهات محتسبة بعد. انشر فيديو ليبدأ حساب أرباحك.</div>`}
  <p class="muted" style="margin-top:10px">تُحسب الأرباح تقديريًا بناءً على التفاعل (لايكات وتعليقات) على فيديوهاتك، بالإضافة لمكافأة عن كل متابع جديد (ما يعادل 5 ج.م لكل متابع داخل نظام النقاط). هذه قيمة تجريبية داخل التطبيق فقط وليست أموالًا حقيقية ولا وعدًا بالدفع.</p>
@@ -1684,7 +1795,7 @@ function renderAdmin(){
 }
 function renderAdminRecharges(){
  const list=(state.rechargeRequests||[]).slice().sort((a,b)=>b.createdAt-a.createdAt);
- return `<div class="admin-list">${list.length?list.map(r=>`<div class="admin-card" style="display:block"><div class="admin-info"><b>${esc(r.ownerName||'مستخدم')} <span class="status ${r.status==='approved'?'approved':r.status==='rejected'?'rejected':'pending'}">${r.status==='approved'?'مقبول':r.status==='rejected'?'مرفوض':'قيد المراجعة'}</span></b><div class="admin-cap">${esc(r.ownerEmail)}<br>🪙 المطلوب: ${fmt(r.requestedTokens)} توكن<br>📱 ${esc(r.methodName||r.method)}<br>🧾 ${esc(r.note)}<br>${new Date(r.createdAt).toLocaleString('ar-EG')}</div></div><div class="admin-actions">${r.status==='pending'?`<button class="btn btn-sm btn-success" onclick="approveRecharge('${r.id}')">✅ تأكيد وإضافة</button><button class="btn btn-sm btn-danger" onclick="rejectRecharge('${r.id}')">رفض</button>`:''}</div></div>`).join(''):`<div class="empty">لا توجد طلبات شحن.</div>`}</div>`;
+ return `<div class="admin-list">${list.length?list.map(r=>`<div class="admin-card" style="display:block"><div class="admin-info"><b>${esc(r.ownerName||'مستخدم')} <span class="status ${r.status==='approved'?'approved':r.status==='rejected'?'rejected':'pending'}">${r.status==='approved'?'مقبول':r.status==='rejected'?'مرفوض':'قيد المراجعة'}</span></b><div class="admin-cap">${esc(r.ownerEmail)}<br>🪙 المطلوب: ${fmt(r.requestedTokens)} توكن${r.priceEGP?` (${fmt(r.priceEGP)} جنيه)`:''}<br>📱 ${esc(r.methodName||r.method)}<br>🧾 ${esc(r.note)}<br>${new Date(r.createdAt).toLocaleString('ar-EG')}</div></div><div class="admin-actions">${r.status==='pending'?`<button class="btn btn-sm btn-success" onclick="approveRecharge('${r.id}')">✅ تأكيد وإضافة</button><button class="btn btn-sm btn-danger" onclick="rejectRecharge('${r.id}')">رفض</button>`:''}</div></div>`).join(''):`<div class="empty">لا توجد طلبات شحن.</div>`}</div>`;
 }
 function renderAdminErrors(){
  const list=state.systemErrors||[];
@@ -1865,7 +1976,7 @@ function init(){
 // ارسم شاشة البداية فورًا؛ لا ننتظر أي تخزين أو IndexedDB أو مؤقت.
 // هذا مهم خصوصًا عند فتح الملف من content://downloads على الهاتف.
 try{render();}catch(e){
-  app.innerHTML='<div class="screen splash"><div class="s-logo">S</div><div class="splash-welcome splash-title">أهلاً بيك 👋</div><div class="splash-welcome">مرحبًا بك في SnapVibe</div><div class="loader"><i></i></div></div>';
+  app.innerHTML='<div class="screen splash"><div class="s-logo" role="img" aria-label="حرف S شعار SnapVibe">S</div><div class="splash-welcome splash-title">أهلاً بيك 👋</div><div class="splash-welcome">مرحبًا بك في SnapVibe</div><div class="loader"><i></i></div></div>';
 }
 init();
 </script>
