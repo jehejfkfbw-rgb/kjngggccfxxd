@@ -2,229 +2,399 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0A0A0F">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop stop-color=%22%237C5CFF%22/%3E%3Cstop offset=%22.5%22 stop-color=%22%23FF5C7A%22/%3E%3Cstop offset=%221%22 stop-color=%22%232FE6C9%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%2264%22 height=%2264%22 rx=%2217%22 fill=%22url(%23g)%22/%3E%3Cpath d=%22M20 13 Q20 9 24 11 L48 30 Q51 32 48 34 L24 53 Q20 55 20 51 Z%22 fill=%22white%22/%3E%3Ccircle cx=%2250%22 cy=%2215%22 r=%225.5%22 fill=%22white%22 opacity=%22.85%22/%3E%3C/svg%3E">
-<title>SnapVibe | منصة التواصل الاجتماعي</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0A0A10">
+<meta name="color-scheme" content="dark">
+<meta name="application-name" content="Zaply">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Zaply">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
+<meta name="description" content="Zaply — شارك لحظاتك بفيديوهات قصيرة، واكتشف محتوى يشبهك.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%238B5CF6'/%3E%3Cstop offset='1' stop-color='%23EC4899'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='18' fill='url(%23g)'/%3E%3Cpath d='M20 21h24L20 43h24' fill='none' stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<title>Zaply | شارك لحظاتك</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" media="print" onload="this.media='all'">
 
 <style>
+/* =====================================================================
+   Zaply — Design System (v1)
+   ===================================================================== */
 :root{
-  --icon:url("snapvibe-logo.png");
-  --bg:#0A0A0F;--surface:#15151C;--surface2:#1D1D26;--line:#2A2A35;
-  --text:#FFFFFF;--muted:#9494A0;--purple:#7C5CFF;--cyan:#2FE6C9;--pink:#FF5C7A;
-  --danger:#FF4D6A;--success:#3DDC84;--warning:#FFB020;
-  --grad:linear-gradient(135deg,#7C5CFF 0%,#FF5C7A 50%,#2FE6C9 100%);
+  --bg:#0A0A10;--bg2:#0F0F17;--surface:#15151F;--surface2:#1C1C29;--surface3:#262636;
+  --line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.15);
+  --text:#F6F6FB;--muted:#9696AB;--muted2:#6B6B80;
+  --brand:#8B5CF6;--brand2:#EC4899;--gold:#FBBF24;
+  --purple:#8B5CF6;--cyan:#22D3EE;--pink:#A78BFA;
+  --danger:#FF4D6D;--success:#2DD4A0;--warning:#FBBF24;
+  --grad:linear-gradient(135deg,#8B5CF6 0%,#D946EF 55%,#EC4899 100%);
+  --r-sm:12px;--r:16px;--r-lg:24px;--r-xl:30px;
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);
+  --navh:calc(var(--sab) + 98px);
+  --ease:cubic-bezier(.22,1,.36,1);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;min-height:100%;background:#0A0A0F}
-body{font-family:Cairo,system-ui,sans-serif;color:var(--text);display:flex;justify-content:center;letter-spacing:-.1px}
-button,input,textarea{font:inherit}
-input,textarea{background:var(--surface);color:var(--text);border:1px solid transparent;border-radius:10px;padding:11px 13px;outline:none;width:100%}
-input::placeholder,textarea::placeholder{color:var(--muted)}
-button{cursor:pointer}
-button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid rgba(254,44,85,.55);outline-offset:2px}
-#app{width:100%;max-width:480px;height:100dvh;min-height:560px;background:var(--bg);position:relative;overflow:hidden}
-.screen{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--bg)}
-.hidden{display:none!important}
-svg{width:24px;height:24px;display:block}
-.fade{animation:fade .18s ease}
-@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-@media(min-width:481px){#app{height:92dvh;margin:4dvh 0;border:1px solid var(--line);border-radius:28px;box-shadow:0 20px 80px rgba(0,0,0,.6)}}
-
-/* Brand / splash */
-.s-logo{width:150px;height:150px;border-radius:38px;display:grid;place-items:center;background:var(--grad);color:#fff;font-size:94px;font-weight:900;font-family:Arial,sans-serif;line-height:1;text-shadow:0 8px 28px rgba(0,0,0,.3);box-shadow:0 24px 70px rgba(254,44,85,.28),0 0 45px rgba(37,244,238,.14);animation:s-pop .6s cubic-bezier(.2,.8,.2,1)}
-.splash-welcome{font-size:14px;color:#eee;margin-top:18px;font-weight:600}.splash-title{font-size:22px;margin-top:20px;font-weight:800;letter-spacing:-.3px}
-.splash-desc{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.8;max-width:280px}
-@keyframes s-pop{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
-.splash{align-items:center;justify-content:center;text-align:center;padding:30px;background:var(--bg)}
-.logo{width:88px;height:88px;border-radius:22px;overflow:hidden;display:grid;place-items:center;background-image:var(--icon);background-size:cover;background-position:center}
-.brand{font-size:29px;font-weight:800;margin-top:16px;letter-spacing:-.4px}
-.tagline{font-size:13px;color:var(--muted);margin-top:3px}
-.loader{width:110px;height:2.5px;background:var(--line);border-radius:10px;overflow:hidden;margin-top:28px}
-.loader i{display:block;width:40%;height:100%;background:var(--pink);animation:load 1.05s infinite}
-@keyframes load{from{transform:translateX(260%)}to{transform:translateX(-260%)}}
-
-/* Auth */
-.auth{padding:38px 24px 24px;overflow:auto}
-.auth-head{text-align:center;margin-bottom:30px}
-.auth-head .logo{width:54px;height:54px;border-radius:16px;margin:0 auto 16px}
-h1,h2,p{margin:0}
-h1{font-size:24px;font-weight:700;letter-spacing:-.3px}
-.muted{color:var(--muted);font-size:13px;line-height:1.75}
-.field{margin-bottom:14px}
-.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:7px;font-weight:600}
-.field input,.field textarea{
-width:100%;background:var(--surface);color:var(--text);border:1px solid transparent;
-border-radius:10px;padding:14px 15px;outline:none;font-size:14.5px
+html,body{margin:0;height:100%;background:#050508;overscroll-behavior:none}
+body{
+  font-family:"Cairo","IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color:var(--text);display:flex;justify-content:center;align-items:center;
+  -webkit-font-smoothing:antialiased;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation;
+  background:radial-gradient(60% 50% at 50% 0%,rgba(139,92,246,.22),transparent 70%),radial-gradient(40% 40% at 90% 100%,rgba(236,72,153,.14),transparent 70%),#050508;
 }
-.field input:focus,.field textarea:focus{border-color:var(--text)}
-.error{color:var(--danger);font-size:12px;margin-top:6px;display:none}
-.btn{border:0;border-radius:9px;padding:13px 16px;font-weight:700;font-size:14px;min-height:46px}
-.btn-primary{background:var(--pink);color:#fff}
-.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+button,input,textarea{font:inherit}
+input,textarea{-webkit-user-select:text;user-select:text}
+button{cursor:pointer;color:inherit}
+button:active{transform:scale(.97)}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid rgba(167,139,250,.7);outline-offset:2px}
+h1,h2,p{margin:0}
+svg{width:24px;height:24px;display:block}
+.hidden{display:none!important}
+::-webkit-scrollbar{width:0;height:0}
+
+#app{width:100%;max-width:480px;height:100dvh;min-height:560px;background:var(--bg);position:relative;overflow:hidden}
+@media(min-width:481px){#app{height:min(920px,95dvh);border-radius:38px;border:1px solid var(--line2);box-shadow:0 30px 120px rgba(0,0,0,.7),0 0 0 8px rgba(255,255,255,.03)}}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--bg)}
+.fade{animation:fade .32s var(--ease)}
+@keyframes fade{from{opacity:0;transform:translateY(10px) scale(.995)}to{opacity:1;transform:none}}
+
+/* ---------- Brand mark (Z) ---------- */
+.zmark{--zs:56px;width:var(--zs);height:var(--zs);border-radius:30%;background:var(--grad);display:grid;place-items:center;flex:none;position:relative;
+  box-shadow:0 10px 30px rgba(168,85,247,.42),inset 0 1px 0 rgba(255,255,255,.4),inset 0 -8px 16px rgba(0,0,0,.12)}
+.zmark svg{width:56%;height:56%;overflow:visible}
+.zmark.draw svg path{stroke-dasharray:46;stroke-dashoffset:46;animation:zdraw 1.5s cubic-bezier(.65,0,.35,1) infinite}
+@keyframes zdraw{0%{stroke-dashoffset:46}55%,80%{stroke-dashoffset:0}100%{stroke-dashoffset:-46}}
+@keyframes zfloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-6px) scale(1.04)}}
+@keyframes ring{0%{transform:scale(.8);opacity:.7}100%{transform:scale(2.1);opacity:0}}
+
+/* ---------- Splash ---------- */
+.splash{align-items:center;justify-content:center;text-align:center;padding:30px;
+  background:radial-gradient(60% 40% at 50% 38%,rgba(139,92,246,.34),transparent 72%),radial-gradient(45% 30% at 80% 90%,rgba(236,72,153,.2),transparent 70%),var(--bg)}
+.splash-mark{position:relative;display:grid;place-items:center;margin-bottom:26px}
+.splash-mark .zmark{--zs:124px;animation:zfloat 2.4s ease-in-out infinite;box-shadow:0 24px 70px rgba(168,85,247,.5),inset 0 1px 0 rgba(255,255,255,.45)}
+.splash-mark .ring{position:absolute;inset:0;border-radius:32%;border:2px solid rgba(167,139,250,.55);animation:ring 2.2s ease-out infinite}
+.splash-mark .ring.r2{animation-delay:1.1s}
+.splash-name{font-size:38px;font-weight:900;letter-spacing:-.5px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.splash-desc{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.9;max-width:270px}
+.dots{display:flex;gap:7px;margin-top:34px}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--brand);animation:dot 1.1s ease-in-out infinite}
+.dots i:nth-child(2){animation-delay:.15s;background:#C455F0}.dots i:nth-child(3){animation-delay:.3s;background:var(--brand2)}
+@keyframes dot{0%,80%,100%{transform:scale(.6);opacity:.35}40%{transform:scale(1.15);opacity:1}}
+
+/* ---------- Buttons / inputs ---------- */
+.btn{border:0;border-radius:var(--r);padding:13px 18px;font-weight:800;font-size:14.5px;min-height:50px;transition:transform .15s,box-shadow .2s,background .2s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary{background:var(--grad);color:#fff;box-shadow:0 10px 28px rgba(192,64,240,.32),inset 0 1px 0 rgba(255,255,255,.28)}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--text);border:1px solid var(--line2)}
 .btn-danger{background:var(--danger);color:#fff}
-.btn-success{background:var(--success);color:#04140c}
-.btn-sm{min-height:34px;padding:7px 12px;font-size:12px;border-radius:8px}
+.btn-success{background:var(--success);color:#03150d}
+.btn-outline-danger{background:transparent;color:var(--danger);border:1px solid rgba(255,77,109,.4)}
+.btn-sm{min-height:36px;padding:7px 14px;font-size:12.5px;border-radius:12px}
 .full{width:100%}
-.note{font-size:11px;color:var(--muted);text-align:center;line-height:1.7;margin-top:13px}
-.auth-switch{display:block;width:100%;margin-top:13px;border:0;background:none;color:var(--muted);font-size:12px;padding:9px;text-align:center;cursor:pointer}.auth-switch b{color:var(--pink);font-weight:700}.secure-warning{margin:12px 0;padding:11px 12px;border:0;background:rgba(255,197,49,.09);border-radius:10px;color:#f6d47a;font-size:11px;line-height:1.7}.review-box{margin:12px 0;padding:14px;border:0;background:var(--surface);border-radius:12px;text-align:center}.review-box b{display:block;color:var(--warning);font-size:14px;margin-bottom:4px;font-weight:700}.review-box span{color:var(--muted);font-size:11px}
+input,textarea{width:100%;background:var(--surface);color:var(--text);border:1.5px solid var(--line);border-radius:var(--r);padding:14px 16px;outline:none;font-size:15px;transition:border-color .2s,box-shadow .2s,background .2s}
+input::placeholder,textarea::placeholder{color:var(--muted2)}
+input:focus,textarea:focus{border-color:var(--brand);background:var(--surface2);box-shadow:0 0 0 4px rgba(139,92,246,.18)}
+.muted{color:var(--muted);font-size:13px;line-height:1.8}
+.note{font-size:11px;color:var(--muted);text-align:center;line-height:1.8;margin-top:13px}
+.error{color:var(--danger);font-size:12.5px;margin-top:8px;display:none;font-weight:600}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:8px;font-weight:700}
+.pw{position:relative}.pw input{padding-inline-end:50px}
+.pw .eye{position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:0;background:none;color:var(--muted);display:grid;place-items:center}
+.pw .eye svg{width:20px;height:20px}
 
-.permission-screen{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:28px}.permission-screen h1{font-size:20px;margin:14px 0 8px}.permission-screen p{max-width:320px;margin-bottom:20px}.permission-icon{width:82px;height:82px;border-radius:22px;background:var(--grad);display:grid;place-items:center;font-size:38px}
-/* Top bar */
-.topbar{height:54px;min-height:54px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--line);font-size:16px;font-weight:700;position:relative;background:rgba(0,0,0,.9);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);z-index:4}
-.topbar .side{position:absolute;display:grid;place-items:center;width:38px;height:38px;border:0;background:transparent;color:var(--text)}
-.topbar .right{right:8px}.topbar .left{left:8px}
-.settings-btn{position:absolute;left:8px;top:9px;width:36px;height:36px;border:0;border-radius:10px;background:transparent;color:var(--text);font-size:19px;display:grid;place-items:center}.settings-sheet{padding-bottom:24px}.settings-sheet .setting-item{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 2px;border:0;border-bottom:1px solid var(--line);background:none;border-radius:0;color:var(--text);margin-top:0;text-align:right}.settings-sheet .setting-item.danger{color:var(--danger)}
-.settings-group-label{font-size:11px;color:var(--muted);font-weight:700;margin:16px 2px 4px;text-transform:uppercase;letter-spacing:.3px}
-.setting-toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
-.switch{position:relative;width:44px;height:26px;border-radius:999px;border:0;background:var(--line);flex:none;transition:.2s}
-.switch i{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s;display:block}
-.switch.on{background:var(--pink)}.switch.on i{transform:translateX(-18px)}
-.mini-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,.08);color:var(--muted);vertical-align:middle}
-.mini-badge.biz{background:rgba(37,244,238,.14);color:var(--cyan);border:1px solid rgba(37,244,238,.35)}
+/* ---------- Auth ---------- */
+.auth{padding:calc(var(--sat) + 44px) 24px 30px;overflow:auto;
+  background:radial-gradient(70% 34% at 85% 0%,rgba(139,92,246,.36),transparent 72%),radial-gradient(55% 28% at 0% 8%,rgba(236,72,153,.24),transparent 72%),var(--bg)}
+.auth-head{text-align:center;margin-bottom:30px}
+.auth-head .zmark{--zs:78px;margin:0 auto 20px}
+.auth-head h1{font-size:28px;font-weight:900;letter-spacing:-.4px;margin-bottom:6px}
+h1{font-size:26px;font-weight:900;letter-spacing:-.3px}
+.auth-switch{display:block;width:100%;margin-top:14px;border:0;background:none;color:var(--muted);font-size:13px;padding:10px;text-align:center;font-weight:600}
+.auth-switch b{color:#B79CFF;font-weight:800}
+.secure-warning{margin:12px 0;padding:12px 14px;background:rgba(251,191,36,.09);border:1px solid rgba(251,191,36,.2);border-radius:var(--r);color:#f6d47a;font-size:11.5px;line-height:1.8}
+.review-box{margin:12px 0;padding:16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);text-align:center}
+.review-box b{display:block;color:var(--gold);font-size:14px;margin-bottom:4px;font-weight:800}
+.review-box span{color:var(--muted);font-size:12px}
+.review-note{display:flex;gap:9px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;font-size:11px;color:var(--muted)}
+.review-note b{color:var(--text);white-space:nowrap}.review-note span{line-height:1.7}
+.permission-screen{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:28px;background:radial-gradient(60% 35% at 50% 20%,rgba(139,92,246,.25),transparent 70%)}
+.permission-screen h1{font-size:21px;margin:16px 0 8px}.permission-screen p{max-width:320px;margin-bottom:20px}
+.permission-icon{width:88px;height:88px;border-radius:28px;background:var(--grad);display:grid;place-items:center;font-size:34px;box-shadow:0 18px 50px rgba(168,85,247,.4)}
 
-/* Feed */
+/* ---------- Top bars ---------- */
+.topbar{height:calc(58px + var(--sat));min-height:calc(58px + var(--sat));padding-top:var(--sat);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;position:relative;
+  background:rgba(10,10,16,.72);-webkit-backdrop-filter:blur(24px) saturate(1.5);backdrop-filter:blur(24px) saturate(1.5);border-bottom:1px solid var(--line);z-index:4}
+.topbar .side{position:absolute;top:calc(var(--sat) + 9px);display:grid;place-items:center;width:40px;height:40px;border:0;border-radius:14px;background:rgba(255,255,255,.06);color:var(--text)}
+.topbar .side svg{width:20px;height:20px}
+.topbar .right{right:12px}.topbar .left{left:12px}
+.page-head{display:flex;align-items:center;justify-content:space-between;padding:calc(var(--sat) + 16px) 18px 6px}
+.page-head h1{font-size:28px}
+.glass-btn{width:42px;height:42px;border:1px solid var(--line2);border-radius:15px;background:rgba(24,24,36,.55);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);color:#fff;display:grid;place-items:center;position:relative;flex:none}
+.glass-btn svg{width:21px;height:21px}
+.mini-badge{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:800;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.08);color:var(--muted);vertical-align:middle}
+.mini-badge.biz{background:rgba(34,211,238,.12);color:var(--cyan);border:1px solid rgba(34,211,238,.3)}
+.icon-btn{border:0;background:none;color:var(--muted);padding:4px;display:inline-grid;place-items:center}.icon-btn svg{width:17px;height:17px}
+
+/* ---------- Home / feed ---------- */
+.home-topbar{position:absolute;top:0;left:0;right:0;z-index:12;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:calc(var(--sat) + 10px) 14px 26px;background:linear-gradient(180deg,rgba(0,0,0,.62),transparent);pointer-events:none}
+.home-topbar>*{pointer-events:auto}
+.brand-lockup{display:flex;align-items:center;gap:8px}
+.brand-lockup .zmark{--zs:36px;box-shadow:0 6px 18px rgba(168,85,247,.5),inset 0 1px 0 rgba(255,255,255,.4)}
+.brand-lockup b{font-size:20px;font-weight:900;letter-spacing:-.4px;text-shadow:0 2px 12px rgba(0,0,0,.5)}
+.feed-tabs{display:flex;gap:3px;padding:4px;border-radius:999px;background:rgba(20,20,30,.5);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid var(--line)}
+.feed-tabs button{border:0;background:none;color:rgba(255,255,255,.72);font-weight:800;font-size:12.5px;padding:7px 14px;border-radius:999px;transition:.25s var(--ease);white-space:nowrap}
+.feed-tabs button.on{background:#fff;color:#0A0A10}
+.top-actions{display:flex;gap:8px}
+.top-search,.notification-bell{position:relative;width:42px;height:42px;border:1px solid var(--line2);border-radius:15px;background:rgba(24,24,36,.55);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);color:#fff;display:grid;place-items:center}
+.top-search svg,.notification-bell svg{width:21px;height:21px}
+.notification-bell span{position:absolute;top:-5px;left:-5px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:var(--danger);color:#fff;font:800 10px/19px system-ui;text-align:center;border:2px solid #0A0A10}
+@media(max-width:400px){.brand-lockup b{display:none}.feed-tabs button{padding:7px 11px}}
 .feed{flex:1;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none;background:#000}
-.feed::-webkit-scrollbar{display:none}
-.video-card{height:100%;min-height:100%;scroll-snap-align:start;position:relative;background:#000;overflow:hidden}
-.video-card>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}.sound-btn{position:absolute;right:12px;top:64px;z-index:4;width:38px;height:38px;border:1px solid rgba(255,255,255,.16);border-radius:50%;background:rgba(0,0,0,.4);color:#fff;display:grid;place-items:center}.sound-btn svg{width:20px;height:20px}
-.video-card:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.5),transparent 22%,transparent 56%,rgba(0,0,0,.82))}
-.user-row{display:flex;align-items:center;gap:10px}
-.follow-chip{border:1px solid var(--pink);background:rgba(254,44,85,.14);color:#fff;font-size:11px;font-weight:700;border-radius:20px;padding:4px 12px;box-shadow:0 0 12px rgba(254,44,85,.55)}
-.follow-chip.sent{border-color:var(--line);background:rgba(255,255,255,.08);box-shadow:none;color:var(--muted)}
-.meta{position:absolute;right:16px;left:80px;bottom:22px;z-index:2}
-.user{font-size:15px;font-weight:700;margin-bottom:5px}
-.caption{font-size:13.5px;line-height:1.7;color:#f2f2f2}
-.song{display:inline-flex;gap:5px;align-items:center;margin-top:8px;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.1);border:0;color:#fff;font-size:10.5px}
-.song svg{width:13px;height:13px;color:var(--cyan)}
-.actions{position:absolute;left:10px;bottom:22px;z-index:3;display:flex;flex-direction:column;align-items:center;gap:19px}
-.avatar{display:grid;place-items:center;background:var(--grad);font-weight:700;overflow:hidden}
+.video-card{height:100%;min-height:100%;scroll-snap-align:start;scroll-snap-stop:always;position:relative;background:#000;overflow:hidden}
+.video-card>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+.video-card:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.35),transparent 20%,transparent 50%,rgba(0,0,0,.86))}
+.sound-btn{position:absolute;right:14px;top:calc(var(--sat) + 76px);z-index:6;width:40px;height:40px;border:1px solid var(--line2);border-radius:50%;background:rgba(20,20,30,.5);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:#fff;display:grid;place-items:center;padding:0}
+.sound-btn svg{width:19px;height:19px}
+.meta{position:absolute;right:16px;left:86px;bottom:calc(var(--sab) + 104px);z-index:3}
+.user-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.user{font-size:15.5px;font-weight:800;text-shadow:0 2px 10px rgba(0,0,0,.6)}
+.follow-chip{border:1.5px solid rgba(255,255,255,.85);background:rgba(255,255,255,.08);color:#fff;font-size:11.5px;font-weight:800;border-radius:999px;padding:4px 13px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.follow-chip.sent{border-color:var(--line2);color:var(--muted)}
+.caption{font-size:13.5px;line-height:1.75;color:#f4f4f8;margin-top:8px;text-shadow:0 1px 8px rgba(0,0,0,.6);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.song{display:inline-flex;gap:6px;align-items:center;margin-top:10px;padding:5px 12px;border-radius:999px;background:rgba(20,20,30,.5);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid var(--line);color:#fff;font-size:11px;font-weight:700}
+.song svg{width:14px;height:14px;color:#D8B4FE}
+.actions{position:absolute;left:12px;bottom:calc(var(--sab) + 104px);z-index:5;display:flex;flex-direction:column;align-items:center;gap:13px}
+.avatar{display:grid;place-items:center;background:var(--grad);font-weight:800;overflow:hidden;color:#fff}
 .avatar img{width:100%;height:100%;object-fit:cover}
-.avatar.sm{width:42px;height:42px;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);margin-bottom:2px}
-.action{border:0;background:none;color:#fff;padding:0;display:flex;flex-direction:column;align-items:center;gap:4px;text-shadow:0 1px 6px rgba(0,0,0,.4)}
-.action svg{width:30px;height:30px;filter:drop-shadow(0 0 6px rgba(255,255,255,.35))}
-.action span{font-size:11.5px;font-weight:700;text-shadow:0 0 10px rgba(255,255,255,.35)}
-.action.liked{color:var(--pink)}
-.action.liked svg{filter:drop-shadow(0 0 10px rgba(254,44,85,.9))}
-.action.liked span{text-shadow:0 0 10px rgba(254,44,85,.75)}
-.empty{height:100%;display:grid;place-items:center;text-align:center;color:var(--muted);padding:35px;line-height:1.8}
+.avatar.sm{width:48px;height:48px;border-radius:50%;border:2px solid #fff;margin-bottom:4px;box-shadow:0 6px 18px rgba(0,0,0,.4)}
+.action{border:0;background:none;color:#fff;padding:0;display:flex;flex-direction:column;align-items:center;gap:5px}
+.action svg{width:48px;height:48px;padding:12px;border-radius:50%;background:rgba(20,20,30,.45);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.13);transition:transform .25s var(--ease),background .2s}
+.action:active svg{transform:scale(.86)}
+.action span{font-size:11px;font-weight:800;text-shadow:0 1px 8px rgba(0,0,0,.7)}
+.action.liked svg{background:rgba(255,77,109,.22);color:#FF4D6D;fill:#FF4D6D;border-color:rgba(255,77,109,.55);animation:pop .45s var(--ease)}
+@keyframes pop{0%{transform:scale(.7)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+.vprog{position:absolute;left:0;right:0;bottom:0;height:3px;z-index:7;background:rgba(255,255,255,.14);direction:ltr}
+.vprog i{display:block;height:100%;width:0;background:var(--grad);border-radius:0 3px 3px 0}
+.burst{position:absolute;z-index:9;width:110px;height:110px;margin:-55px 0 0 -55px;pointer-events:none;color:#FF4D6D;animation:burst .85s var(--ease) forwards;filter:drop-shadow(0 8px 24px rgba(255,77,109,.6))}
+.burst svg{width:100%;height:100%}
+@keyframes burst{0%{transform:scale(.3) rotate(-12deg);opacity:0}25%{transform:scale(1.15) rotate(6deg);opacity:1}70%{transform:scale(1) rotate(0);opacity:1}100%{transform:scale(1.5) translateY(-40px);opacity:0}}
+.flash{position:absolute;left:50%;top:50%;z-index:9;width:76px;height:76px;margin:-38px 0 0 -38px;border-radius:50%;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:grid;place-items:center;pointer-events:none;animation:flash .6s var(--ease) forwards;color:#fff}
+.flash svg{width:34px;height:34px}
+@keyframes flash{0%{transform:scale(.6);opacity:0}30%{transform:scale(1);opacity:1}100%{transform:scale(1.25);opacity:0}}
+.vload{position:absolute;inset:0;z-index:2;display:grid;place-items:center;pointer-events:none;background:rgba(0,0,0,.4);transition:opacity .3s,visibility .3s}
+.vload.off{opacity:0;visibility:hidden}
+.vload .zmark{--zs:62px}
+.vload .verr{text-align:center;color:#fff;font-size:13px;line-height:2}.vload .verr button{pointer-events:auto;margin-top:6px}
+.empty{height:100%;display:grid;place-items:center;align-content:center;gap:6px;text-align:center;color:var(--muted);padding:36px;line-height:1.9;font-size:14px}
+.empty svg{width:46px;height:46px;margin:0 auto 6px;color:var(--brand);opacity:.9}
 
-/* Bottom nav */
-.bottom{height:64px;min-height:64px;background:rgba(0,0,0,.88);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-around;z-index:6;padding-bottom:max(5px,env(safe-area-inset-bottom))}
-.nav{border:0;background:none;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:600}
-.nav svg{transition:filter .15s,color .15s}
-.nav.active{color:var(--pink)}
-.nav.active svg{filter:drop-shadow(0 0 8px rgba(254,44,85,.85))}
-.nav.active span{text-shadow:0 0 8px rgba(254,44,85,.55)}
-.nav-icon{width:22px;height:22px;display:grid;place-items:center;font-size:19px}.top-search{position:absolute;left:8px;top:9px;width:36px;height:36px;border:0;border-radius:10px;background:transparent;color:var(--text);font-size:19px;display:grid;place-items:center;pointer-events:auto;z-index:20;cursor:pointer}.top-notif{position:absolute;right:8px;top:9px;width:36px;height:36px;border:0;border-radius:10px;background:rgba(0,229,255,.12);color:var(--cyan);font-size:18px;display:grid;place-items:center;pointer-events:auto;z-index:20;cursor:pointer;box-shadow:0 0 0 1px rgba(0,229,255,.35) inset}.top-notif.is-off{background:transparent;color:var(--text);box-shadow:none;opacity:.8}.home-topbar{position:absolute;left:0;right:0;top:0;height:54px;z-index:5;display:flex;align-items:center;justify-content:center;pointer-events:none}.home-topbar b{pointer-events:auto;font-weight:800;font-size:17px;letter-spacing:.2px;text-shadow:0 0 14px rgba(254,44,85,.55),0 0 26px rgba(37,244,238,.3),0 1px 8px rgba(0,0,0,.6)}.search-title{font-weight:700;margin:16px 2px 7px;color:var(--muted);font-size:12px}.person-result{min-height:64px}.search-person-info{flex:1;min-width:0;overflow:hidden}.search-person-info b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.video-result{align-items:flex-start}.video-result video{flex:0 0 60px}
-.search-panel{max-height:75vh;overflow:auto}.search-result{display:flex;align-items:center;gap:10px;padding:12px 0;border:0;border-bottom:1px solid var(--line);background:none;border-radius:0;margin-top:0}.search-result video{width:58px;height:74px;object-fit:cover;border-radius:8px}.messages-list{max-height:58vh;overflow:auto}.message-row{padding:12px 0;border:0;border-bottom:1px solid var(--line);background:none;border-radius:0;margin-top:0}.message-bubble{padding:9px 12px;border-radius:14px;background:var(--surface2);margin-top:6px;line-height:1.6}.message-compose{display:flex;gap:7px;margin-top:10px}.message-compose input{flex:1}.terms{line-height:1.9;text-align:right;color:#eee;font-size:13px}.terms strong{color:var(--pink)}
-.add{position:relative;width:46px;height:32px;border:0;border-radius:8px;background:#fff;color:#0a0a0a;display:grid;place-items:center;margin-top:-2px;z-index:1;box-shadow:0 0 18px rgba(254,44,85,.45),0 0 18px rgba(37,244,238,.3)}
-.add:before,.add:after{content:"";position:absolute;top:0;bottom:0;width:100%;border-radius:8px;z-index:-1}
-.add:before{background:var(--cyan);left:-6px}
-.add:after{background:var(--pink);right:-6px}
-.add svg{width:20px;height:20px}
+/* ---------- Bottom navigation (floating glass) ---------- */
+.bottom{position:absolute;left:12px;right:12px;bottom:calc(var(--sab) + 10px);height:68px;border-radius:28px;z-index:20;
+  background:rgba(20,20,30,.74);-webkit-backdrop-filter:blur(30px) saturate(1.7);backdrop-filter:blur(30px) saturate(1.7);border:1px solid var(--line2);box-shadow:0 14px 44px rgba(0,0,0,.55);
+  display:flex;align-items:center;justify-content:space-around;padding:0 8px}
+.nav{position:relative;border:0;background:none;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;font-weight:800;padding:8px 8px;border-radius:18px;min-width:56px;transition:color .25s}
+.nav svg{width:23px;height:23px;transition:transform .3s var(--ease)}
+.nav.active{color:#fff}.nav.active svg{color:#C4A5FF;transform:translateY(-2px) scale(1.12)}
+.nav.active:after{content:"";position:absolute;bottom:1px;width:16px;height:3px;border-radius:3px;background:var(--grad)}
+.add{position:relative;width:56px;height:46px;border:0;border-radius:18px;background:var(--grad);color:#fff;display:grid;place-items:center;box-shadow:0 10px 28px rgba(192,64,240,.5),inset 0 1px 0 rgba(255,255,255,.35)}
+.add svg{width:24px;height:24px}
 
-.account-box{margin:0 18px 14px;padding:16px;border:0;background:var(--surface);border-radius:14px}.account-email{font-size:11px;color:var(--muted);direction:ltr;text-align:center;margin-top:3px}.account-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.btn-outline-danger{background:transparent;color:var(--danger);border:1px solid rgba(255,59,92,.4)}
-/* Profile */
-.profile-head{text-align:center;padding:24px 18px 14px}
-.avatar.lg{width:88px;height:88px;border-radius:50%;margin:0 auto 10px;font-size:29px;position:relative}
-.avatar-edit{position:absolute;bottom:0;left:0;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--surface2);border:2px solid var(--bg)}
-.avatar-edit svg{width:13px;height:13px}
-.profile-name{font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:5px}
-.icon-btn{border:0;background:none;color:var(--muted);padding:3px}
-.stats{display:flex;justify-content:center;gap:26px;margin-top:12px}
-.stats b{display:block;font-size:17px;font-weight:800;text-shadow:0 0 12px rgba(254,44,85,.4)}.stats span{color:var(--muted);font-size:10.5px}
-.edit-profile-btn{display:flex;align-items:center;justify-content:center;gap:7px;margin:14px auto 0;border:1px solid var(--pink);background:rgba(254,44,85,.12);color:#fff;font-weight:700;font-size:12.5px;border-radius:22px;padding:9px 18px;box-shadow:0 0 16px rgba(254,44,85,.4)}
-.edit-profile-btn svg{width:14px;height:14px}
-.grid{flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:2px}
-.cell{aspect-ratio:9/14;background:var(--surface);position:relative;overflow:hidden}
-.discover-tabs{display:flex;gap:7px;overflow-x:auto;padding:11px 14px;scrollbar-width:none}
-.discover-tabs::-webkit-scrollbar{display:none}
-.discover-chip{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-size:12px;font-weight:700;border-radius:18px;padding:7px 14px}
-.discover-chip.sel{background:var(--pink);color:#fff;border-color:transparent;box-shadow:0 0 14px rgba(254,44,85,.6)}
-.discover-cell{cursor:pointer;border-radius:6px}
-.discover-cell video{width:100%;height:100%;object-fit:cover}
-.dstat{position:absolute;bottom:5px;right:5px;background:rgba(0,0,0,.55);border-radius:6px;padding:2px 6px;font-size:9.5px;text-shadow:0 0 8px rgba(254,44,85,.7)}
+/* ---------- Grids / profile ---------- */
+.grid{flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:8px 14px var(--navh);align-content:start}
+.cell{aspect-ratio:9/14;background:var(--surface);position:relative;overflow:hidden;border-radius:16px;border:1px solid var(--line)}
 .cell video{width:100%;height:100%;object-fit:cover}
-.badge{position:absolute;top:5px;right:5px;border-radius:6px;padding:2px 6px;font-size:9px;font-weight:700}
-.pending{background:var(--warning);color:#2a2000}.approved{background:var(--success);color:#04140c}.rejected{background:var(--danger);color:#fff}
-.privacy{position:absolute;bottom:5px;right:5px;background:rgba(0,0,0,.6);border-radius:6px;padding:2px 5px;font-size:9px}
-.review-note{display:flex;gap:8px;align-items:flex-start;background:var(--surface);border:0;border-radius:12px;padding:11px 12px;font-size:10px;color:var(--muted)}
-.review-note b{color:var(--text);white-space:nowrap}.review-note span{line-height:1.6}
+.discover-cell{cursor:pointer}.discover-cell video{width:100%;height:100%;object-fit:cover}
+.dstat{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-radius:999px;padding:3px 8px;font-size:10px;font-weight:800}
+.badge{position:absolute;top:6px;right:6px;border-radius:999px;padding:3px 8px;font-size:9.5px;font-weight:800}
+.pending{background:var(--warning);color:#2a2000}.approved{background:var(--success);color:#03150d}.rejected{background:var(--danger);color:#fff}
+.privacy{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.6);border-radius:999px;padding:3px 7px;font-size:10px}
+.discover-tabs{display:flex;gap:8px;overflow-x:auto;padding:10px 18px 6px;scrollbar-width:none}
+.discover-chip{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-size:12.5px;font-weight:800;border-radius:999px;padding:8px 16px;transition:.25s var(--ease)}
+.discover-chip.sel{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 8px 22px rgba(192,64,240,.32)}
+.pscroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-bottom:var(--navh)}
+.pscroll .grid{flex:none;overflow:visible;padding-bottom:8px}
+.page-body{flex:1;min-height:0;overflow:auto;padding:18px 18px var(--navh)}
+.cover{position:relative;height:calc(150px + var(--sat));background:
+  radial-gradient(60% 90% at 20% 20%,rgba(255,255,255,.22),transparent 60%),
+  radial-gradient(50% 80% at 85% 90%,rgba(236,72,153,.55),transparent 65%),
+  linear-gradient(135deg,#6D3CE0,#B23EE6 60%,#EC4899)}
+.cover:after{content:"";position:absolute;inset:auto 0 0 0;height:60px;background:linear-gradient(180deg,transparent,var(--bg))}
+.cover .glass-btn{position:absolute;top:calc(var(--sat) + 12px);z-index:2}
+.cover .c-left{left:14px}.cover .c-right{right:14px}
+.profile-head{position:relative;text-align:center;padding:0 18px 12px;margin-top:-58px;z-index:2}
+.avatar.lg{width:104px;height:104px;border-radius:50%;margin:0 auto 12px;font-size:34px;position:relative;border:4px solid var(--bg);box-shadow:0 0 0 2px rgba(167,139,250,.6),0 14px 40px rgba(139,92,246,.4);overflow:visible}
+.avatar.lg img{border-radius:50%}
+.avatar-edit{position:absolute;bottom:-2px;left:-2px;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--surface3);border:3px solid var(--bg);color:#fff;padding:0}
+.avatar-edit svg{width:14px;height:14px}
+.profile-name{font-size:22px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:6px;letter-spacing:-.3px}
+.profile-name svg{width:17px;height:17px;color:var(--muted)}
+.code-chip{display:inline-flex;align-items:center;gap:6px;margin-top:6px;padding:4px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:11.5px;color:var(--muted);font-weight:700;direction:ltr}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(74px,1fr));gap:8px;margin-top:16px}
+.stats>div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 4px 10px;text-align:center}
+.stats b{display:block;font-size:19px;font-weight:900;letter-spacing:-.3px}
+.stats span{color:var(--muted);font-size:10.5px;font-weight:700}
+.profile-actions{display:flex;gap:8px;margin-top:14px}
+.profile-actions .btn{flex:1}
+.account-box{margin:6px 18px 12px;padding:16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg)}
+.account-email{font-size:11.5px;color:var(--muted);direction:ltr;text-align:center;margin-top:3px}
+.account-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.tile-btn{display:flex;flex-direction:column;align-items:center;gap:7px;padding:13px 4px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface2);color:var(--text);font-size:11px;font-weight:800}
+.tile-btn svg{width:22px;height:22px;color:#B79CFF}
+.tile-btn.danger{color:var(--danger)}.tile-btn.danger svg{color:var(--danger)}
+.vids-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:18px 18px 6px}
+.vids-head b{font-size:16px;font-weight:900}.vids-head span{font-size:11.5px;color:var(--muted);font-weight:700}
+.vtile{min-width:0}
+.vmeta{display:flex;flex-direction:column;gap:1px;padding:6px 4px 6px;font-size:10.5px;color:var(--muted);line-height:1.55}
+.vmeta b{color:var(--text);font-weight:800;font-size:11px}
+.dl-btn{position:absolute;top:6px;left:6px;z-index:5;width:32px;height:32px;padding:0;border:0;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;display:grid;place-items:center;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.dl-btn svg{width:17px;height:17px}
+.profile-relations{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}.profile-relations .btn{width:100%;min-width:0}
 
-/* Create */
+/* ---------- Create / camera ---------- */
 .camera{flex:1;position:relative;background:#000;overflow:hidden}
 .camera>video,.preview{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.camera:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.45),transparent 30%,rgba(0,0,0,.58))}
-.cambar{position:absolute;top:0;left:0;right:0;z-index:4;height:58px;display:flex;justify-content:space-between;align-items:center;padding:9px 12px}
-.round{width:38px;height:38px;border:0;border-radius:50%;background:rgba(0,0,0,.4);color:#fff;display:grid;place-items:center;box-shadow:0 0 10px rgba(37,244,238,.25)}
-.music-row{position:absolute;top:67px;left:12px;right:12px;z-index:4;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none}
-.music-row::-webkit-scrollbar{display:none}
-.music{flex:0 0 auto;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.4);color:#fff;border-radius:18px;padding:6px 10px;font-size:10px}
-.music.sel{background:var(--pink);color:#fff;border-color:transparent;font-weight:700;box-shadow:0 0 14px rgba(254,44,85,.65)}
-.music.more{background:rgba(37,244,238,.14);border-color:rgba(37,244,238,.4);color:var(--cyan);font-weight:700}
-.music-item{display:flex;align-items:center;gap:8px;width:100%;text-align:right;background:none;border:0;border-bottom:1px solid var(--line);color:var(--text);padding:11px 2px;font-size:13px}
-.music-item svg{width:15px;height:15px;margin-inline-start:auto;color:var(--pink)}
-.music-item.sel{color:var(--pink);font-weight:700}
-.controls{position:absolute;bottom:23px;left:0;right:0;z-index:4;display:flex;justify-content:center;align-items:center;gap:30px}
-.rec{width:72px;height:72px;border-radius:50%;border:4px solid #fff;background:transparent;display:grid;place-items:center;box-shadow:0 0 24px rgba(254,44,85,.55)}
-.rec i{width:54px;height:54px;border-radius:50%;background:var(--pink);display:block;transition:.2s;box-shadow:0 0 22px rgba(254,44,85,.85)}
-.rec.recording{box-shadow:0 0 34px rgba(254,44,85,.9)}
-.rec.recording i{width:26px;height:26px;border-radius:7px}
-.tool{width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;display:grid;place-items:center;box-shadow:0 0 10px rgba(37,244,238,.3)}
+.camera:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.5),transparent 28%,rgba(0,0,0,.62))}
+.cambar{position:absolute;top:0;left:0;right:0;z-index:4;padding:calc(var(--sat) + 10px) 14px 10px;display:flex;justify-content:space-between;align-items:center;font-weight:800}
+.round{width:42px;height:42px;border:1px solid var(--line2);border-radius:50%;background:rgba(20,20,30,.5);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:#fff;display:grid;place-items:center;padding:0}
+.music-row{position:absolute;top:calc(var(--sat) + 70px);left:14px;right:14px;z-index:4;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+.music{flex:0 0 auto;border:1px solid var(--line2);background:rgba(20,20,30,.5);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:#fff;border-radius:999px;padding:7px 13px;font-size:11px;font-weight:700}
+.music.sel{background:var(--grad);border-color:transparent;font-weight:800}
+.music.more{background:rgba(34,211,238,.12);border-color:rgba(34,211,238,.35);color:var(--cyan)}
+.music-item{display:flex;align-items:center;gap:8px;width:100%;text-align:right;background:none;border:0;border-bottom:1px solid var(--line);color:var(--text);padding:13px 2px;font-size:14px}
+.music-item svg{width:16px;height:16px;margin-inline-start:auto;color:var(--brand)}
+.music-item.sel{color:#C4A5FF;font-weight:800}
+.controls{position:absolute;bottom:calc(var(--sab) + 26px);left:0;right:0;z-index:4;display:flex;justify-content:center;align-items:center;gap:32px}
+.rec{width:80px;height:80px;border-radius:50%;border:4px solid #fff;background:transparent;display:grid;place-items:center;padding:0;transition:.25s var(--ease)}
+.rec i{width:60px;height:60px;border-radius:50%;background:var(--grad);display:block;transition:.25s var(--ease);box-shadow:0 0 28px rgba(217,70,239,.6)}
+.rec.recording{border-color:var(--danger)}.rec.recording i{width:30px;height:30px;border-radius:9px;background:var(--danger)}
+.tool{width:48px;height:48px;border:1px solid var(--line2);border-radius:50%;background:rgba(20,20,30,.5);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:#fff;display:grid;place-items:center;padding:0}
 .tool small{display:block;font-size:8px}
-.timer{position:absolute;top:17px;left:0;right:0;text-align:center;z-index:5;color:var(--pink);font-weight:700}
+.timer{position:absolute;top:calc(var(--sat) + 22px);left:0;right:0;text-align:center;z-index:5;color:#fff;font-weight:800;font-variant-numeric:tabular-nums}
 
-/* Sheets / modals */
-.overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);z-index:30;display:flex;align-items:flex-end}
-.sheet{width:100%;max-height:88%;overflow:auto;background:var(--surface2);border-radius:20px 20px 0 0;padding:16px 18px max(18px,env(safe-area-inset-bottom));animation:up .2s ease}
-@keyframes up{from{transform:translateY(20px)}to{transform:none}}
-.handle{width:34px;height:4px;background:var(--line);border-radius:4px;margin:0 auto 14px}
-.sheet h2{font-size:16px;margin-bottom:13px;font-weight:700}
-.preview-thumb{width:100%;max-height:190px;object-fit:cover;border-radius:12px;background:#000;margin-bottom:12px}
-.privacy-list{display:grid;gap:7px;margin:12px 0}
-.privacy-opt{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
-.privacy-opt.sel{border-color:var(--pink);background:rgba(254,44,85,.1)}
-.privacy-opt svg{width:20px}.privacy-opt b{font-size:13px}.privacy-opt small{display:block;color:var(--muted);font-size:10px}
-.comments{height:67%;display:flex;flex-direction:column}
+/* ---------- Sheets ---------- */
+.overlay{position:absolute;inset:0;background:rgba(5,5,10,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);z-index:100;display:flex;align-items:flex-end;animation:ofade .25s}
+@keyframes ofade{from{opacity:0}to{opacity:1}}
+.sheet{width:100%;max-height:90%;overflow:auto;background:linear-gradient(180deg,var(--surface2),var(--surface));border-radius:30px 30px 0 0;padding:12px 20px max(22px,var(--sab));border:1px solid var(--line2);border-bottom:0;box-shadow:0 -24px 70px rgba(0,0,0,.55);animation:sheetUp .38s var(--ease)}
+@keyframes sheetUp{from{transform:translateY(60px);opacity:.4}to{transform:none;opacity:1}}
+.handle{width:42px;height:5px;background:var(--line2);border-radius:5px;margin:0 auto 16px}
+.sheet h2{font-size:18px;margin-bottom:14px;font-weight:900}
+.preview-thumb{width:100%;max-height:200px;object-fit:cover;border-radius:var(--r);background:#000;margin-bottom:12px}
+.privacy-list{display:grid;gap:8px;margin:12px 0}
+.privacy-opt{display:flex;align-items:center;gap:12px;padding:13px 14px;border:1.5px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.privacy-opt.sel{border-color:var(--brand);background:rgba(139,92,246,.12)}
+.privacy-opt svg{width:20px}.privacy-opt b{font-size:13.5px}.privacy-opt small{display:block;color:var(--muted);font-size:11px}
+.comments{height:70%;display:flex;flex-direction:column}
 .comment-list{flex:1;overflow:auto}
-.comment{display:flex;gap:9px;padding:9px 0}
-.cav{width:30px;height:30px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-size:11px;font-weight:700;flex:none}
-.comment-name{color:var(--muted);font-size:10px}.comment-text{font-size:13px}
-.comment-input{display:flex;gap:7px;margin-top:8px}
-.comment-input input{flex:1;border:0;background:var(--surface);color:var(--text);border-radius:20px;padding:10px 14px;outline:none}
-.send{width:40px;height:40px;border:0;border-radius:50%;background:var(--pink);display:grid;place-items:center;color:#fff}
-.toast{position:absolute;left:50%;bottom:82px;transform:translateX(-50%);z-index:60;background:#242428;border:0;padding:9px 15px;border-radius:22px;font-size:11px;white-space:nowrap;animation:fade .2s;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.comment{display:flex;gap:10px;padding:10px 0}
+.cav{width:34px;height:34px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-size:12px;font-weight:800;flex:none}
+.comment-name{color:var(--muted);font-size:11px;font-weight:700}.comment-text{font-size:13.5px;margin-top:2px}
+.comment-input{display:flex;gap:8px;margin-top:10px}
+.comment-input input{flex:1;border-radius:999px;padding:12px 18px}
+.send{width:46px;height:46px;border:0;border-radius:50%;background:var(--grad);display:grid;place-items:center;color:#fff;flex:none;box-shadow:0 8px 22px rgba(192,64,240,.4)}
+.send svg{width:20px;height:20px}
+.toast{position:absolute;left:50%;top:calc(var(--sat) + 14px);transform:translateX(-50%);z-index:300;max-width:calc(100% - 32px);background:rgba(28,28,41,.92);-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);border:1px solid var(--line2);padding:11px 20px;border-radius:999px;font-size:12.5px;font-weight:800;text-align:center;line-height:1.6;animation:toastIn .4s var(--ease);box-shadow:0 14px 44px rgba(0,0,0,.55)}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,-16px) scale(.94)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
 
-/* Admin */
-.admin-list{flex:1;overflow:auto;padding:4px 14px}
-.filters{display:flex;gap:7px;overflow:auto;padding:11px 11px 0}
-.admin-card{display:flex;gap:10px;background:none;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:12px 0;margin-bottom:0}
-.admin-thumb{width:64px;height:88px;flex:none;background:#000;border-radius:8px;overflow:hidden}
+/* ---------- Settings / lists ---------- */
+.settings-sheet{padding-bottom:26px}
+.settings-sheet .setting-item{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 14px;border:0;background:var(--surface);border-radius:var(--r);color:var(--text);margin-top:8px;text-align:right;font-weight:700;font-size:14px}
+.settings-sheet .setting-item.danger{color:var(--danger)}
+.settings-group-label{font-size:11.5px;color:var(--muted);font-weight:800;margin:18px 2px 2px;letter-spacing:.3px}
+.setting-toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.switch{position:relative;width:50px;height:30px;border-radius:999px;border:0;background:var(--surface3);flex:none;transition:.25s var(--ease);padding:0}
+.switch i{position:absolute;top:3px;right:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.25s var(--ease);display:block;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.switch.on{background:var(--grad)}.switch.on i{transform:translateX(-20px)}
+.terms{line-height:2;text-align:right;color:#e8e8f0;font-size:13.5px}.terms strong{color:#C4A5FF}
+.search-title{font-weight:800;margin:18px 2px 8px;color:var(--muted);font-size:12.5px}
+.person-result{min-height:66px}.search-person-info{flex:1;min-width:0;overflow:hidden}
+.search-person-info b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.video-result{align-items:flex-start}.video-result video{flex:0 0 60px}
+.search-panel{max-height:82%;overflow:auto}
+.search-result{display:flex;align-items:center;gap:12px;padding:11px;border:0;background:var(--surface);border-radius:var(--r);margin-top:8px;width:100%;text-align:right;color:var(--text)}
+.search-result video{width:58px;height:74px;object-fit:cover;border-radius:12px}
+.messages-list{max-height:58vh;overflow:auto}
+.message-row{padding:12px;border:0;background:var(--surface);border-radius:var(--r);margin-top:8px}
+.message-bubble{padding:10px 14px;border-radius:18px;background:var(--surface3);margin-top:6px;line-height:1.7;font-size:13.5px}
+.message-compose{display:flex;gap:8px;margin-top:12px}.message-compose input{flex:1;border-radius:999px;padding:12px 18px}
+.message-request{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;margin-bottom:8px}
+.message-request .request-actions{display:flex;gap:8px;margin-top:10px}.message-request .request-actions button{flex:1}
+.relation-tabs{display:flex;gap:8px;overflow:auto;padding:3px 0 10px;scrollbar-width:none}.relation-tabs .btn{white-space:nowrap}
+.relation-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.relation-main{display:flex;align-items:center;gap:10px;min-width:0}.relation-main>div:last-child{min-width:0}
+.relation-actions{display:flex;gap:6px;flex-shrink:0}
+.request-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:rgba(139,92,246,.16);color:#C4A5FF;font-size:10.5px;font-weight:800}
+@media(max-width:520px){.relation-actions .btn{padding:7px 10px;font-size:11px}}
+.notifications-sheet{max-height:84%}
+.notif-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px}
+.notifications-list{max-height:58vh;overflow:auto}
+.notification-item{width:100%;display:flex;align-items:center;gap:12px;padding:12px;margin-top:8px;border:0;background:var(--surface);border-radius:var(--r);color:var(--text);text-align:right}
+.notification-icon{width:44px;height:44px;flex:none;border-radius:15px;background:var(--surface3);display:grid;place-items:center;font-size:20px}
+.notification-copy{min-width:0;flex:1;display:block}
+.notification-copy b{display:block;font-size:13px;margin-bottom:3px}
+.notification-copy small{display:block;color:#A8A8BD;font-size:11.5px;line-height:1.6}
+.notification-copy em{display:block;color:var(--muted2);font-size:10px;font-style:normal;margin-top:4px}
+
+/* ---------- Admin ---------- */
+.admin-list{flex:1;overflow:auto;padding:6px 14px 30px}
+.filters{display:flex;gap:8px;overflow:auto;padding:12px 14px 0}
+.admin-card{display:flex;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:12px;margin-bottom:10px}
+.admin-thumb{width:66px;height:90px;flex:none;background:#000;border-radius:14px;overflow:hidden}
 .admin-thumb video{width:100%;height:100%;object-fit:cover}
-.admin-info{min-width:0;flex:1}.admin-info b{font-size:12px}.admin-cap{font-size:10px;color:var(--muted);line-height:1.6;margin:3px 0 8px}
-.admin-actions{display:flex;gap:5px;flex-wrap:wrap}
-.status{font-size:9px;border-radius:6px;padding:2px 6px;margin-right:4px}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition:none!important}}
+.admin-info{min-width:0;flex:1}.admin-info b{font-size:13px}.admin-cap{font-size:11px;color:var(--muted);line-height:1.7;margin:3px 0 8px}
+.admin-actions{display:flex;gap:6px;flex-wrap:wrap}
+.status{font-size:9.5px;border-radius:999px;padding:2px 8px;margin-right:4px;font-weight:800}
+.status.approved{background:var(--success);color:#03150d}.status.pending{background:var(--warning);color:#2a2000}
 
-.brand-s,.s-logo{display:flex;align-items:center;justify-content:center;background:var(--grad);color:#fff;font-weight:900;text-shadow:0 3px 18px rgba(0,0,0,.25)}
-.brand-s{width:76px;height:76px;border-radius:20px;font-size:44px;margin:0 auto 16px;box-shadow:0 12px 32px rgba(254,44,85,.22)}.s-logo{width:150px;height:150px;border-radius:38px;font-size:94px;margin:0 auto 24px}.relation-tabs{display:flex;gap:6px;overflow:auto;padding:3px 0 8px;scrollbar-width:none}.relation-tabs::-webkit-scrollbar{display:none}.relation-tabs .btn{white-space:nowrap}.relation-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:0;padding:12px 0;border-bottom:1px solid var(--line)}.relation-main{display:flex;align-items:center;gap:9px;min-width:0}.relation-main>div:last-child{min-width:0}.relation-actions{display:flex;gap:6px;flex-shrink:0}.request-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:999px;background:rgba(254,44,85,.14);color:var(--pink);font-size:10px;font-weight:600}.message-request{border:0;background:var(--surface);border-radius:12px;padding:12px;margin-bottom:8px}.message-request .request-actions{display:flex;gap:7px;margin-top:9px}.message-request .request-actions button{flex:1}.profile-relations{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}.profile-relations .btn{width:100%;min-width:0}@media(max-width:520px){.profile-relations{grid-template-columns:1fr 1fr}.relation-actions .btn{padding:7px 9px;font-size:10px}}
+@media(max-width:480px){#app{min-height:100dvh;border-radius:0}.auth{padding-left:20px;padding-right:20px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+
+.vload .verr .zmark{margin:0 auto 8px}
+.price-line{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line);font-size:12.5px;margin-bottom:14px;color:var(--muted);font-weight:700}
+.price-line b{color:var(--gold);font-size:14.5px}
+.pack-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 10px;margin:6px 0 16px}
+.pack{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:18px 8px 13px;border:1.5px solid var(--line);border-radius:var(--r);background:var(--surface);color:var(--text)}
+.pack b{font-size:18px;font-weight:900}
+.pack span{font-size:13px;color:var(--muted);font-weight:800}
+.pack small{font-size:10.5px;color:var(--muted2);font-weight:700}
+.pack em{position:absolute;top:-10px;font-style:normal;font-size:10px;font-weight:900;background:var(--grad);color:#fff;padding:2px 10px;border-radius:999px;white-space:nowrap}
+.pack.sel{border-color:var(--brand);background:rgba(139,92,246,.15);box-shadow:0 0 0 3px rgba(139,92,246,.16)}
+.pack.sel span{color:#E9D5FF}
+.total-box{display:flex;flex-direction:column;align-items:center;gap:3px;padding:16px;margin-bottom:16px;border-radius:var(--r-lg);background:linear-gradient(135deg,rgba(139,92,246,.22),rgba(236,72,153,.16));border:1px solid rgba(167,139,250,.38)}
+.total-box span{font-size:12px;color:var(--muted);font-weight:700}
+.total-box b{font-size:30px;font-weight:900;letter-spacing:-.5px}
+.total-box small{color:#D8B4FE;font-size:12px;font-weight:700;min-height:16px}
+.dev-row{background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(236,72,153,.12))!important;border:1px solid rgba(167,139,250,.32)!important}
+.nav-dot{position:absolute;top:6px;right:15px;width:10px;height:10px;border-radius:50%;background:var(--danger);border:2px solid #14141e}
+.cover.sm{height:112px}
+
 </style>
 </head>
 <body>
-<div id="app"><div id="bootSplash" class="screen splash" aria-label="SnapVibe"><div class="s-logo" role="img" aria-label="حرف S شعار SnapVibe">S</div><div class="splash-welcome splash-title">أهلاً بيك 👋</div><div class="splash-welcome">مرحبًا بك في SnapVibe</div><div class="splash-desc">منصتك الاجتماعية لمشاركة الفيديوهات القصيرة، اكتشاف محتوى جديد والتواصل مع الآخرين.</div><div class="loader"><i></i></div></div></div>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<div id="app"><div id="bootSplash" class="screen splash" aria-label="Zaply"><div class="splash-mark"><span class="ring"></span><span class="ring r2"></span><span class="zmark draw"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11l-11 11h11"/></svg></span></div><div class="splash-name">Zaply</div><div class="splash-desc">شارك لحظاتك بفيديوهات قصيرة، واكتشف محتوى يشبهك.</div><div class="dots"><i></i><i></i><i></i></div></div></div>
+<script>
+/* تحميل مكتبات Firebase/Supabase في الخلفية: قبل كده كانت 4 سكربتات بتوقف الصفحة كلها
+   لو النت بطيء أو الرابط اتأخر، فتفضل شاشة التحميل للأبد. دلوقتي التطبيق بيفتح فورًا وبيتوصل بالسيرفر لما المكتبات توصل. */
+(function(){
+  function ls(src){return new Promise(function(res){
+    var done=false,el=document.createElement('script');
+    function fin(ok){if(done)return;done=true;res(ok)}
+    el.src=src;el.async=false;el.onload=function(){fin(true)};el.onerror=function(){fin(false)};
+    document.head.appendChild(el);setTimeout(function(){fin(false)},15000);
+  })}
+  var fb=ls('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js').then(function(ok){
+    return ok?ls('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js'):false;
+  });
+  var sb=ls('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js');
+  window.__svLibs=Promise.all([fb,sb]);
+})();
+</script>
 <script>
 (function(){
   function fallback(){
     var a=document.getElementById('app');
     if(!a || !a.querySelector('#bootSplash')) return;
-    a.innerHTML='<div class="screen auth fade"><div class="auth-head"><div class="brand-s" role="img" aria-label="شعار SnapVibe"><svg viewBox="0 0 100 100" width="60%" height="60%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M30 20 Q30 14 36 17 L76 46 Q80 50 76 54 L36 83 Q30 86 30 80 Z" fill="#fff"/><circle cx="78" cy="24" r="9" fill="#fff" opacity=".85"/></svg></div><h1>تسجيل الدخول</h1><p class="muted">أهلاً بيك في SnapVibe 👋</p></div><div class="field"><label>البريد الإلكتروني</label><input id="bootEmail" type="email" autocomplete="email" placeholder="name@example.com"></div><div class="field"><label>كلمة السر</label><input id="bootPass" type="password" autocomplete="current-password" placeholder="••••••••"></div><button id="bootLogin" class="btn btn-primary full">دخول</button><div id="bootMsg" class="error" style="display:none"></div><p class="muted" style="text-align:center;margin-top:14px;font-size:12px">جارٍ تشغيل التطبيق… إذا لم يستجب الزر أعد تحميل الصفحة.</p></div>';
+    a.innerHTML='<div class="screen auth fade"><div class="auth-head"><span class="zmark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11l-11 11h11"/></svg></span><h1>تسجيل الدخول</h1><p class="muted">أهلاً بيك في Zaply 👋</p></div><div class="field"><label>البريد الإلكتروني</label><input id="bootEmail" type="email" autocomplete="email" placeholder="name@example.com"></div><div class="field"><label>كلمة السر</label><input id="bootPass" type="password" autocomplete="current-password" placeholder="••••••••"></div><button id="bootLogin" class="btn btn-primary full">دخول</button><div id="bootMsg" class="error" style="display:none"></div><p class="muted" style="text-align:center;margin-top:14px;font-size:12px">جارٍ تشغيل التطبيق… إذا لم يستجب الزر أعد تحميل الصفحة.</p></div>';
     var b=document.getElementById('bootLogin');
     if(b) b.onclick=function(){
       var m=document.getElementById('bootMsg');
@@ -240,65 +410,19 @@ border-radius:10px;padding:14px 15px;outline:none;font-size:14.5px
 "use strict";
 
 /* =========================================================
-   SnapVibe — نسخة HTML واحدة، متصلة الآن بقاعدة بيانات Supabase حقيقية
+   Zaply — نسخة HTML واحدة، متصلة الآن بقاعدة بيانات Supabase حقيقية
    عشان أي حساب/فيديو/تفاعل يظهر فورًا على كل الأجهزة (موبايل، لابتوب... إلخ)
    مش بس على الجهاز اللي اتعمل منه.
    ========================================================= */
 
 const ADMIN_EMAIL="jehejfkfbw@gmail.com";
-/* أمان متوسط: مش متخزنة نص عادي، متخزنة كـ hash (SHA-256). */
-const ADMIN_PASS_HASH="d43fb1434f358fa0d6843b5c1411dbc68a42d4f1b51c8c871802eaec70cedf51";
-
-/* ---------- تشفير كلمات السر (SHA-256) — أمان متوسط، أفضل بكثير من تخزينها نص عادي ---------- */
-async function hashPassword(pw){
-  try{
-    const enc=new TextEncoder().encode(String(pw||""));
-    const buf=await crypto.subtle.digest("SHA-256",enc);
-    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
-  }catch(e){
-    console.warn("Hashing unavailable, falling back to plain (insecure)",e);
-    return String(pw||"");
-  }
-}
-function looksHashed(str){return typeof str==="string"&&/^[0-9a-f]{64}$/i.test(str)}
+const ADMIN_PASS="ddee4dab";
 
 /* ============== التخزين النهائي للتطبيق: Firebase Firestore ==============
    الحسابات + التوكن + الهدايا + طلبات الشحن + طلبات السحب + الأخطاء
    + بيانات الفيديو (العنوان/المالك/الحالة) = Firebase.
    ملف الفيديو نفسه فقط = Supabase Storage.
    ======================================================================== */
-/* ==========================================================================
-   ⚠️ خطوة واحدة لازم تتعمل مرة واحدة بس عشان كل حاجة تشتغل (أمان متوسط):
-   الكود مبيقدرش يدخل بنفسه على حساباتك في Firebase/Supabase (مفيش وصول شبكة
-   من هنا)، فلازم تنسخ الإعدادات دي بنفسك، مرة واحدة، من لوحتي التحكم:
-
-   1) Firebase Console → مشروع snapvibe-df811 → Authentication → Sign-in method
-      → فعّل "Anonymous" (زر تفعيل بس، بدون أي إعداد إضافي).
-
-   2) Firebase Console → Firestore Database → Rules → الصق ده وانشر (Publish):
-      rules_version = '2';
-      service cloud.firestore {
-        match /databases/{database}/documents {
-          match /snapvibe/app_state {
-            allow read: if true;
-            allow write: if request.auth != null;
-          }
-        }
-      }
-
-   3) Supabase → مشروعك → Storage → bucket اسمه "videos" (اعمله لو مش موجود،
-      واختار Public bucket) → Policies → New Policy → الصق الكود ده في SQL
-      Editor بتاع Supabase وشغّله:
-      create policy "public read videos"
-        on storage.objects for select
-        using ( bucket_id = 'videos' );
-      create policy "anon upload videos"
-        on storage.objects for insert
-        with check ( bucket_id = 'videos' );
-
-   من غير الخطوتين 2 و3 هتفضل رسالة "تعذّر الحفظ" أو "فشل رفع الفيديو" تظهر
-   حتى لو الكود مظبوط 100%، لأن الرفض جاي من إعدادات السيرفر مش من الكود.
-   ========================================================================== */
 const firebaseConfig={
   apiKey:"AIzaSyAfqUdOD-Y2qMUwj6C-hZ-9-2JCjPef6U",
   authDomain:"snapvibe-df811.firebaseapp.com",
@@ -308,23 +432,19 @@ const firebaseConfig={
   appId:"1:572071205713:web:3666dad3c5c5a9cd8b5170"
 };
 let FIREBASE_READY=false, db=null, authApp=null;
-/* هذا الـ Promise بيتحل لما يبقى فيه تسجيل دخول (ولو مجهول/anonymous) في Firebase Auth.
-   ضروري لأن أي Firestore Rules متوسطة الأمان لازم تشترط request.auth != null،
-   وبدون تسجيل دخول (حتى لو مجهول) كل قراءة/كتابة هترفض. */
-let firebaseAuthReady=Promise.resolve();
-try{
-  if(firebaseConfig.apiKey && firebaseConfig.projectId && typeof firebase!=="undefined"){
-    firebase.initializeApp(firebaseConfig);
-    db=firebase.firestore();
-    authApp=firebase.auth();
-    FIREBASE_READY=true;
-    firebaseAuthReady=authApp.signInAnonymously().catch(e=>{
-      console.warn("SnapVibe: تسجيل الدخول المجهول في Firebase فشل — راجع تفعيل Anonymous Sign-in في Firebase Console > Authentication > Sign-in method.",e);
-    });
+function initFirebase(){
+  if(FIREBASE_READY)return true;
+  try{
+    if(firebaseConfig.apiKey && firebaseConfig.projectId && typeof firebase!=="undefined" && firebase.firestore){
+      if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      db=firebase.firestore();
+      FIREBASE_READY=true;
+    }
+  }catch(e){
+    console.warn("Zaply: Firebase غير متصل.",e);
+    FIREBASE_READY=false;
   }
-}catch(e){
-  console.warn("SnapVibe: Firebase غير متصل.",e);
-  FIREBASE_READY=false;
+  return FIREBASE_READY;
 }
 
 /* ============== Supabase: ملفات الفيديو فقط ============== */
@@ -334,17 +454,23 @@ const supabaseConfig={
 };
 const SUPABASE_BUCKET="videos";
 let SUPABASE_READY=false, supabaseClient=null;
-try{
-  if(supabaseConfig.url && supabaseConfig.anonKey && typeof window.supabase!=="undefined"){
-    supabaseClient=window.supabase.createClient(supabaseConfig.url,supabaseConfig.anonKey);
-    SUPABASE_READY=true;
+function initSupabase(){
+  if(SUPABASE_READY)return true;
+  try{
+    if(supabaseConfig.url && supabaseConfig.anonKey && typeof window.supabase!=="undefined"){
+      supabaseClient=window.supabase.createClient(supabaseConfig.url,supabaseConfig.anonKey);
+      SUPABASE_READY=true;
+    }
+  }catch(e){
+    console.warn("Zaply: Supabase غير متصل — رفع الفيديو لن يعمل.",e);
+    SUPABASE_READY=false;
   }
-}catch(e){
-  console.warn("SnapVibe: Supabase غير متصل — رفع الفيديو لن يعمل.",e);
-  SUPABASE_READY=false;
+  return SUPABASE_READY;
 }
+let remoteLoaded=false, pendingSave=false, lastSavedAt=0, remoteErrShown=false;
 function remoteDoc(){return db.collection("snapvibe").doc("app_state")}
 
+/* Browser notifications intentionally disabled: Zaply uses only the in-app notification center above. */
 const STORAGE_KEY="snapvibe_state_v2";
 const SESSION_KEY="snapvibe_session_v2";
 const LOGIN_ATTEMPTS_KEY="snapvibe_login_attempts_v2";
@@ -407,8 +533,25 @@ check:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="
 globe:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.4 3.6 5.3 3.6 8.5s-1.2 6.1-3.6 8.5c-2.4-2.4-3.6-5.3-3.6-8.5S9.6 5.9 12 3.5z"/></svg>`,
 users:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><path d="M2.5 19c.7-2.8 3-4.4 6.5-4.4s5.8 1.6 6.5 4.4"/><circle cx="17" cy="8.5" r="2.4"/><path d="M15.5 14.8c2.6.3 4.3 1.7 4.9 4.2"/></svg>`,
 lock:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="10.5" width="14" height="9" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>`,
-compass:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M15 9l-2 6-6 2 2-6 6-2z"/></svg>`
+compass:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M15 9l-2 6-6 2 2-6 6-2z"/></svg>`,
+download:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7.5 11l4.5 4.5 4.5-4.5M4.5 19.5h15"/></svg>`,
+search:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>`,
+bell:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>`,
+chat:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.8-.9L3 20l1.3-4.6A8.4 8.4 0 1 1 21 11.5z"/></svg>`,
+gift:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg>`,
+settings:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg>`,
+wallet:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="3"/><path d="M3 10h18M16.5 15h1"/><path d="M6 6l9-3 1 3"/></svg>`,
+logout:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>`,
+vol:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>`,
+mute:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="m22 9-6 6M16 9l6 6"/></svg>`,
+eye:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>`,
+eyeoff:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4M6.6 6.6A17 17 0 0 0 2 12s3.6 7 10 7a9.7 9.7 0 0 0 4.4-1"/></svg>`,
+arrow:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`,
+pause:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M8 5v14M16 5v14"/></svg>`,
+heartfill:`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-8.4-5-10.4-10.2C.2 7.3 2.2 4 5.7 3.6c2.2-.3 4.2.7 5.5 2.6l.8 1.1.8-1.1c1.3-1.9 3.3-2.9 5.5-2.6 3.5.4 5.5 3.7 4.1 7.2C20.4 16 12 21 12 21z"/></svg>`
 };
+const zmark=(cls,size)=>`<span class="zmark ${cls||""}"${size?` style="--zs:${size}px"`:""}><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11l-11 11h11"/></svg></span>`;
+function splashHTML(){return `<div class="screen splash fade"><div class="splash-mark"><span class="ring"></span><span class="ring r2"></span>${zmark("draw")}</div><div class="splash-name">Zaply</div><div class="splash-desc">شارك لحظاتك بفيديوهات قصيرة، واكتشف محتوى يشبهك.</div><div class="dots"><i></i><i></i><i></i></div></div>`}
 
 const DEMO=[];
 
@@ -420,9 +563,9 @@ const WALLETS=[
 ];
 
 const state={
-screen:"splash",session:null,accounts:{},videos:[],withdrawals:[],rechargeRequests:[],giftTransactions:[],systemErrors:[],
+screen:"splash",session:null,accounts:{},videos:[],withdrawals:[],rechargeRequests:[],giftTransactions:[],systemErrors:[],adminMessages:[],
 pending:null,
-ui:{comments:null,share:null,messages:false,search:false,settings:false,selectedChat:null,publish:false,stage:"camera",recorded:null,recordedIsBlob:false,song:SONGS[0],privacy:"public",editName:false,adminFilter:"pending",adminTab:"videos",banTarget:null,toast:null,authMode:"login",banNotice:null,banUntil:null,banPermanent:false,viewProfile:null,viewProfileFrom:"home",settingsSection:null,editBiz:false,profileTab:"videos",withdrawSheet:false,withdrawWallet:"orange",withdrawPhone:"",tokenRecharge:false,rechargeMethod:"orange",rechargeAmount:"",rechargeNote:"",giftVideoId:null,resetConfirm:false}
+ui:{comments:null,share:null,messages:false,search:false,notifications:false,settings:false,selectedChat:null,publish:false,stage:"camera",recorded:null,recordedIsBlob:false,song:SONGS[0],privacy:"public",editName:false,adminFilter:"pending",adminTab:"videos",banTarget:null,toast:null,authMode:"login",banNotice:null,banUntil:null,banPermanent:false,viewProfile:null,viewProfileFrom:"home",settingsSection:null,editBiz:false,profileTab:"videos",withdrawSheet:false,withdrawWallet:"orange",withdrawPhone:"",tokenRecharge:false,rechargeMethod:"orange",rechargeAmount:"",rechargeNote:"",giftVideoId:null,resetConfirm:false}
 };
 
 let stream=null,recordStream=null,recorder=null,chunks=[],timer=null;
@@ -498,114 +641,13 @@ function banDetail(a){
 }
 function adminUsers(){return Object.entries(state.accounts).map(([email,a])=>({email,...a}));}
 function liked(v){return !!state.session&&v.likes.includes(state.session.email)}
-function toast(msg){state.ui.toast=msg;render();setTimeout(()=>{state.ui.toast=null;render()},1900)}
-
-/* ================= إشعارات حقيقية على مستوى النظام (Notifications API) =================
-   دي ميزة "native" فعلية غير موجودة في مجرد فتح صفحة ويب: إشعار بيظهر من برّه التطبيق
-   (في شريط الإشعارات بتاع الجهاز) لما حد يعمل لايك/تعليق/متابعة/هدية، حتى لو التطبيق
-   شغّال في الخلفية. لما التطبيق يتغلف بـ Capacitor لاحقًا، نفس الكود ده يشتغل زي ما هو
-   ويضاف عليه فقط قدرة الوصول للإشعار وقت إغلاق التطبيق تمامًا عن طريق Capacitor Push plugin. */
-const APP_ICON_DATA_URI="data:image/svg+xml;base64,"+btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" rx="28" fill="%230A0A0F"/><path d="M42 30 Q42 22 50 26 L92 60 Q98 64 92 68 L50 102 Q42 106 42 98 Z" fill="%237C5CFF"/><circle cx="96" cy="32" r="10" fill="%23FF5C7A"/></svg>'.replace(/%23/g,"#"));
-
-function notifyLocal(title,body){
-  try{
-    if(!("Notification" in window))return;
-    if(Notification.permission!=="granted")return;
-    if(document.visibilityState==="visible")return; /* التطبيق مفتوح وشغال قدامه أصلًا، مفيش داعي نزعجه بإشعار خارجي */
-    new Notification(title,{body,icon:APP_ICON_DATA_URI,badge:APP_ICON_DATA_URI});
-  }catch(e){console.warn("Notification display failed",e)}
+let toastTimer=null;
+function toast(msg){
+  state.ui.toast=msg;render();
+  clearTimeout(toastTimer);
+  // قبل كده كان بيعيد رسم الشاشة كلها لما الرسالة تختفي، وده كان بيرجّع الفيديو لأول الصفحة ويعيد تحميله.
+  toastTimer=setTimeout(()=>{state.ui.toast=null;const t=app.querySelector(".toast");if(t)t.remove()},1900);
 }
-function notifIsOn(){return typeof Notification!=="undefined"&&Notification.permission==="granted"}
-function notifInfo(){
-  const supported="Notification" in window;
-  const permission=supported?Notification.permission:"unsupported";
-  const protocol=location.protocol; /* https: / http: / file: */
-  const secure=window.isSecureContext===true;
-  return{supported,permission,protocol,secure};
-}
-function openNotifSheet(){state.ui.notifSheet=true;render()}
-function closeNotifSheet(){state.ui.notifSheet=false;render()}
-async function requestNotifNow(){
-  if(!("Notification" in window)){render();return}
-  try{ await Notification.requestPermission(); }catch(e){ console.warn("Notification request failed",e); }
-  render();
-}
-async function enableNotifications(){ openNotifSheet(); }
-function notifSheet(){
-  if(!state.ui.notifSheet)return "";
-  const info=notifInfo();
-  let statusLine="",helpLine="";
-  if(!info.supported){
-    statusLine="🔕 المتصفح/المتصفح المصغّر ده مش بيدعم الإشعارات خالص";
-    helpLine="ده قيد من المتصفح نفسه مش من التطبيق — جرب افتح نفس الرابط من متصفح Chrome الأساسي في الجهاز (مش من جوه تطبيق تاني زي فيسبوك أو انستجرام بيفتح روابط جواه)، وتأكد إن الرابط بيبدأ بـ https://";
-  } else if(!info.secure){
-    statusLine="🔕 الصفحة مش شغالة على اتصال آمن (HTTPS)";
-    helpLine=`البروتوكول الحالي: ${esc(info.protocol)} — الإشعارات محتاجة رابط https:// حقيقي عشان تشتغل، مش ملف مفتوح من الجهاز مباشرة.`;
-  } else if(info.permission==="granted"){
-    statusLine="✅ الإشعارات مفعّلة وشغالة تمام";
-    helpLine="هتوصلك إشعارات فورية لما حد يليقلك، يتابعك، يبعتلك هدية، أو يعمل كومنت — حتى لو التطبيق مقفول.";
-  } else if(info.permission==="denied"){
-    statusLine="🚫 الإذن مرفوض من إعدادات المتصفح";
-    helpLine="لازم تفعّله يدويًا: افتح قائمة كروم (⋮) ← معلومات الموقع (أيقونة القفل بجانب الرابط) ← الإشعارات ← اختار «السماح».";
-  } else {
-    statusLine="🔔 لسه محتاج إذنك";
-    helpLine="دوس الزرار تحت وهيظهرلك طلب إذن حقيقي من المتصفح — دوس «سماح».";
-  }
-  return `<div class="overlay" onclick="if(event.target===this)closeNotifSheet()"><section class="sheet"><div class="handle"></div><h2>🔔 حالة الإشعارات</h2>
-   <div class="review-box"><b>${statusLine}</b><span>${esc(helpLine)}</span></div>
-   <div class="muted" style="font-size:11px;line-height:2;margin-top:10px">
-     الدعم في المتصفح: ${info.supported?'✅ موجود':'❌ غير موجود'}<br>
-     اتصال آمن (HTTPS): ${info.secure?'✅ نعم':'❌ لا — البروتوكول: '+esc(info.protocol)}<br>
-     حالة الإذن: ${esc(info.permission)}
-   </div>
-   ${(info.supported&&info.secure&&info.permission==="default")?`<button class="btn btn-primary full" style="margin-top:14px" onclick="requestNotifNow()">🔔 اطلب الإذن الآن</button>`:''}
-   <button class="btn btn-ghost full" style="margin-top:8px" onclick="closeNotifSheet()">إغلاق</button>
-  </section></div>`;
-}
-function engagementSnapshot(a){
-  if(!a)return null;
-  const myVideos=state.videos.filter(v=>v.ownerEmail===a.email&&v.status==="approved");
-  const likes=myVideos.reduce((s,v)=>s+(v.likes?.length||0),0);
-  const comments=myVideos.reduce((s,v)=>s+(v.comments?.length||0),0);
-  return{
-    followers:Array.isArray(a.followers)?a.followers.length:0,
-    friendRequests:Array.isArray(a.friendRequests)?a.friendRequests.length:0,
-    giftCoins:Number(a.giftCoinsEarned)||0,
-    likes,comments
-  };
-}
-function notifyEngagementDiff(before,after){
-  if(!before||!after)return;
-  if(after.followers>before.followers) notifyLocal("👤 متابع جديد!",`عندك ${after.followers-before.followers} متابع جديد على SnapVibe`);
-  if(after.friendRequests>before.friendRequests) notifyLocal("👥 طلب صداقة جديد",`عندك طلب صداقة جديد في انتظار ردك`);
-  if(after.giftCoins>before.giftCoins) notifyLocal("🎁 هدية جديدة!",`حد بعتلك هدية وأضيفت لرصيدك القابل للسحب`);
-  if(after.likes>before.likes || after.comments>before.comments) notifyLocal("❤️ تفاعل جديد",`فيه لايكات/تعليقات جديدة على فيديوهاتك`);
-}
-
-/* ================= تثبيت التطبيق كـ PWA (Add to Home Screen) =================
-   ميزة "native" تانية: المستخدم يقدر يثبّت التطبيق بأيقونة على شاشته الرئيسية
-   ويفتحه بدون شريط عنوان متصفح، بدل ما يفضل مجرد رابط في المتصفح. */
-let deferredInstallPrompt=null;
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstallPrompt=e;render();});
-window.addEventListener("appinstalled",()=>{deferredInstallPrompt=null;toast("✅ تم تثبيت التطبيق على جهازك");render();});
-async function installApp(){
-  if(!deferredInstallPrompt){toast("التثبيت كتطبيق غير متاح على هذا المتصفح/الجهاز حاليًا");return}
-  deferredInstallPrompt.prompt();
-  try{await deferredInstallPrompt.userChoice}catch(e){}
-  deferredInstallPrompt=null;render();
-}
-try{
-  const manifest={
-    name:"SnapVibe",short_name:"SnapVibe",start_url:".",display:"standalone",
-    background_color:"#0A0A0F",theme_color:"#0A0A0F",
-    icons:[{src:APP_ICON_DATA_URI,sizes:"128x128",type:"image/svg+xml"}]
-  };
-  const manifestBlob=new Blob([JSON.stringify(manifest)],{type:"application/manifest+json"});
-  const link=document.createElement("link");
-  link.rel="manifest"; link.href=URL.createObjectURL(manifestBlob);
-  document.head.appendChild(link);
-}catch(e){console.warn("PWA manifest setup failed",e)}
-
 
 /* ---------- عد تنازلي حي لانتهاء الحظر المؤقت (24 ساعة) ---------- */
 let banCountdownTimer=null;
@@ -671,15 +713,18 @@ function stripLocalOnly(v){const x={...v};delete x.fileId;delete x.src;return x}
 function save(){
   // Cache محلي سريع فقط؛ المصدر الأساسي لكل البيانات هو Firebase.
   try{
-    const payload={accounts:state.accounts,videos:state.videos.map(stripLocalOnly),withdrawals:state.withdrawals||[],rechargeRequests:state.rechargeRequests||[],giftTransactions:state.giftTransactions||[],systemErrors:state.systemErrors||[]};
+    const payload={accounts:state.accounts,videos:state.videos.map(stripLocalOnly),withdrawals:state.withdrawals||[],rechargeRequests:state.rechargeRequests||[],giftTransactions:state.giftTransactions||[],systemErrors:state.systemErrors||[],adminMessages:state.adminMessages||[]};
     localStorage.setItem(STORAGE_KEY,JSON.stringify(payload));
   }catch(e){console.warn("Local cache unavailable",e)}
   try{syncChannel?.postMessage({type:"state-updated",at:Date.now()})}catch(e){}
-  if(FIREBASE_READY){
+  // مهم: لو كتبنا على السيرفر قبل ما نقرأ منه، هنمسح كل حسابات وفيديوهات الناس (الكتابة بتستبدل الوثيقة كلها).
+  if(!FIREBASE_READY||!remoteLoaded){pendingSave=true;return;}
+  {
     clearTimeout(saveDebounce);
     saveDebounce=setTimeout(()=>{
-      const payload={accounts:state.accounts,videos:state.videos.map(stripLocalOnly),withdrawals:state.withdrawals||[],rechargeRequests:state.rechargeRequests||[],giftTransactions:state.giftTransactions||[],systemErrors:state.systemErrors||[],updatedAt:Date.now()};
-      firebaseAuthReady.then(()=>remoteDoc().set(payload,{merge:false})).catch(e=>{
+      const payload={accounts:state.accounts,videos:state.videos.map(stripLocalOnly),withdrawals:state.withdrawals||[],rechargeRequests:state.rechargeRequests||[],giftTransactions:state.giftTransactions||[],systemErrors:state.systemErrors||[],adminMessages:state.adminMessages||[],updatedAt:Date.now()};
+      lastSavedAt=payload.updatedAt;
+      remoteDoc().set(payload,{merge:false}).catch(e=>{
         console.error("Firestore sync failed",e);
         recordSystemError('firebase_save',e?.message||String(e));
         toast("⚠️ تعذّر حفظ البيانات على Firebase");
@@ -698,9 +743,8 @@ function applyLoadedState(x){
       friends:Array.isArray(a.friends)?a.friends:[],followers:Array.isArray(a.followers)?a.followers:[],following:Array.isArray(a.following)?a.following:[],
       friendRequests:Array.isArray(a.friendRequests)?a.friendRequests:[],sentFriendRequests:Array.isArray(a.sentFriendRequests)?a.sentFriendRequests:[],messages:Array.isArray(a.messages)?a.messages:[],
       banReason:("banReason" in a?a.banReason:null),lastModerationAction:("lastModerationAction" in a?a.lastModerationAction:null),isPrivate:!!a.isPrivate,
-      accountType:a.accountType==="business"?"business":"personal",bizCategory:a.bizCategory||null,earningsWithdrawn:Number(a.earningsWithdrawn)||0,
+      accountType:a.accountType==="business"?"business":"personal",bizCategory:a.bizCategory||null,earningsWithdrawn:Number(a.earningsWithdrawn)||0,notificationReadAt:Number(a.notificationReadAt)||0,
       tokens:Math.max(0,Number(a.tokens)||0),totalTokensReceived:Math.max(0,Number(a.totalTokensReceived)||0),totalTokensSent:Math.max(0,Number(a.totalTokensSent)||0),
-      giftCoinsEarned:Math.max(0,Number(a.giftCoinsEarned)||0),
       giftsReceived:Array.isArray(a.giftsReceived)?a.giftsReceived:[],giftsSent:Array.isArray(a.giftsSent)?a.giftsSent:[]
     };
   });
@@ -710,32 +754,32 @@ function applyLoadedState(x){
   state.rechargeRequests=Array.isArray(x?.rechargeRequests)?x.rechargeRequests:[];
   state.giftTransactions=Array.isArray(x?.giftTransactions)?x.giftTransactions:[];
   state.systemErrors=Array.isArray(x?.systemErrors)?x.systemErrors:[];
+  state.adminMessages=Array.isArray(x?.adminMessages)?x.adminMessages:[];
 }
 function load(){
   try{
     const x=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null"); if(x)applyLoadedState(x);
     if(!state.session){const sess=JSON.parse(localStorage.getItem(SESSION_KEY)||"null");if(sess)state.session=sess}
   }catch(e){}
-  if(FIREBASE_READY){
-    firebaseAuthReady.then(()=>{
+  if(FIREBASE_READY && !remoteUnsub){
     try{
-      if(remoteUnsub)remoteUnsub();
       remoteUnsub=remoteDoc().onSnapshot(snap=>{
         if(snap.metadata.hasPendingWrites)return;
-        const x=snap.data(); if(!x)return;
-        const myEmail=state.session&&!state.session.isAdmin?state.session.email:null;
-        const before=myEmail?engagementSnapshot(state.accounts?.[myEmail]):null;
+        const x=snap.data();
+        const first=!remoteLoaded; remoteLoaded=true;
+        if(first) pendingSave=false; // أي تغيير قبل أول قراءة بنتجاهله بدل ما يمسح بيانات السيرفر
+        if(!x)return;
+        if(!first && x.updatedAt && x.updatedAt===lastSavedAt) return; // ده صدى كتابتنا إحنا، مفيش داعي نعيد رسم الشاشة (كان بيعيد تحميل الفيديوهات)
         applyLoadedState(x); render();
-        if(myEmail){
-          const after=engagementSnapshot(state.accounts?.[myEmail]);
-          if(before) notifyEngagementDiff(before,after);
-        }
-      },err=>{console.error("Firestore listen error",err);recordSystemError('firebase_listen',err?.message||String(err));});
+      },err=>{
+        console.error("Firestore listen error",err);recordSystemError('firebase_listen',err?.message||String(err));
+        if(!remoteErrShown){remoteErrShown=true;toast("⚠️ تعذّر الاتصال بقاعدة البيانات، تأكد من النت أو من قواعد Firestore");}
+      });
     }catch(e){console.error("Firestore listener setup error",e)}
-    });
   }
 }
 
+let lastRenderedScreen=null;
 function go(screen){stopCamera();state.screen=screen;render()}
 
 function render(){
@@ -752,19 +796,21 @@ function render(){
     }
   }
   const map={splash:renderSplash,auth:renderAuth,onboarding:renderOnboarding,home:renderHome,profile:renderProfile,create:renderCreate,admin:renderAdmin,discover:renderDiscover,userProfile:renderUserProfile,earnings:renderEarnings};
+  const SCROLLERS=["#feed",".pscroll",".screen>.grid",".admin-list"];
+  const keep=(lastRenderedScreen===state.screen)?SCROLLERS.map(q=>{const el=app.querySelector(q);return el?el.scrollTop:null}):null;
   app.innerHTML=(map[state.screen]||renderAuth)();
-  setTimeout(()=>{app.querySelector("input")?.focus(); if(state.screen==="home") setupFeedPlayback();},20);
+  if(keep)SCROLLERS.forEach((q,i)=>{if(keep[i]){const el=app.querySelector(q);if(el)el.scrollTop=keep[i]}});
+  lastRenderedScreen=state.screen;
+  setTimeout(()=>{const fe=app.querySelector("#commentText,#messageText,#adminMsgText")||((state.screen==="auth"||state.screen==="onboarding")?app.querySelector("input"):null);if(fe){fe.focus();try{const L=fe.value.length;fe.setSelectionRange(L,L)}catch(_){}} if(state.screen==="home") setupFeedPlayback();},20);
   if(state.screen==="auth"&&state.ui.banUntil&&!state.ui.banPermanent){startBanCountdown()}else{stopBanCountdown()}
   if(state.ui.toast) app.insertAdjacentHTML("beforeend",`<div class="toast">${esc(state.ui.toast)}</div>`);
 }
 
-function renderSplash(){
- return `<div class="screen splash fade"><div class="s-logo" role="img" aria-label="حرف S شعار SnapVibe">S</div><div class="splash-welcome splash-title">أهلاً بيك 👋</div><div class="splash-welcome">مرحبًا بك في SnapVibe</div><div class="splash-desc">منصتك الاجتماعية لمشاركة الفيديوهات القصيرة، اكتشاف محتوى جديد والتواصل مع الآخرين.</div><div class="loader"><i></i></div></div>`
-}
+function renderSplash(){return splashHTML()}
 function renderAuth(){
  if(state.ui.authMode==="choice") state.ui.authMode="login";
  if(state.ui.authMode==="forgot"){
-   return `<div class="screen auth fade"><div class="auth-head"><div class="brand-s" role="img" aria-label="شعار SnapVibe"><svg viewBox="0 0 100 100" width="60%" height="60%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M30 20 Q30 14 36 17 L76 46 Q80 50 76 54 L36 83 Q30 86 30 80 Z" fill="#fff"/><circle cx="78" cy="24" r="9" fill="#fff" opacity=".85"/></svg></div><h1>استعادة كلمة السر</h1><p class="muted">اكتب بريدك الإلكتروني وكلمة السر الجديدة. (تطبيق تجريبي بدون سيرفر بريد حقيقي، فالتحديث يتم مباشرة بعد التأكد من وجود الحساب.)</p></div>
+   return `<div class="screen auth fade"><div class="auth-head">${zmark()}<h1>استعادة كلمة السر</h1><p class="muted">اكتب بريدك الإلكتروني وكلمة السر الجديدة. (تطبيق تجريبي بدون سيرفر بريد حقيقي، فالتحديث يتم مباشرة بعد التأكد من وجود الحساب.)</p></div>
    <div class="field"><label>البريد الإلكتروني</label><input id="femail" type="email" autocomplete="email" placeholder="name@example.com"></div>
    <div class="field"><label>كلمة السر الجديدة</label><input id="fpass1" type="password" autocomplete="new-password" placeholder="••••••••"></div>
    <div class="field"><label>تأكيد كلمة السر الجديدة</label><input id="fpass2" type="password" autocomplete="new-password" placeholder="••••••••"><div id="authErr" class="error"></div></div>
@@ -772,17 +818,16 @@ function renderAuth(){
    <button class="auth-switch" onclick="showLogin()">رجوع لتسجيل الدخول</button>
    </div>`
  }
- return `<div class="screen auth fade"><div class="auth-head"><div class="brand-s" role="img" aria-label="شعار SnapVibe"><svg viewBox="0 0 100 100" width="60%" height="60%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M30 20 Q30 14 36 17 L76 46 Q80 50 76 54 L36 83 Q30 86 30 80 Z" fill="#fff"/><circle cx="78" cy="24" r="9" fill="#fff" opacity=".85"/></svg></div><h1>${state.ui.authMode==="signup"?"إنشاء حساب جديد":"تسجيل الدخول"}</h1><p class="muted">${state.ui.authMode==="signup"?"أنشئ حسابك مرة واحدة وسيتم حفظه على الجهاز.":"أدخل البريد الإلكتروني وكلمة السر للمتابعة."}</p></div>
+ return `<div class="screen auth fade"><div class="auth-head">${zmark()}<h1>${state.ui.authMode==="signup"?"إنشاء حساب جديد":"تسجيل الدخول"}</h1><p class="muted">${state.ui.authMode==="signup"?"أنشئ حسابك في ثواني وابدأ تشارك لحظاتك.":"أدخل البريد الإلكتروني وكلمة السر للمتابعة."}</p></div>
  ${state.ui.banNotice?`<div class="error" style="display:block;text-align:center;margin:12px 0;line-height:1.9">🚫 ${esc(state.ui.banNotice)}${(!state.ui.banPermanent&&state.ui.banUntil)?`<br><span class="muted" style="font-size:11px">الوقت المتبقي حتى يرجع الحساب نشط تلقائيًا</span><br><b id="banCountdownVal" style="font-size:21px;letter-spacing:1.5px;color:var(--warning);display:inline-block;margin-top:5px;direction:ltr">${formatCountdown(state.ui.banUntil-Date.now())}</b>`:""}</div>`:""}
  <div class="field"><label>البريد الإلكتروني</label><input id="email" type="email" autocomplete="email" placeholder="name@example.com"></div>
- <div class="field"><label>كلمة السر</label><input id="pass" type="password" autocomplete="${state.ui.authMode==="signup"?"new-password":"current-password"}" placeholder="••••••••"><div id="authErr" class="error"></div></div>
+ <div class="field"><label>كلمة السر</label><div class="pw"><input id="pass" type="password" autocomplete="${state.ui.authMode==="signup"?"new-password":"current-password"}" placeholder="••••••••"><button type="button" class="eye" onclick="togglePass('pass',this)" aria-label="إظهار كلمة السر">${ICON.eye}</button></div><div id="authErr" class="error"></div></div>
  <button class="btn btn-primary full" onclick="${state.ui.authMode==="signup"?"startSignup()":"login()"}">${state.ui.authMode==="signup"?"متابعة وإنشاء الحساب":"دخول"}</button>
- <button class="btn btn-ghost full" style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px" onclick="signInWithGoogle()"><span style="font-weight:700">G</span> تسجيل الدخول بحساب Google</button>
  ${state.ui.authMode==="signup"?`<button class="btn btn-ghost full" style="margin-top:10px" onclick="showLogin()">لديك حساب بالفعل؟ تسجيل الدخول</button>`:`<button class="auth-switch" onclick="showForgot()">نسيت كلمة السر؟</button><button class="auth-switch" onclick="showSignup()">ليس لديك حساب؟ <b>إنشاء حساب جديد</b></button>`}
  </div>`
 }
 function showForgot(){state.pending=null;state.ui.authMode="forgot";render()}
-async function submitForgotPassword(){
+function submitForgotPassword(){
  const eEl=app.querySelector("#femail"),p1El=app.querySelector("#fpass1"),p2El=app.querySelector("#fpass2"),err=app.querySelector("#authErr");
  const e=(eEl?.value||"").trim().toLowerCase(),p1=p1El?.value||"",p2=p2El?.value||"";
  if(err)err.style.display="none";
@@ -794,7 +839,7 @@ async function submitForgotPassword(){
  if(a.authProvider==="google"){if(err){err.textContent="هذا الحساب يستخدم تسجيل دخولًا خارجيًا. استخدم البريد وكلمة السر المسجلين";err.style.display="block";}return}
  if(p1.length<8){if(err){err.textContent="كلمة السر يجب أن تكون 8 أحرف/أرقام على الأقل";err.style.display="block";}return}
  if(p1!==p2){if(err){err.textContent="كلمتا السر غير متطابقتين";err.style.display="block";}return}
- a.password=await hashPassword(p1);
+ a.password=p1;
  save();
  state.ui.authMode="login";
  render();
@@ -814,10 +859,11 @@ function startSignup(){
  if(p.length<8){err.textContent="كلمة السر يجب أن تكون 8 أحرف/أرقام على الأقل";err.style.display="block";return}
  if(e===ADMIN_EMAIL){err.textContent="هذا البريد محجوز لحساب المطور";err.style.display="block";return}
  if(getAccount(e)){err.textContent="هذا الحساب موجود بالفعل. اضغط «تسجيل الدخول» واستخدم كلمة السر القديمة.";err.style.display="block";return}
+ if(!remoteLoaded){err.textContent="لسه بيتم الاتصال بالسيرفر… استنى ثواني وجرّب تاني (لو استمرت المشكلة تأكد من النت).";err.style.display="block";return}
  state.pending={email:e,password:p,trustScore:100,riskFlags:[]};state.screen="onboarding";render();
 }
 function renderOnboarding(){
- return `<div class="screen auth fade"><div class="auth-head"><div class="brand-s" role="img" aria-label="شعار SnapVibe"><svg viewBox="0 0 100 100" width="60%" height="60%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M30 20 Q30 14 36 17 L76 46 Q80 50 76 54 L36 83 Q30 86 30 80 Z" fill="#fff"/><circle cx="78" cy="24" r="9" fill="#fff" opacity=".85"/></svg></div><h1>أهلاً بيك</h1><p class="muted">خلّي حسابك جاهز في خطوة واحدة.</p></div>
+ return `<div class="screen auth fade"><div class="auth-head">${zmark()}<h1>أهلاً بيك</h1><p class="muted">خلّي حسابك جاهز في خطوة واحدة.</p></div>
  <div class="field"><label>الاسم</label><input id="name" placeholder="اكتب اسمك" value="${esc(state.pending?.googleName||"")}"></div>
  <div class="field"><label>السن</label><input id="age" type="number" min="13" max="100" placeholder="13 أو أكثر"><div id="obErr" class="error"></div></div>
  <button class="btn btn-primary full" onclick="finishSignup()">إنشاء الحساب</button></div>`
@@ -832,19 +878,11 @@ async function login(){
  if(loginRateLimited()){err.textContent="تم إيقاف محاولات الدخول مؤقتًا للحماية. جرّب بعد 10 دقائق.";err.style.display="block";return}
  if(!validEmail(e)){rememberLoginAttempt();err.textContent="اكتب بريدًا إلكترونيًا صحيحًا";err.style.display="block";return}
  if(p.length<4){rememberLoginAttempt();err.textContent="كلمة السر غير صحيحة";err.style.display="block";return}
- if(e===ADMIN_EMAIL){
-   const adminHash=await hashPassword(p);
-   if(adminHash===ADMIN_PASS_HASH){state.session={email:e,isAdmin:true};saveSession();state.screen="admin";render();return}
-   rememberLoginAttempt();err.textContent="كلمة السر غير صحيحة";err.style.display="block";return;
- }
+ if(e===ADMIN_EMAIL&&p===ADMIN_PASS){state.session={email:e,isAdmin:true};saveSession();state.screen="admin";render();return}
  if(getAccount(e)){
    const existing=getAccount(e);
    if(existing.authProvider==="google"){rememberLoginAttempt();err.textContent="هذا الحساب يستخدم تسجيل دخولًا خارجيًا. استخدم طريقة الدخول الأصلية.";err.style.display="block";return}
-   const enteredHash=await hashPassword(p);
-   const storedIsHashed=looksHashed(existing.password);
-   const matches=storedIsHashed?(existing.password===enteredHash):(existing.password===p);
-   if(!matches){rememberLoginAttempt();err.textContent="كلمة السر غير صحيحة";err.style.display="block";return}
-   if(!storedIsHashed){ existing.password=enteredHash; /* ترقية تلقائية لكلمة سر قديمة غير مشفّرة */ }
+   if(existing.password!==p){rememberLoginAttempt();err.textContent="كلمة السر غير صحيحة";err.style.display="block";return}
    if(isBanned(existing)){
      const permanent=existing.bannedPermanent===true||existing.banType==='permanent';
      state.ui.banNotice=banText(existing);
@@ -853,13 +891,12 @@ async function login(){
      render();
      return;
    }
-   state.session={email:e};saveSession();state.ui.banNotice=null;state.ui.banUntil=null;state.ui.banPermanent=false;state.screen="home";
-   if(!storedIsHashed) save(); /* يحفظ نسخة الـ hash الجديدة بدل النص العادي القديم */
-   render();return
+   if(!Number(existing.notificationReadAt)){existing.notificationReadAt=Date.now();save()} state.session={email:e};saveSession();state.ui.banNotice=null;state.ui.banUntil=null;state.ui.banPermanent=false;state.screen="home";render();setTimeout(()=>{const n=adminMsgUnread();if(n)toast("📢 عندك "+n+" رسالة من المطور")},700);return
  }
+ if(!remoteLoaded){err.textContent="لسه بيتم الاتصال بالسيرفر… استنى ثواني وجرّب تاني (لو استمرت المشكلة تأكد من النت).";err.style.display="block";return}
  err.textContent="هذا الحساب غير موجود. الحسابات الجديدة يجب أن تُنشأ من زر «إنشاء حساب جديد».";err.style.display="block"
 }
-async function finishSignup(){
+function finishSignup(){
   try{
     const nameEl=app.querySelector("#name"),ageEl=app.querySelector("#age"),err=app.querySelector("#obErr");
     const n=(nameEl?.value||"").trim(), a=Number(ageEl?.value);
@@ -872,8 +909,7 @@ async function finishSignup(){
       return;
     }
     const email=String(state.pending.email).trim().toLowerCase();
-    const hashedPassword=await hashPassword(state.pending.password);
-    state.accounts[email]={email,name:n,age:a,password:hashedPassword,authProvider:state.pending.authProvider||"password",code:generateUserCode(),avatar:null,bannedUntil:null,bannedPermanent:false,banHours:0,banStartedAt:null,banReason:null,lastModerationAction:null,friends:[],followers:[],following:[],friendRequests:[],sentFriendRequests:[],messages:[],trustScore:state.pending.trustScore??100,riskFlags:state.pending.riskFlags||[],emailVerified:false,createdAt:Date.now(),isPrivate:false,accountType:"personal",bizCategory:null,earningsWithdrawn:0,tokens:0,totalTokensReceived:0,totalTokensSent:0,giftCoinsEarned:0,giftsReceived:[],giftsSent:[]};
+    state.accounts[email]={email,name:n,age:a,password:state.pending.password,authProvider:state.pending.authProvider||"password",code:generateUserCode(),avatar:null,bannedUntil:null,bannedPermanent:false,banHours:0,banStartedAt:null,banReason:null,lastModerationAction:null,friends:[],followers:[],following:[],friendRequests:[],sentFriendRequests:[],messages:[],trustScore:state.pending.trustScore??100,riskFlags:state.pending.riskFlags||[],emailVerified:false,createdAt:Date.now(),isPrivate:false,accountType:"personal",bizCategory:null,earningsWithdrawn:0,tokens:0,totalTokensReceived:0,totalTokensSent:0,giftsReceived:[],giftsSent:[],notificationReadAt:Date.now()};
     state.session={email};
     state.pending=null;
     // ننتقل فورًا للرئيسية، ثم نحاول الحفظ. حتى لو منع content:// التخزين، لا يعلق الزر.
@@ -882,7 +918,7 @@ async function finishSignup(){
     try{save()}catch(e){}
     render();
   }catch(e){
-    console.error("SnapVibe signup error",e);
+    console.error("Zaply signup error",e);
     state.pending=null;
     state.session=null;
     state.screen="auth";
@@ -894,12 +930,67 @@ function nav(active){
  return `<nav class="bottom"><button class="nav ${active==="home"?"active":""}" onclick="go('home')">${ICON.home}<span>الرئيسية</span></button>
  <button class="nav ${active==="discover"?"active":""}" onclick="go('discover')">${ICON.compass}<span>اكتشف</span></button>
  <button class="add" onclick="openCreate()" aria-label="إنشاء فيديو">${ICON.plus}</button>
- <button class="nav ${active==="messages"?"active":""}" onclick="state.ui.messages=true;state.ui.selectedChat=null;render()"><span class="nav-icon">💬</span><span>الرسائل</span></button>
+ <button class="nav ${active==="messages"?"active":""}" onclick="openMessages()">${ICON.chat}${adminMsgUnread()?'<i class="nav-dot"></i>':''}<span>الرسائل</span></button>
  <button class="nav ${active==="profile"?"active":""}" onclick="go('profile')">${ICON.person}<span>حسابي</span></button></nav>`
 }
+function openMessages(){state.ui.messages=true;state.ui.selectedChat=null;if(state.screen!=="home"&&state.screen!=="profile")state.screen="home";render()}
+function openRel(t){state.ui.friends=true;state.ui.friendsTab=t;render()}
+function togglePass(id,btn){const i=document.getElementById(id);if(!i)return;const show=i.type==="password";i.type=show?"text":"password";btn.innerHTML=show?ICON.eyeoff:ICON.eye}
 function requireLogin(){if(!state.session){toast("سجل الدخول أولًا");return false}if(!state.session.isAdmin&&isBanned(account())){logout();return false}return true}
 
 function videoSrc(v){return v.demoSrc||v.videoURL||v.src||""}
+/* ---------- تاريخ الفيديو + تنزيل الفيديو ---------- */
+function vDate(ts){if(!ts)return "—";try{return new Date(ts).toLocaleDateString("ar-EG",{day:"numeric",month:"long",year:"numeric"})}catch(e){return "—"}}
+function vTime(ts){if(!ts)return "";try{return new Date(ts).toLocaleTimeString("ar-EG",{hour:"numeric",minute:"2-digit"})}catch(e){return ""}}
+function dlName(v){
+  const m=String(videoSrc(v)).split("?")[0].match(/\.(mp4|webm|mov)$/i);
+  const ext=m?m[1].toLowerCase():"mp4";
+  const d=v.createdAt?new Date(v.createdAt).toISOString().slice(0,10):"video";
+  return "Zaply_"+String(v.ownerName||"user").replace(/[^\w\u0600-\u06FF-]+/g,"_")+"_"+d+"."+ext;
+}
+async function downloadVideo(id,ev){
+  if(ev&&ev.stopPropagation)ev.stopPropagation();
+  const v=state.videos.find(x=>x.id===id);
+  if(!v||!canViewVideo(v)){toast("الفيديو غير متاح للتنزيل");return}
+  const url=videoSrc(v);
+  if(!url){toast("ملف الفيديو غير موجود");return}
+  const name=dlName(v);
+  try{
+    if(url.includes("/storage/v1/object/public/")){
+      // روابط Supabase: بإضافة ?download= السيرفر نفسه يرجّع الملف كتنزيل مباشر (من غير ما نحمّله في الذاكرة).
+      const a=document.createElement("a");
+      a.href=url+(url.includes("?")?"&":"?")+"download="+encodeURIComponent(name);
+      a.rel="noopener";a.style.display="none";
+      document.body.appendChild(a);a.click();a.remove();
+      toast("⬇️ بدأ تنزيل الفيديو");
+      return;
+    }
+    toast("⬇️ جاري تجهيز الفيديو…");
+    const r=await fetch(url);if(!r.ok)throw new Error("http "+r.status);
+    const blob=await r.blob(),u=URL.createObjectURL(blob);
+    const a=document.createElement("a");a.href=u;a.download=name;a.style.display="none";
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(u),5000);
+  }catch(e){
+    console.warn("download failed",e);
+    toast("تعذّر التنزيل المباشر، هفتح الفيديو في صفحة جديدة");
+    try{window.open(url,"_blank","noopener")}catch(_){}
+  }
+}
+/* ---------- حالة تحميل الفيديو (علامة Z) ---------- */
+function vLoader(v){return v.closest(".video-card")?.querySelector(".vload")}
+function vOn(v){const l=vLoader(v);if(l)l.classList.add("off")}
+function vWait(v){const l=vLoader(v);if(l&&!v.paused)l.classList.remove("off")}
+function vErr(v){
+  const l=vLoader(v);if(!l)return;
+  l.classList.remove("off");
+  l.innerHTML='<div class="verr">'+zmark()+'<br>تعذّر تحميل الفيديو<br><button class="btn btn-ghost btn-sm" onclick="vRetry(this)">إعادة المحاولة</button></div>';
+}
+function vRetry(btn){
+  const card=btn.closest(".video-card"),v=card?.querySelector("video"),l=card?.querySelector(".vload");
+  if(l)l.innerHTML=zmark("draw");
+  if(v){v.load();v.play().catch(()=>{})}
+}
 // تم فقدان هاتين الدالتين في نسخة سابقة، وهذا كان يوقف الشاشة الرئيسية بعد كل تسجيل دخول
 // (الخطأ: feedVideos is not defined) ويرجع المستخدم لشاشة الدخول بدون سبب واضح.
 function canViewVideo(v){
@@ -924,12 +1015,96 @@ function shuffleHash(str){
  for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=(h*16777619)>>>0;}
  return h;
 }
-function feedVideos(){
+function allFeed(){
  return visibleVideos().slice().sort((a,b)=>shuffleHash(feedShuffleSalt+a.id)-shuffleHash(feedShuffleSalt+b.id));
 }
+function feedVideos(){
+ const list=allFeed();
+ if(state.ui.feedTab!=="following")return list;
+ const me=account(); if(!me)return [];
+ const set=new Set([...relList(me,"following"),...relList(me,"friends")].map(e=>accountKey(e)||String(e).trim().toLowerCase()));
+ return list.filter(v=>set.has(accountKey(v.ownerEmail)));
+}
+function setFeedTab(t){if(state.ui.feedTab===t)return;state.ui.feedTab=t;render();const f=document.getElementById("feed");if(f)f.scrollTop=0}
+
+/* ===== In-app notifications only =====
+   Notifications are rendered inside Zaply. The browser Notification API is intentionally
+   not used, and no browser notification permission is requested. */
+function notificationEvents(){
+  const me=account();
+  if(!me)return [];
+  const myEmail=accountKey(me.email);
+  const out=[];
+  relList(me,'friendRequests').forEach(r=>{
+    const from=getAccount(typeof r==='string'?r:r?.from);
+    if(from)out.push({id:'friend-'+from.email+'-'+(r?.at||0),at:Number(r?.at)||0,icon:'👥',title:'طلب صداقة جديد',text:`${from.name||'مستخدم'} أرسل لك طلب صداقة`,action:"state.ui.messages=true;state.ui.selectedChat=null;render()"});
+  });
+  relList(me,'messages').filter(m=>accountKey(m.to)===myEmail).forEach(m=>{
+    const from=getAccount(m.from);
+    if(from)out.push({id:'msg-'+m.id,at:Number(m.at)||0,icon:'💬',title:'رسالة جديدة',text:`${from.name||'صديق'} أرسل لك رسالة`,action:"state.ui.messages=true;state.ui.selectedChat=null;render()"});
+  });
+  (state.giftTransactions||[]).filter(g=>accountKey(g.toEmail)===myEmail).forEach(g=>{
+    out.push({id:'gift-'+g.id,at:Number(g.createdAt)||0,icon:g.emoji||'🎁',title:'هدية جديدة',text:`${g.fromName||'مستخدم'} أرسل لك ${g.giftName||'هدية'}`,action:"go('profile')"});
+  });
+  (state.rechargeRequests||[]).filter(r=>accountKey(r.ownerEmail)===myEmail && r.status!=='pending').forEach(r=>{
+    out.push({id:'recharge-'+r.id,at:Number(r.reviewedAt||r.createdAt)||0,icon:r.status==='approved'?'✅':'❌',title:r.status==='approved'?'تم قبول الشحن':'تم رفض الشحن',text:r.status==='approved'?`تمت إضافة ${Number(r.requestedTokens)||0} توكن إلى حسابك`:'تم رفض طلب شحن التوكن',action:"go('profile')"});
+  });
+  (state.withdrawals||[]).filter(r=>accountKey(r.ownerEmail)===myEmail && r.status!=='pending').forEach(r=>{
+    out.push({id:'withdraw-'+r.id,at:Number(r.reviewedAt||r.createdAt)||0,icon:r.status==='approved'?'💸':'ℹ️',title:'تحديث طلب السحب',text:r.status==='approved'?'تمت الموافقة على طلب السحب':'تم تحديث حالة طلب السحب',action:"go('earnings')"});
+  });
+  state.videos.filter(v=>accountKey(v.ownerEmail)===myEmail && v.status!=='pending').forEach(v=>{
+    out.push({id:'video-'+v.id+'-'+v.status,at:Number(v.reviewedAt||v.createdAt)||0,icon:v.status==='approved'?'🎉':'❌',title:v.status==='approved'?'تم قبول الفيديو':'تم رفض الفيديو',text:v.status==='approved'?'فيديوك أصبح منشورًا الآن':'تم رفض الفيديو بعد المراجعة',action:"go('profile')"});
+  });
+  state.videos.filter(v=>Array.isArray(v.likes)&&v.likes.includes(myEmail)===false && accountKey(v.ownerEmail)===myEmail).forEach(v=>{
+    const latestLikeCount=Array.isArray(v.likes)?v.likes.length:0;
+    if(latestLikeCount>0)out.push({id:'likes-'+v.id+'-'+latestLikeCount,at:Number(v.createdAt)||0,icon:'❤️',title:'تفاعل جديد',text:`فيديوك لديه ${latestLikeCount} إعجاب${latestLikeCount>1?'ات':''}`,action:"go('profile')"});
+  });
+  myAdminMessages().forEach(m=>{out.push({id:'admin-'+m.id,at:Number(m.at)||0,icon:'📢',title:'رسالة من المطور',text:String(m.text||'').slice(0,120),action:"openDevMessages()"})});
+  return out.filter(x=>x.at>0).sort((a,b)=>b.at-a.at).slice(0,40);
+}
+function notificationUnreadCount(){
+  const me=account(); if(!me)return 0;
+  const events=notificationEvents();
+  const readAt=Number(me.notificationReadAt)||0;
+  return events.filter(e=>e.at>readAt).length;
+}
+function openNotifications(){
+  if(!requireLogin())return;
+  const me=account();
+  if(me){me.notificationReadAt=Date.now();save()}
+  state.ui.notifications=true;
+  render();
+}
+function closeNotifications(){state.ui.notifications=false;render()}
+function notificationsSheet(){
+  if(!state.ui.notifications)return '';
+  const events=notificationEvents();
+  return `<div class="overlay" onclick="if(event.target===this)closeNotifications()">
+    <section class="sheet notifications-sheet">
+      <div class="handle"></div>
+      <div class="notif-head">
+        <div><h2 style="margin:0">🔔 الإشعارات</h2><p class="muted">كل الإشعارات تظهر هنا داخل التطبيق فقط.</p></div>
+        <span class="mini-badge">داخل Zaply</span>
+      </div>
+      <div class="notifications-list">
+        ${events.length?events.map(n=>`<button class="notification-item" onclick="closeNotifications();${n.action}">
+          <span class="notification-icon">${n.icon}</span>
+          <span class="notification-copy"><b>${esc(n.title)}</b><small>${esc(n.text)}</small><em>${new Date(n.at).toLocaleString('ar-EG')}</em></span>
+        </button>`).join(''):`<div class="empty" style="height:auto;padding:45px 12px">🔔<br><b style="color:var(--text)">لا توجد إشعارات</b><br><span>سيظهر أي نشاط جديد هنا داخل التطبيق.</span></div>`}
+      </div>
+      <button class="btn btn-ghost full" style="margin-top:10px" onclick="closeNotifications()">إغلاق</button>
+    </section>
+  </div>`;
+}
+function notificationBell(){
+  const n=notificationUnreadCount();
+  return `<button class="notification-bell" type="button" onclick="openNotifications()" aria-label="الإشعارات" title="الإشعارات">${ICON.bell}${n?`<span>${n>99?'99+':n}</span>`:''}</button>`;
+}
+
 function renderHome(){
- const list=feedVideos();
- return `<div class="screen fade"><div class="home-topbar"><b>SnapVibe</b><button class="top-search" type="button" onclick="openSearch()" aria-label="فتح البحث" title="بحث">🔍</button><button class="top-notif ${notifIsOn()?'':'is-off'}" type="button" onclick="openNotifSheet()" aria-label="الإشعارات" title="الإشعارات">${notifIsOn()?'🔔':'🔕'}</button></div><div class="feed" id="feed">${list.length?list.map(videoCard).join(""):`<div class="empty">${ICON.camera}<div>لسه مفيش فيديوهات متاحة.<br>ابدأ أول فيديو من زر +.</div></div>`}</div>${nav("home")}${overlays()}${searchSheet()}${messagesSheet()}${notifSheet()}</div>`
+ const list=feedVideos(), tab=state.ui.feedTab||"foryou";
+ const emptyMsg=tab==="following"?"لسه مفيش فيديوهات من الناس اللي بتتابعهم.<br>دوّر على أصدقاء وتابعهم من زر البحث.":"لسه مفيش فيديوهات متاحة.<br>ابدأ أول فيديو من زر +.";
+ return `<div class="screen fade"><div class="home-topbar"><div class="brand-lockup">${zmark()}<b>Zaply</b></div><div class="feed-tabs"><button class="${tab==="foryou"?"on":""}" onclick="setFeedTab('foryou')">لك</button><button class="${tab==="following"?"on":""}" onclick="setFeedTab('following')">المتابَعون</button></div><div class="top-actions"><button class="top-search" type="button" onclick="openSearch()" aria-label="فتح البحث">${ICON.search}</button>${notificationBell()}</div></div><div class="feed" id="feed">${list.length?list.map(videoCard).join(""):`<div class="empty">${ICON.camera}<div>${emptyMsg}</div></div>`}</div>${nav("home")}${overlays()}${searchSheet()}${messagesSheet()}${notificationsSheet()}${devMessagesSheet()}</div>`
 }
 function addUnique(arr,email){arr=Array.isArray(arr)?arr:[];const e=accountKey(email)||String(email||'').trim().toLowerCase();if(e&&!arr.some(x=>String(x).toLowerCase()===e))arr.push(e);return arr}
 function removeEmail(arr,email){const e=String(accountKey(email)||email||'').trim().toLowerCase();return (Array.isArray(arr)?arr:[]).filter(x=>String(x).trim().toLowerCase()!==e)}
@@ -999,31 +1174,25 @@ function renderFriends(){
  if(tab==='requests')content=incoming.length?incoming.map(a=>`<div class="admin-card relation-row"><div class="relation-main"><div class="avatar sm">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}</div><div><b>${esc(a.name||'مستخدم')}</b><div class="muted" style="font-size:10px">أرسل لك طلب صداقة</div></div></div><div class="relation-actions"><button class="btn btn-sm btn-primary" onclick="acceptFriendRequest('${esc(a.email)}')">قبول</button><button class="btn btn-sm btn-danger" onclick="rejectFriendRequest('${esc(a.email)}')">رفض</button></div></div>`).join(''):`<div class="empty">لا توجد طلبات صداقة.</div>`;
  return `<div class="overlay" onclick="if(event.target===this){state.ui.friends=false;render()}"><section class="sheet"><div class="handle"></div><h2>👥 العلاقات</h2><div class="relation-tabs"><button class="btn btn-sm ${tab==='friends'?'btn-primary':'btn-ghost'}" onclick="state.ui.friendsTab='friends';render()">الأصدقاء (${friends.length})</button><button class="btn btn-sm ${tab==='followers'?'btn-primary':'btn-ghost'}" onclick="state.ui.friendsTab='followers';render()">المتابعين (${followers.length})</button><button class="btn btn-sm ${tab==='following'?'btn-primary':'btn-ghost'}" onclick="state.ui.friendsTab='following';render()">أتابعهم (${following.length})</button><button class="btn btn-sm ${tab==='requests'?'btn-primary':'btn-ghost'}" onclick="state.ui.friendsTab='requests';render()">طلبات (${incoming.length})</button></div><p class="muted" style="margin:10px 0">المراسلة متاحة فقط بعد قبول طلب الصداقة.</p><div class="admin-list" style="max-height:55vh;overflow:auto">${content}</div><button class="btn btn-ghost full" style="margin-top:10px" onclick="state.ui.friends=false;render()">إغلاق</button></section></div>`;
 }
-/* ---------- أسعار شحن التوكن (جنيه مصري) — يظهر للمستخدم كم يحوّل مقابل كام توكن ---------- */
-const RECHARGE_PACKAGES=[
- {id:"p1",tokens:60,price:15},
- {id:"p2",tokens:130,price:30},
- {id:"p3",tokens:300,price:65},
- {id:"p4",tokens:650,price:130},
- {id:"p5",tokens:1400,price:250},
- {id:"p6",tokens:3200,price:500}
+/* ============ أسعار التوكن (عدّلها من هنا) ============ */
+const TOKEN_RATE_EGP=0.25;   // سعر التوكن الواحد بالجنيه (للكمية المخصصة)
+const TOKEN_MIN=40;          // أقل كمية شحن مخصصة (= 10 ج.م)
+const TOKEN_PACKS=[
+ {id:"p100",tokens:100,price:25},
+ {id:"p250",tokens:250,price:60},
+ {id:"p500",tokens:500,price:115,tag:"الأكثر طلبًا"},
+ {id:"p1000",tokens:1000,price:220,tag:"وفّر 10%"},
+ {id:"p2500",tokens:2500,price:525},
+ {id:"p5000",tokens:5000,price:1000,tag:"أفضل قيمة"}
 ];
-const EGP_PER_TOKEN=0.22; /* سعر تقريبي للتوكن عند إدخال كمية مخصّصة بخلاف الباقات */
-function estimatePrice(tokens){return Math.max(1,Math.round(Number(tokens||0)*EGP_PER_TOKEN))}
-
+function tokenPrice(tokens){const p=TOKEN_PACKS.find(x=>x.tokens===tokens);return p?p.price:Math.round(tokens*TOKEN_RATE_EGP*100)/100}
+function egpText(n){n=Number(n)||0;return (Number.isInteger(n)?String(n):n.toFixed(2))+" ج.م"}
+function tokFmt(n){return Number(n||0).toLocaleString("en-US")}
 const GIFT_ITEMS=[
- {id:"kiss",name:"بوسة",emoji:"😘",cost:5},
  {id:"rose",name:"وردة",emoji:"🌹",cost:10},
- {id:"balloon",name:"بالونة",emoji:"🎈",cost:20},
  {id:"heart",name:"قلب",emoji:"❤️",cost:50},
- {id:"cake",name:"تورتة",emoji:"🎂",cost:80},
  {id:"star",name:"نجمة",emoji:"⭐",cost:100},
- {id:"ring",name:"خاتم",emoji:"💍",cost:250},
- {id:"crown",name:"تاج",emoji:"👑",cost:500},
- {id:"diamond",name:"ألماسة",emoji:"💎",cost:1000},
- {id:"car",name:"عربية",emoji:"🚗",cost:2000},
- {id:"rocket",name:"صاروخ",emoji:"🚀",cost:5000},
- {id:"lion",name:"أسد",emoji:"🦁",cost:10000}
+ {id:"crown",name:"تاج",emoji:"👑",cost:500}
 ];
 function tokenBalance(a){return Math.max(0,Number(a?.tokens)||0)}
 function recordSystemError(type,message,extra={}){
@@ -1032,35 +1201,47 @@ function recordSystemError(type,message,extra={}){
   state.systemErrors=state.systemErrors.slice(0,100);
   save();
 }
-function openTokenRecharge(){state.ui.tokenRecharge=true;state.ui.rechargeMethod='orange';state.ui.rechargePackage=RECHARGE_PACKAGES[0].id;state.ui.rechargeAmount=String(RECHARGE_PACKAGES[0].tokens);state.ui.rechargeNote='';render()}
+function openTokenRecharge(){state.ui.tokenRecharge=true;state.ui.rechargeMethod='orange';state.ui.rechargePack='p500';state.ui.rechargeAmount='';state.ui.rechargeNote='';render()}
 function closeTokenRecharge(){state.ui.tokenRecharge=false;render()}
-function selectRechargePackage(id){
- state.ui.rechargePackage=id;
- if(id!=='custom'){const p=RECHARGE_PACKAGES.find(x=>x.id===id);if(p)state.ui.rechargeAmount=String(p.tokens);}
- render();
+function selectedRecharge(){
+ const id=state.ui.rechargePack||'p500';
+ if(id!=='custom'){const p=TOKEN_PACKS.find(x=>x.id===id);if(p)return {tokens:p.tokens,price:p.price,packId:p.id}}
+ const t=Math.floor(Number(state.ui.rechargeAmount)||0);
+ return {tokens:t,price:t>0?tokenPrice(t):0,packId:'custom'};
+}
+function pickPack(id){state.ui.rechargePack=id;if(id!=='custom')state.ui.rechargeAmount='';render()}
+function updateRechargePrice(){
+ const c=selectedRecharge(),ok=c.tokens>=TOKEN_MIN&&c.tokens<=100000;
+ const p=document.getElementById('rechargePrice'),t=document.getElementById('rechargeTokens');
+ if(p)p.textContent=ok?egpText(c.price):'—';
+ if(t)t.textContent=ok?('ستحصل على '+tokFmt(c.tokens)+' توكن'):('الحد الأدنى '+TOKEN_MIN+' توكن');
 }
 function submitTokenRecharge(){
  const a=account();if(!a)return;
- const amount=Number(app.querySelector('#rechargeAmount')?.value||state.ui.rechargeAmount||0);
- const note=String(app.querySelector('#rechargeNote')?.value||'').trim();
+ const note=String(app.querySelector('#rechargeNote')?.value??state.ui.rechargeNote??'').trim();
  const method=state.ui.rechargeMethod||'orange';
- if(!Number.isFinite(amount)||amount<1||amount>100000){toast('اكتب عدد توكن صالحًا بين 1 و100000');return}
+ const c=selectedRecharge();
+ if(!Number.isFinite(c.tokens)||c.tokens<TOKEN_MIN||c.tokens>100000){toast(`اكتب عدد توكن بين ${TOKEN_MIN} و100000`);return}
  if(note.length<2){toast('اكتب رقم العملية/ملاحظة التحويل');return}
  const names={orange:'Orange Cash',we:'WE Cash'};
- const pkg=RECHARGE_PACKAGES.find(p=>p.tokens===amount);
- const priceEGP=pkg?pkg.price:estimatePrice(amount);
  state.rechargeRequests=state.rechargeRequests||[];
- state.rechargeRequests.unshift({id:'r'+Date.now()+Math.random().toString(36).slice(2,7),ownerEmail:a.email,ownerName:a.name,method,methodName:names[method]||method,requestedTokens:amount,priceEGP,note,status:'pending',createdAt:Date.now()});
- save();closeTokenRecharge();toast(`✅ تم إرسال طلب شحن ${fmt(amount)} توكن (${fmt(priceEGP)} جنيه). سيتم إضافة التوكن بعد المراجعة.`);
+ state.rechargeRequests.unshift({id:'r'+Date.now()+Math.random().toString(36).slice(2,7),ownerEmail:a.email,ownerName:a.name,method,methodName:names[method]||method,requestedTokens:c.tokens,priceEgp:c.price,packId:c.packId,note,status:'pending',createdAt:Date.now()});
+ save();closeTokenRecharge();toast(`✅ تم إرسال طلب شحن ${tokFmt(c.tokens)} توكن (${egpText(c.price)}). سيتم إضافتها بعد المراجعة.`);
 }
 function tokenRechargeSheet(){
  if(!state.ui.tokenRecharge)return '';
- const method=state.ui.rechargeMethod||'orange';
- const pkgId=state.ui.rechargePackage||RECHARGE_PACKAGES[0].id;
- const isCustom=pkgId==='custom';
- const amountNow=Number(state.ui.rechargeAmount)||0;
- const priceNow=isCustom?estimatePrice(amountNow):(RECHARGE_PACKAGES.find(p=>p.id===pkgId)?.price||0);
- return `<div class="overlay" onclick="if(event.target===this)closeTokenRecharge()"><section class="sheet"><div class="handle"></div><h2>🪙 شحن التوكن</h2><div class="review-box"><b>الدفع يدوي</b><span>اختَر باقة أو اكتب كمية مخصّصة، حوّل السعر الظاهر بالطريقة المختارة، ثم اكتب رقم العملية. التوكن لا يُضاف تلقائيًا؛ المطور يراجع الطلب أولًا.</span></div><div class="field"><label>اختر باقة</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${RECHARGE_PACKAGES.map(p=>`<button class="btn ${pkgId===p.id?'btn-primary':'btn-ghost'}" style="padding:10px 6px;line-height:1.5" onclick="selectRechargePackage('${p.id}')">🪙 ${fmt(p.tokens)}<br><b>${fmt(p.price)} جنيه</b></button>`).join('')}</div><button class="btn ${isCustom?'btn-primary':'btn-ghost'} full" style="margin-top:8px" onclick="selectRechargePackage('custom')">✏️ كمية مخصّصة</button></div>${isCustom?`<div class="field"><label>عدد التوكن المطلوب</label><input id="rechargeAmount" type="number" min="1" max="100000" value="${amountNow||''}" placeholder="مثال: 100" oninput="state.ui.rechargeAmount=this.value" onchange="render()"></div>`:''}<div class="review-box" style="margin:8px 0;text-align:center"><b>المطلوب تحويله: ${fmt(priceNow)} جنيه</b><span>مقابل ${fmt(amountNow)} توكن</span></div><div class="field"><label>طريقة التحويل</label><div style="display:flex;gap:7px"><button class="btn btn-sm ${method==='orange'?'btn-primary':'btn-ghost'}" onclick="state.ui.rechargeMethod='orange';render()">Orange Cash</button><button class="btn btn-sm ${method==='we'?'btn-primary':'btn-ghost'}" onclick="state.ui.rechargeMethod='we';render()">WE Cash</button></div></div><div class="review-box" style="margin:8px 0;text-align:right"><b>${method==='orange'?'📱 01213783090':'📱 01503724381'}</b><span>${method==='orange'?'Orange Cash':'WE Cash'} — الرقم الظاهر للتحويل فقط</span></div><div class="field"><label>رقم العملية أو ملاحظة التحويل</label><input id="rechargeNote" placeholder="اكتب رقم العملية بعد التحويل"></div><button class="btn btn-primary full" onclick="submitTokenRecharge()">إرسال طلب الشحن</button><button class="btn btn-ghost full" style="margin-top:8px" onclick="closeTokenRecharge()">إلغاء</button></section></div>`;
+ const method=state.ui.rechargeMethod||'orange',sel=state.ui.rechargePack||'p500',cur=selectedRecharge();
+ const ok=cur.tokens>=TOKEN_MIN&&cur.tokens<=100000;
+ return `<div class="overlay" onclick="if(event.target===this)closeTokenRecharge()"><section class="sheet"><div class="handle"></div><h2>🪙 شحن التوكن</h2>
+ <div class="price-line"><span>سعر التوكن الواحد</span><b>${egpText(TOKEN_RATE_EGP)}</b></div>
+ <div class="pack-grid">${TOKEN_PACKS.map(p=>`<button class="pack ${sel===p.id?'sel':''}" onclick="pickPack('${p.id}')">${p.tag?`<em>${p.tag}</em>`:''}<b>${tokFmt(p.tokens)} 🪙</b><span>${egpText(p.price)}</span></button>`).join('')}<button class="pack ${sel==='custom'?'sel':''}" onclick="pickPack('custom')"><b>كمية أخرى</b><span>اكتب العدد</span></button></div>
+ ${sel==='custom'?`<div class="field"><label>عدد التوكن (من ${TOKEN_MIN} إلى 100000)</label><input id="rechargeAmount" type="number" inputmode="numeric" min="${TOKEN_MIN}" max="100000" placeholder="مثال: 300" value="${esc(state.ui.rechargeAmount||'')}" oninput="state.ui.rechargeAmount=this.value;updateRechargePrice()"></div>`:''}
+ <div class="total-box"><span>المبلغ المطلوب تحويله</span><b id="rechargePrice">${ok?egpText(cur.price):'—'}</b><small id="rechargeTokens">${ok?('ستحصل على '+tokFmt(cur.tokens)+' توكن'):(sel==='custom'?('الحد الأدنى '+TOKEN_MIN+' توكن'):'')}</small></div>
+ <div class="review-box" style="margin:0 0 14px"><b>الدفع يدوي</b><span>حوّل المبلغ الظاهر بالضبط بالطريقة المختارة، ثم اكتب رقم العملية. التوكن لا يُضاف تلقائيًا؛ المطور يراجع الطلب أولًا.</span></div>
+ <div class="field"><label>طريقة التحويل</label><div style="display:flex;gap:8px"><button class="btn btn-sm ${method==='orange'?'btn-primary':'btn-ghost'}" onclick="state.ui.rechargeMethod='orange';render()">Orange Cash</button><button class="btn btn-sm ${method==='we'?'btn-primary':'btn-ghost'}" onclick="state.ui.rechargeMethod='we';render()">WE Cash</button></div></div>
+ <div class="review-box" style="margin:8px 0 16px;text-align:right"><b>${method==='orange'?'📱 01213783090':'📱 01503724381'}</b><span>${method==='orange'?'Orange Cash':'WE Cash'} — الرقم الظاهر للتحويل فقط</span></div>
+ <div class="field"><label>رقم العملية أو ملاحظة التحويل</label><input id="rechargeNote" placeholder="اكتب رقم العملية بعد التحويل" value="${esc(state.ui.rechargeNote||'')}" oninput="state.ui.rechargeNote=this.value"></div>
+ <button class="btn btn-primary full" onclick="submitTokenRecharge()">إرسال طلب الشحن</button><button class="btn btn-ghost full" style="margin-top:8px" onclick="closeTokenRecharge()">إلغاء</button></section></div>`;
 }
 function openGift(videoId){if(!requireLogin())return;const v=state.videos.find(x=>x.id===videoId);if(!v)return;if(accountKey(v.ownerEmail)===accountKey(account()?.email)){toast('لا يمكنك إرسال هدية لنفسك');return}state.ui.giftVideoId=videoId;render()}
 function closeGift(){state.ui.giftVideoId=null;render()}
@@ -1068,7 +1249,7 @@ function giftSheet(){
  const id=state.ui.giftVideoId;if(!id)return '';
  const v=state.videos.find(x=>x.id===id);if(!v)return '';
  const receiver=getAccount(v.ownerEmail),me=account();
- return `<div class="overlay" onclick="if(event.target===this)closeGift()"><section class="sheet"><div class="handle"></div><h2>🎁 إرسال هدية</h2><p class="muted" style="margin-bottom:6px">إلى ${esc(receiver?.name||v.ownerName)} · رصيدك ${fmt(tokenBalance(me))} 🪙</p><div class="review-box" style="margin-bottom:10px"><b>💵 الهدايا = فلوس حقيقية</b><span>أي هدية توصل لصاحب الفيديو بتتحول لرصيد قابل للسحب فورًا، زي أرباح الفيديوهات بالظبط.</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${GIFT_ITEMS.map(g=>`<button class="btn btn-ghost" style="padding:14px 8px" onclick="sendGift('${v.id}','${g.id}')"><span style="font-size:26px">${g.emoji}</span><br>${esc(g.name)}<br><b>${g.cost} 🪙</b></button>`).join('')}</div><button class="btn btn-primary full" style="margin-top:10px" onclick="closeGift();openTokenRecharge()">➕ شحن التوكن</button><button class="btn btn-ghost full" style="margin-top:8px" onclick="closeGift()">إلغاء</button></section></div>`;
+ return `<div class="overlay" onclick="if(event.target===this)closeGift()"><section class="sheet"><div class="handle"></div><h2>🎁 إرسال هدية</h2><p class="muted" style="margin-bottom:10px">إلى ${esc(receiver?.name||v.ownerName)} · رصيدك ${fmt(tokenBalance(me))} 🪙</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${GIFT_ITEMS.map(g=>`<button class="btn btn-ghost" style="padding:14px 8px" onclick="sendGift('${v.id}','${g.id}')"><span style="font-size:26px">${g.emoji}</span><br>${esc(g.name)}<br><b>${g.cost} 🪙</b><br><small class="muted">≈ ${egpText(tokenPrice(g.cost))}</small></button>`).join('')}</div><button class="btn btn-primary full" style="margin-top:10px" onclick="closeGift();openTokenRecharge()">➕ شحن التوكن</button><button class="btn btn-ghost full" style="margin-top:8px" onclick="closeGift()">إلغاء</button></section></div>`;
 }
 function sendGift(videoId,giftId){
  const me=account(),v=state.videos.find(x=>x.id===videoId),g=GIFT_ITEMS.find(x=>x.id===giftId);if(!me||!v||!g)return;
@@ -1076,44 +1257,46 @@ function sendGift(videoId,giftId){
  if(accountKey(me.email)===accountKey(receiver.email)){toast('لا يمكنك إرسال هدية لنفسك');return}
  if(tokenBalance(me)<g.cost){toast('رصيد التوكن غير كافٍ — اشحن أولًا');return}
  me.tokens=tokenBalance(me)-g.cost;me.totalTokensSent=(Number(me.totalTokensSent)||0)+g.cost;
- receiver.giftCoinsEarned=(Number(receiver.giftCoinsEarned)||0)+g.cost;receiver.totalTokensReceived=(Number(receiver.totalTokensReceived)||0)+g.cost;
+ receiver.tokens=tokenBalance(receiver)+g.cost;receiver.totalTokensReceived=(Number(receiver.totalTokensReceived)||0)+g.cost;
  me.giftsSent=Array.isArray(me.giftsSent)?me.giftsSent:[];receiver.giftsReceived=Array.isArray(receiver.giftsReceived)?receiver.giftsReceived:[];
  const tx={id:'g'+Date.now()+Math.random().toString(36).slice(2,7),fromEmail:me.email,fromName:me.name,toEmail:receiver.email,toName:receiver.name,videoId,giftId:g.id,giftName:g.name,emoji:g.emoji,tokens:g.cost,createdAt:Date.now()};
  me.giftsSent.unshift(tx);receiver.giftsReceived.unshift(tx);state.giftTransactions=state.giftTransactions||[];state.giftTransactions.unshift(tx);state.giftTransactions=state.giftTransactions.slice(0,500);
  save();state.ui.giftVideoId=null;render();toast(`🎁 تم إرسال ${g.emoji} ${g.name}`);
 }
-function tokenPanel(a){return `<div class="review-box" style="margin:10px 18px;text-align:center"><span>رصيد التوكن</span><b style="display:block;font-size:25px;margin:3px 0">${fmt(tokenBalance(a))} 🪙</b><button class="btn btn-primary btn-sm" onclick="openTokenRecharge()">➕ شحن التوكن</button></div>`}
+function tokenPanel(a){return `<div class="review-box" style="margin:10px 0;text-align:center"><span>رصيد التوكن</span><b style="display:block;font-size:26px;margin:3px 0;color:var(--text)">${tokFmt(tokenBalance(a))} 🪙</b><span style="display:block;margin-bottom:12px">سعر التوكن: ${egpText(TOKEN_RATE_EGP)} · الباقات تبدأ من ${egpText(TOKEN_PACKS[0].price)}</span><button class="btn btn-primary btn-sm" onclick="openTokenRecharge()">➕ شحن التوكن</button></div>`}
 
-function videoCard(v){
+function videoCard(v,idx){
  const acc=state.accounts[v.ownerEmail], av=acc?.avatar?`<img src="${esc(acc.avatar)}">`:initials(v.ownerName);
  const me=account(), isOwn=me&&accountKey(me.email)===accountKey(v.ownerEmail);
  const st=relationStatus(v.ownerEmail);
  const followBtn=(!isOwn&&me&&st!=="friends")?`<button class="follow-chip ${st==="sent"?"sent":""}" onclick="toggleFriend('${esc(v.ownerEmail)}')">${st==="sent"?"تم الطلب":"+ متابعة"}</button>`:"";
  const bizTag=acc&&acc.accountType==="business"?` <span class="mini-badge biz">تجاري</span>`:"";
- return `<article class="video-card" data-id="${v.id}"><video src="${esc(videoSrc(v))}" muted loop playsinline webkit-playsinline="true" autoplay preload="auto" onclick="videoGesture(this)"></video><button class="sound-btn" aria-label="تشغيل الصوت" onclick="toggleSound(event,this)">🔇</button>
+ return `<article class="video-card" data-id="${v.id}"><video src="${esc(videoSrc(v))}" muted loop playsinline webkit-playsinline="true" preload="${idx===0?"auto":"metadata"}" onclick="vTap(event,this)" onloadeddata="vOn(this)" onplaying="vOn(this)" onwaiting="vWait(this)" onerror="vErr(this)" ontimeupdate="vProg(this)"></video><div class="vload">${zmark("draw")}</div><button class="sound-btn" aria-label="تشغيل الصوت" onclick="toggleSound(event,this)">${ICON.mute}</button><div class="vprog"><i></i></div>
  <div class="meta"><div class="user-row"><div class="user" style="cursor:pointer" onclick="openUserProfile('${esc(v.ownerEmail)}')">@${esc(v.ownerName)}${bizTag}</div>${followBtn}</div><div class="caption">${esc(v.caption)}</div>${v.song&&v.song!==SONGS[0]?`<div class="song">${ICON.music}${esc(v.song)}</div>`:""}</div>
- <div class="actions"><button class="avatar sm" style="border:0;padding:0" onclick="openUserProfile('${esc(v.ownerEmail)}')">${av}</button>
- <button class="action ${liked(v)?"liked":""}" onclick="likeVideo('${v.id}')">${ICON.heart}<span>${fmt(v.likes.length)}</span></button>
- <button class="action" onclick="openComments('${v.id}')">${ICON.comment}<span>${fmt(v.comments.length)}</span></button>
- <button class="action" onclick="openGift('${v.id}')">🎁<span>هدية</span></button><button class="action" onclick="openShare('${v.id}')">${ICON.share}<span>مشاركة</span></button></div></article>`
+ <div class="actions"><button class="avatar sm" style="padding:0" onclick="openUserProfile('${esc(v.ownerEmail)}')" aria-label="ملف صاحب الفيديو">${av}</button>
+ <button class="action like-btn ${liked(v)?"liked":""}" onclick="likeVideo('${v.id}')" aria-label="إعجاب">${ICON.heart}<span>${fmt(v.likes.length)}</span></button>
+ <button class="action" onclick="openComments('${v.id}')" aria-label="تعليقات">${ICON.comment}<span>${fmt(v.comments.length)}</span></button>
+ <button class="action" onclick="openGift('${v.id}')" aria-label="هدية">${ICON.gift}<span>هدية</span></button>
+ <button class="action" onclick="openShare('${v.id}')" aria-label="مشاركة">${ICON.share}<span>مشاركة</span></button>
+ <button class="action" onclick="downloadVideo('${v.id}',event)" aria-label="تنزيل الفيديو">${ICON.download}<span>تنزيل</span></button></div></article>`
 }
 function renderDiscover(){
  const cats=[{id:"all",label:"الكل"},{id:"trend",label:"🔥 تريند"},{id:"music",label:"🎵 موسيقى"},{id:"dance",label:"💃 رقص"},{id:"comedy",label:"😂 كوميديا"}];
  const cat=state.ui.discoverCat||"all";
  const matchers={trend:v=>songFamily(v.song)?.label==="تريند",music:v=>["هادي","حزين","رومانسي","تراثي"].includes(songFamily(v.song)?.label),dance:v=>["رقص وحماس","ملحمي"].includes(songFamily(v.song)?.label),comedy:v=>songFamily(v.song)?.label==="كوميدي"||/كوميد|ضحك|😂|هزار/.test(v.caption||"")};
- const all=feedVideos();
+ const all=allFeed();
  const list=cat==="all"?all:all.filter(matchers[cat]||(()=>false));
- return `<div class="screen fade"><div class="topbar"><b>اكتشف</b></div>
+ return `<div class="screen fade"><div class="page-head"><h1>اكتشف</h1><button class="glass-btn" onclick="openSearch()" aria-label="بحث">${ICON.search}</button></div>
  <div class="discover-tabs">${cats.map(c=>`<button class="discover-chip ${cat===c.id?"sel":""}" onclick="state.ui.discoverCat='${c.id}';render()">${c.label}</button>`).join("")}</div>
  <div class="grid" style="flex:1">${list.length?list.map(discoverCell).join(""):`<div class="empty" style="grid-column:1/-1">لا يوجد محتوى في هذا التصنيف بعد.</div>`}</div>
- ${nav("discover")}</div>`
+ ${nav("discover")}${searchSheet()}</div>`
 }
 function discoverCell(v){
  const acc=state.accounts[v.ownerEmail];
- return `<div class="cell discover-cell" onclick="openVideoFromDiscover('${v.id}')"><video src="${esc(videoSrc(v))}" muted preload="metadata" playsinline></video><span class="dstat">❤️ ${fmt(v.likes.length)}</span></div>`
+ return `<div class="cell discover-cell" onclick="openVideoFromDiscover('${v.id}')"><video src="${esc(videoSrc(v))}" muted preload="metadata" playsinline></video><span class="dstat">❤️ ${fmt(v.likes.length)}</span><button class="dl-btn" onclick="downloadVideo('${v.id}',event)" aria-label="تنزيل الفيديو">${ICON.download}</button></div>`
 }
 function openVideoFromDiscover(id){
- state.screen="home";render();
+ state.ui.feedTab="foryou";state.screen="home";render();
  setTimeout(()=>{const el=document.querySelector('.video-card[data-id="'+id+'"]');if(el)el.scrollIntoView({block:"start"})},60)
 }
 let audioUnlocked=false;
@@ -1123,11 +1306,11 @@ function videoGesture(v){
   audioUnlocked=true;
   const card=v.closest('.video-card');
   document.querySelectorAll('#feed video').forEach(x=>{
-    if(x!==v){x.pause();x.muted=true; const b=x.closest('.video-card')?.querySelector('.sound-btn'); if(b)b.textContent='🔇';}
+    if(x!==v){x.pause();x.muted=true; const b=x.closest('.video-card')?.querySelector('.sound-btn'); if(b)b.innerHTML=ICON.mute;}
   });
   v.muted=false;
   v.play().catch(()=>{v.muted=true;});
-  const b=card?.querySelector('.sound-btn'); if(b){b.textContent=v.muted?'🔇':'🔊';b.setAttribute('aria-label',v.muted?'تشغيل الصوت':'كتم الصوت');}
+  const b=card?.querySelector('.sound-btn'); if(b){b.innerHTML=(v.muted?ICON.mute:ICON.vol);b.setAttribute('aria-label',v.muted?'تشغيل الصوت':'كتم الصوت');}
 }
 function togglePlay(v){videoGesture(v)}
 function toggleSound(e,btn){
@@ -1135,11 +1318,11 @@ function toggleSound(e,btn){
  audioUnlocked=true;
  const card=btn.closest('.video-card'),v=card?.querySelector('video'); if(!v)return;
  document.querySelectorAll('#feed video').forEach(x=>{
-   if(x!==v){x.pause();x.muted=true; const b=x.closest('.video-card')?.querySelector('.sound-btn'); if(b)b.textContent='🔇';}
+   if(x!==v){x.pause();x.muted=true; const b=x.closest('.video-card')?.querySelector('.sound-btn'); if(b)b.innerHTML=ICON.mute;}
  });
  v.muted=!v.muted;
- if(!v.muted){v.play().catch(()=>{});btn.textContent='🔊';btn.setAttribute('aria-label','كتم الصوت')}
- else{btn.textContent='🔇';btn.setAttribute('aria-label','تشغيل الصوت')}
+ if(!v.muted){v.play().catch(()=>{});btn.innerHTML=ICON.vol;btn.setAttribute('aria-label','كتم الصوت')}
+ else{btn.innerHTML=ICON.mute;btn.setAttribute('aria-label','تشغيل الصوت')}
 }
 // نفس المشكلة: كانت تُستدعى عند التمرير في الفيديوهات لكنها غير موجودة أصلًا
 // (لا يوجد تحميل صفحات إضافي حاليًا، فتُركت بدون أي عملية لمنع توقف الصفحة).
@@ -1174,14 +1357,15 @@ function setupFeedPlayback(){
    entries.forEach(entry=>{
      const v=entry.target, card=v.closest('.video-card'), b=card?.querySelector('.sound-btn');
      if(entry.isIntersecting && entry.intersectionRatio>=0.5){
+       const nx=card?.nextElementSibling?.querySelector("video"); if(nx&&nx.preload!=="auto")nx.preload="auto";
        videos.forEach(x=>{
-         if(x!==v){x.pause();x.muted=true;const bb=x.closest('.video-card')?.querySelector('.sound-btn');if(bb)bb.textContent='🔇';}
+         if(x!==v){x.pause();x.muted=true;const bb=x.closest('.video-card')?.querySelector('.sound-btn');if(bb)bb.innerHTML=ICON.mute;}
        });
        // لا يمكن للمتصفح إجبار الصوت بدون تفاعل المستخدم. بعد أول تفاعل، ينتقل الصوت للفيديو الظاهر فقط.
-       if(audioUnlocked){v.muted=false; if(b)b.textContent='🔊'; v.play().catch(()=>{v.muted=true;if(b)b.textContent='🔇';v.play().catch(()=>{});});}
-       else {v.muted=true;if(b)b.textContent='🔇';v.play().catch(()=>{});}
+       if(audioUnlocked){v.muted=false; if(b)b.innerHTML=ICON.vol; v.play().catch(()=>{v.muted=true;if(b)b.innerHTML=ICON.mute;v.play().catch(()=>{});});}
+       else {v.muted=true;if(b)b.innerHTML=ICON.mute;v.play().catch(()=>{});}
      }else if(!entry.isIntersecting){
-       v.pause();v.muted=true;if(b)b.textContent='🔇';
+       v.pause();v.muted=true;if(b)b.innerHTML=ICON.mute;
      }
    });
  },{threshold:[0,0.25,0.5,0.75,1]});
@@ -1189,7 +1373,10 @@ function setupFeedPlayback(){
 }
 function likeVideo(id){
  if(!requireLogin())return;const v=state.videos.find(x=>x.id===id);if(!v||!canViewVideo(v))return;
- const e=state.session.email,i=v.likes.indexOf(e);i>=0?v.likes.splice(i,1):v.likes.push(e);save();render()
+ const e=state.session.email,i=v.likes.indexOf(e);i>=0?v.likes.splice(i,1):v.likes.push(e);save();
+ // نحدّث زر الإعجاب فقط بدل إعادة رسم الشاشة (كان بيرجّع الفيديو لأول الصفحة ويعيد تحميله)
+ const btn=state.screen==="home"?document.querySelector('#feed .video-card[data-id="'+id+'"] .like-btn'):null;
+ if(btn){btn.classList.toggle("liked",liked(v));const sp=btn.querySelector("span");if(sp)sp.textContent=fmt(v.likes.length)}else render()
 }
 function openComments(id){const v=state.videos.find(x=>x.id===id);if(!v||!canViewVideo(v))return;state.ui.comments=id;render()}
 function openShare(id){state.ui.share=id;render()}
@@ -1267,7 +1454,7 @@ function messagesSheet(){
    return `<div class="overlay" onclick="if(event.target===this)closeMessages()"><section class="sheet"><div class="handle"></div><div style="display:flex;align-items:center;gap:10px"><div class="avatar sm">${selected.avatar?`<img src="${esc(selected.avatar)}">`:initials(selected.name)}</div><div><h2 style="margin:0">💬 ${esc(selected.name||'مستخدم')}</h2><div class="muted">صديقك · كود: ${esc(userCodeLabel(selected))}</div></div></div><div class="messages-list">${msgs.length?msgs.map(m=>`<div class="message-bubble" style="${m.from===me.email?'text-align:right':'text-align:left'}"><b>${m.from===me.email?'أنت':esc(selected.name||'مستخدم')}</b><br>${esc(m.text)}<div class="muted" style="font-size:9px;margin-top:3px">${new Date(m.at).toLocaleString('ar-EG')}</div></div>`).join(''):`<div class="empty" style="height:auto;padding:25px">ابدأ أول رسالة مع ${esc(selected.name||'صديق')}.</div>`}</div><div class="message-compose"><input id="messageText" placeholder="اكتب رسالة..." onkeydown="if(event.key==='Enter')sendMessage('${esc(selected.email)}')"><button class="send" onclick="sendMessage('${esc(selected.email)}')">${ICON.send}</button></div><button class="btn btn-ghost full" style="margin-top:10px" onclick="state.ui.selectedChat=null;render()">← قائمة الرسائل</button></section></div>`;
  }
  const requests=renderFriendRequestsInMessages(me);
- return `<div class="overlay" onclick="if(event.target===this)closeMessages()"><section class="sheet"><div class="handle"></div><h2>💬 الرسائل</h2>${requests}<p class="muted">تقدر تراسل أصدقاءك المقبولين فقط.</p><div class="messages-list">${friendPeople.length?friendPeople.map(a=>`<button class="message-row" style="width:100%;text-align:right;color:inherit;display:flex;align-items:center;gap:10px" onclick="openChat('${esc(a.email)}')"><div class="avatar sm">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}</div><div style="flex:1"><b>${esc(a.name||'مستخدم')}</b><div class="muted">@${esc(String(a.email).split('@')[0])}</div></div><span>💬</span></button>`).join(''):`<div class="empty" style="height:auto;padding:25px">لا توجد محادثات بعد.<br>عندما تقبل طلب صداقة ستظهر المحادثة هنا.</div>`}</div><button class="btn btn-ghost full" style="margin-top:10px" onclick="closeMessages()">إغلاق</button></section></div>`;
+ return `<div class="overlay" onclick="if(event.target===this)closeMessages()"><section class="sheet"><div class="handle"></div><h2>💬 الرسائل</h2>${requests}${devMessagesRow()}<p class="muted">تقدر تراسل أصدقاءك المقبولين فقط.</p><div class="messages-list">${friendPeople.length?friendPeople.map(a=>`<button class="message-row" style="width:100%;text-align:right;color:inherit;display:flex;align-items:center;gap:10px" onclick="openChat('${esc(a.email)}')"><div class="avatar sm">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}</div><div style="flex:1"><b>${esc(a.name||'مستخدم')}</b><div class="muted">@${esc(String(a.email).split('@')[0])}</div></div><span>💬</span></button>`).join(''):`<div class="empty" style="height:auto;padding:25px">لا توجد محادثات بعد.<br>عندما تقبل طلب صداقة ستظهر المحادثة هنا.</div>`}</div><button class="btn btn-ghost full" style="margin-top:10px" onclick="closeMessages()">إغلاق</button></section></div>`;
 }
 function openSearch(){state.ui.search=true;render();setTimeout(()=>{const input=document.getElementById('searchQuery');if(input){input.focus();input.select()}},60)}
 function closeSearch(){state.ui.search=false;render()}
@@ -1355,7 +1542,7 @@ function settingsSheet(){
  if(!state.ui.settings)return "";
  const a=account();
  const sec=state.ui.settings;
- if(sec==='terms')return settingsSubSheet('📜 الشروط والقواعد',`<div class="terms"><strong>شروط SnapVibe الصارمة</strong><br>• يمنع الإساءة أو السب أو التنمر أو تهديد الآخرين.<br>• يمنع نشر محتوى مخالف للقانون أو يعرّض الآخرين للخطر.<br>• يمنع انتحال شخصية الآخرين أو استخدام حساب شخص آخر.<br>• يمنع إزعاج المستخدمين بالرسائل أو إرسال محتوى غير مرغوب فيه.<br>• أي تعليق مسيء يتم حذفه ولا يُنشر، ويُوقف حساب صاحبه تلقائيًا لمدة <strong>ساعة واحدة</strong>.<br>• المخالفات المتكررة قد تؤدي إلى حظر أطول أو حظر دائم من المطور.<br>• يجب احترام الخصوصية وعدم نشر بيانات شخصية للآخرين.</div>`);
+ if(sec==='terms')return settingsSubSheet('📜 الشروط والقواعد',`<div class="terms"><strong>شروط Zaply الصارمة</strong><br>• يمنع الإساءة أو السب أو التنمر أو تهديد الآخرين.<br>• يمنع نشر محتوى مخالف للقانون أو يعرّض الآخرين للخطر.<br>• يمنع انتحال شخصية الآخرين أو استخدام حساب شخص آخر.<br>• يمنع إزعاج المستخدمين بالرسائل أو إرسال محتوى غير مرغوب فيه.<br>• أي تعليق مسيء يتم حذفه ولا يُنشر، ويُوقف حساب صاحبه تلقائيًا لمدة <strong>ساعة واحدة</strong>.<br>• المخالفات المتكررة قد تؤدي إلى حظر أطول أو حظر دائم من المطور.<br>• يجب احترام الخصوصية وعدم نشر بيانات شخصية للآخرين.</div>`);
  if(sec==='privacy')return settingsSubSheet('🔒 الخصوصية والأمان',`
   <div class="setting-toggle-row"><div><b>حساب خاص</b><div class="muted" style="font-size:11px;margin-top:3px">لو فعّلته، فيديوهاتك ومتابعينك ما يظهروش إلا لأصدقائك المقبولين. أي حد تاني هيشوف اسمك بس.</div></div><button class="switch ${a?.isPrivate?'on':''}" onclick="togglePrivateAccount()"><i></i></button></div>
   <p class="muted" style="margin-top:14px">المراسلة متاحة فقط بين الأصدقاء المقبولين، ومهما كانت إعدادات حسابك.</p>
@@ -1368,15 +1555,14 @@ function settingsSheet(){
  }
  return `<div class="overlay" onclick="if(event.target===this)closeSettings()"><section class="sheet settings-sheet"><div class="handle"></div><h2>⚙️ إعدادات الحساب</h2><div class="account-email" style="margin-bottom:8px">${esc(state.session?.email||"")}</div>
  <div class="settings-group-label">الحساب</div>
- <button class="setting-item" onclick="state.ui.settings='privacy';render()"><span>🔒 الخصوصية والأمان</span><span>›</span></button>
- <button class="setting-item" onclick="closeSettings();openNotifSheet()"><span>🔔 حالة الإشعارات</span><span>${notifIsOn()?"✅":"›"}</span></button>
- ${deferredInstallPrompt?`<button class="setting-item" onclick="installApp()"><span>📲 تثبيت التطبيق على الجهاز</span><span>›</span></button>`:''}
- <button class="setting-item" onclick="state.ui.editBiz=false;state.ui.settings='business';render()"><span>🏢 ${a?.accountType==='business'?'الحساب التجاري':'التحويل لحساب تجاري'}</span><span>›</span></button>
- <button class="setting-item" onclick="closeSettings();go('earnings')"><span>💰 الأرباح ومركز المبدعين</span><span>›</span></button>
- <button class="setting-item" onclick="closeSettings();switchAccount()"><span>👤 تغيير الحساب</span><span>›</span></button>
+ <button class="setting-item" onclick="state.ui.settings='privacy';render()"><span>🔒 الخصوصية والأمان</span><span>‹</span></button>
+ <button class="setting-item" onclick="state.ui.editBiz=false;state.ui.settings='business';render()"><span>🏢 ${a?.accountType==='business'?'الحساب التجاري':'التحويل لحساب تجاري'}</span><span>‹</span></button>
+ <button class="setting-item" onclick="closeSettings();go('earnings')"><span>💰 الأرباح ومركز المبدعين</span><span>‹</span></button>
+ <button class="setting-item" onclick="closeSettings();switchAccount()"><span>👤 تغيير الحساب</span><span>‹</span></button>
  <div class="settings-group-label">عام</div>
- <button class="setting-item" onclick="state.ui.settings='terms';render()"><span>📜 الشروط والقواعد</span><span>›</span></button>
- <button class="setting-item danger" onclick="closeSettings();logout()"><span>🚪 تسجيل الخروج</span><span>›</span></button>
+ ${!isStandalone()?`<button class="setting-item" onclick="installApp()"><span>📲 تثبيت التطبيق على جهازك</span><span>‹</span></button>`:""}
+ <button class="setting-item" onclick="state.ui.settings='terms';render()"><span>📜 الشروط والقواعد</span><span>‹</span></button>
+ <button class="setting-item danger" onclick="closeSettings();logout()"><span>🚪 تسجيل الخروج</span><span>‹</span></button>
  <button class="btn btn-ghost full" style="margin-top:14px" onclick="closeSettings()">إغلاق</button></section></div>`
 }
 function settingsSubSheet(title,body){
@@ -1389,11 +1575,10 @@ function computeEarnings(a){
  const videoCoins=perVideo.reduce((s,v)=>s+v.coins,0);
  const followerCount=Array.isArray(a.followers)?a.followers.length:0;
  const followerCoins=followerCount*100;
- const giftCoins=Math.max(0,Number(a.giftCoinsEarned)||0);
- const totalCoins=videoCoins+followerCoins+giftCoins;
+ const totalCoins=videoCoins+followerCoins;
  const withdrawn=Number(a.earningsWithdrawn)||0;
  const balance=Math.max(0,totalCoins-withdrawn);
- return {perVideo,videoCoins,followerCount,followerCoins,giftCoins,totalCoins,withdrawn,balance};
+ return {perVideo,videoCoins,followerCount,followerCoins,totalCoins,withdrawn,balance};
 }
 function myWithdrawal(a){
  if(!a)return null;
@@ -1457,34 +1642,39 @@ function renderEarnings(){
  const egp=(coins)=>(coins*0.05).toFixed(2);
  const w=myWithdrawal(a);
  return `<div class="screen fade"><div class="topbar"><button class="side right" onclick="go('profile')">${ICON.close}</button><b>💰 الأرباح ومركز المبدعين</b></div>
- <div style="padding:18px;overflow:auto">
+ <div class="page-body">
  ${tokenPanel(a)}
  <div class="review-box" style="text-align:center;padding:22px"><span>الرصيد المتاح</span><b style="font-size:26px;display:block;margin-top:6px">${fmt(e.balance)} نقطة</b><div class="muted" style="margin-top:4px">≈ ${egp(e.balance)} ج.م</div>
  ${w?'':`<button class="btn btn-primary full" style="margin-top:14px" onclick="openWithdrawSheet()">طلب سحب الأرباح</button>`}</div>
  ${w?withdrawStatusBox(w):''}
- <div class="stats" style="margin-top:18px"><div><b>${fmt(e.totalCoins)}</b><span>إجمالي النقاط</span></div><div><b>${fmt(e.followerCoins)}</b><span>من المتابعين (${e.followerCount})</span></div><div><b>${fmt(e.giftCoins)}</b><span>من الهدايا 🎁</span></div><div><b>${fmt(e.withdrawn)}</b><span>تم سحبه</span></div><div><b>${e.perVideo.length}</b><span>فيديو محتسب</span></div></div>
+ <div class="stats" style="margin-top:18px"><div><b>${fmt(e.totalCoins)}</b><span>إجمالي النقاط</span></div><div><b>${fmt(e.followerCoins)}</b><span>من المتابعين (${e.followerCount})</span></div><div><b>${fmt(e.withdrawn)}</b><span>تم سحبه</span></div><div><b>${e.perVideo.length}</b><span>فيديو محتسب</span></div></div>
  <div class="settings-group-label" style="margin-top:18px">تفاصيل كل فيديو</div>
  ${e.perVideo.length?e.perVideo.map(v=>`<div class="admin-card" style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;gap:8px"><span class="muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:65%">${esc(v.caption||'بدون وصف')}</span><b>${fmt(v.coins)} نقطة</b></div><div class="muted" style="font-size:10px;margin-top:4px">❤️ ${v.likes} · 💬 ${v.comments}</div></div>`).join(''):`<div class="empty" style="height:auto;padding:20px">لا توجد فيديوهات محتسبة بعد. انشر فيديو ليبدأ حساب أرباحك.</div>`}
  <p class="muted" style="margin-top:10px">تُحسب الأرباح تقديريًا بناءً على التفاعل (لايكات وتعليقات) على فيديوهاتك، بالإضافة لمكافأة عن كل متابع جديد (ما يعادل 5 ج.م لكل متابع داخل نظام النقاط). هذه قيمة تجريبية داخل التطبيق فقط وليست أموالًا حقيقية ولا وعدًا بالدفع.</p>
  </div>${withdrawSheet()}${tokenRechargeSheet()}${nav("")}</div>`
 }
 function renderProfile(){
- if(!state.session)return `<div class="screen auth"><p class="muted">سجل الدخول لعرض حسابك.</p><button class="btn btn-primary full" style="margin-top:14px" onclick="go('auth')">تسجيل الدخول</button>${nav("profile")}</div>`;
+ if(!state.session)return `<div class="screen auth"><div class="auth-head">${zmark()}<h1>سجّل دخولك</h1><p class="muted">سجّل الدخول لعرض حسابك وفيديوهاتك.</p></div><button class="btn btn-primary full" onclick="go('auth')">تسجيل الدخول</button>${nav("profile")}</div>`;
  const a=account(),mine=state.videos.filter(v=>v.ownerEmail===state.session.email).sort((x,y)=>(y.createdAt||0)-(x.createdAt||0)),likes=mine.reduce((s,v)=>s+v.likes.length,0);
- const bizLine=a.accountType==='business'?`<div class="mini-badge biz" style="margin:6px auto 0">🏢 حساب تجاري${a.bizCategory?` · ${esc(a.bizCategory)}`:""}</div>`:"";
- return `<div class="screen fade"><div class="topbar"><button class="settings-btn" onclick="state.ui.settings=true;render()" aria-label="الإعدادات">⚙️</button><b>حسابي</b></div><div class="profile-head"><div class="avatar lg">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}<button class="avatar-edit" onclick="document.getElementById('avatar').click()">${ICON.pencil}</button><input id="avatar" type="file" accept="image/*" class="hidden" onchange="avatarChange(event)"></div>
- ${state.ui.editName?`<div style="display:flex;gap:6px;justify-content:center"><input id="newName" value="${esc(a.name)}" style="width:170px;background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:7px;text-align:center"><button class="btn btn-primary btn-sm" onclick="saveName()">حفظ</button></div>`:`<div class="profile-name">${esc(a.name)} ${a.isPrivate?`<span title="حساب خاص">${ICON.lock}</span>`:""}<button class="icon-btn" onclick="state.ui.editName=true;render()">${ICON.pencil}</button></div>`}
- ${bizLine}
- <div class="muted">${a.age} سنة</div><div class="stats"><div><b>${Array.isArray(a.followers)?a.followers.length:0}</b><span>متابعون</span></div><div><b>${Array.isArray(a.following)?a.following.length:0}</b><span>يتابع</span></div><div><b>${mine.length}</b><span>فيديو</span></div><div><b>${fmt(likes)}</b><span>إعجاب</span></div></div>
- <button class="edit-profile-btn" onclick="state.ui.editName=true;render()">${ICON.pencil} تعديل الملف الشخصي</button></div>
- <div class="account-box"><b>الحساب</b><div class="account-email">${esc(state.session.email)}</div><div class="muted" style="margin-top:5px">🔑 كودك التعريفي (شاركه مع أصدقائك للتأكد إنهم بيلاقوا حسابك بالظبط): <b style="color:var(--cyan)">${esc(userCodeLabel(a))}</b></div><div class="account-actions"><button class="btn btn-ghost btn-sm" onclick="state.ui.settings=true;render()">⚙️ الإعدادات</button><button class="btn btn-ghost btn-sm" onclick="go('earnings')">💰 الأرباح</button><button class="btn btn-ghost btn-sm" onclick="state.ui.friends=true;state.ui.friendsTab='friends';render()">👥 الأصدقاء (${Array.isArray(a.friends)?a.friends.length:0})</button><button class="btn btn-ghost btn-sm" onclick="state.ui.friends=true;state.ui.friendsTab='followers';render()">👤 المتابعين (${Array.isArray(a.followers)?a.followers.length:0})</button><button class="btn btn-ghost btn-sm" onclick="state.ui.friends=true;state.ui.friendsTab='following';render()">➡️ أتابعهم (${Array.isArray(a.following)?a.following.length:0})</button><button class="btn btn-outline-danger btn-sm" onclick="logout()">تسجيل الخروج</button></div></div><div class="grid">${mine.length?mine.map(gridCell).join(""):`<div class="empty" style="grid-column:1/-1">لسه مفيش فيديوهات عندك.<br>دوس + وابدأ.</div>`}</div>${settingsSheet()}${state.ui.friends?renderFriends():""}${messagesSheet()}${notifSheet()}${nav("profile")}</div>`
+ const nF=Array.isArray(a.followers)?a.followers.length:0,nG=Array.isArray(a.following)?a.following.length:0,nFr=Array.isArray(a.friends)?a.friends.length:0;
+ const bizLine=a.accountType==='business'?`<div class="mini-badge biz" style="margin-top:8px">🏢 حساب تجاري${a.bizCategory?` · ${esc(a.bizCategory)}`:""}</div>`:"";
+ return `<div class="screen fade"><div class="pscroll">
+ <div class="cover"><button class="glass-btn c-right" onclick="state.ui.settings=true;render()" aria-label="الإعدادات">${ICON.settings}</button><button class="glass-btn c-left" onclick="go('earnings')" aria-label="الأرباح">${ICON.wallet}</button></div>
+ <div class="profile-head"><div class="avatar lg">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}<button class="avatar-edit" onclick="document.getElementById('avatar').click()" aria-label="تغيير الصورة">${ICON.camera}</button><input id="avatar" type="file" accept="image/*" class="hidden" onchange="avatarChange(event)"></div>
+ ${state.ui.editName?`<div style="display:flex;gap:8px;justify-content:center"><input id="newName" value="${esc(a.name)}" style="width:190px;text-align:center;padding:10px"><button class="btn btn-primary btn-sm" onclick="saveName()">حفظ</button></div>`:`<div class="profile-name">${esc(a.name)} ${a.isPrivate?`<span title="حساب خاص">${ICON.lock}</span>`:""}</div>`}
+ <div class="muted" style="margin-top:2px">${a.age} سنة</div>${bizLine}
+ <div class="stats"><div onclick="openRel('followers')"><b>${nF}</b><span>متابعون</span></div><div onclick="openRel('following')"><b>${nG}</b><span>يتابع</span></div><div><b>${mine.length}</b><span>فيديو</span></div><div><b>${fmt(likes)}</b><span>إعجاب</span></div></div>
+ <div class="profile-actions"><button class="btn btn-primary" onclick="state.ui.editName=true;render()">${ICON.pencil} تعديل الملف</button><button class="btn btn-ghost" onclick="openRel('friends')">${ICON.users} الأصدقاء (${nFr})</button></div></div>
+ <div class="account-box"><b>الحساب</b><div class="account-email">${esc(state.session.email)}</div><div class="muted" style="margin-top:8px;font-size:12px">🔑 كودك التعريفي (شاركه مع أصدقائك عشان يلاقوا حسابك بالظبط): <b style="color:var(--cyan)">${esc(userCodeLabel(a))}</b></div>
+ <div class="account-actions"><button class="tile-btn" onclick="state.ui.settings=true;render()">${ICON.settings}الإعدادات</button><button class="tile-btn" onclick="go('earnings')">${ICON.wallet}الأرباح</button><button class="tile-btn" onclick="openRel('friends')">${ICON.users}الأصدقاء</button><button class="tile-btn" onclick="openRel('followers')">${ICON.person}المتابعون</button><button class="tile-btn" onclick="openRel('following')">${ICON.arrow}أتابعهم</button><button class="tile-btn danger" onclick="logout()">${ICON.logout}خروج</button></div></div>
+ <div class="vids-head"><b>🎬 فيديوهاتي (${mine.length})</b><span>${mine.length?"آخر فيديو: "+vDate(mine[0].createdAt):"لسه مفيش فيديوهات"}</span></div><div class="grid">${mine.length?mine.map(gridCell).join(""):`<div class="empty" style="grid-column:1/-1;height:auto;padding:40px 20px">${ICON.camera}<div>لسه مفيش فيديوهات عندك.<br>دوس + وابدأ أول فيديو.</div></div>`}</div></div>${settingsSheet()}${state.ui.friends?renderFriends():""}${messagesSheet()}${devMessagesSheet()}${nav("profile")}</div>`
 }
 function gridCell(v){
  const label={pending:"قيد المراجعة",approved:"منشور",rejected:"مرفوض"}[v.status]||v.status;
- return `<div class="cell"><video src="${esc(videoSrc(v))}" controls preload="metadata" playsinline onclick="event.stopPropagation()"></video><span class="badge ${v.status}">${label}</span><span class="privacy">${v.privacy==="public"?"🌍":v.privacy==="friends"?"👥":"🔒"}</span></div>`
+ return `<div class="vtile"><div class="cell"><video src="${esc(videoSrc(v))}" controls preload="metadata" playsinline onclick="event.stopPropagation()"></video><span class="badge ${v.status}">${label}</span><span class="privacy">${v.privacy==="public"?"🌍":v.privacy==="friends"?"👥":"🔒"}</span><button class="dl-btn" onclick="downloadVideo('${v.id}',event)" aria-label="تنزيل الفيديو">${ICON.download}</button></div><div class="vmeta"><b>${vDate(v.createdAt)}</b><span>🕒 ${vTime(v.createdAt)} · ❤️ ${fmt((v.likes||[]).length)}</span></div></div>`
 }
 function publicGridCell(v){
- return `<div class="cell" onclick="openVideoFromDiscover('${v.id}')"><video src="${esc(videoSrc(v))}" muted preload="metadata" playsinline></video><span class="dstat">❤️ ${fmt(v.likes.length)}</span></div>`
+ return `<div class="vtile"><div class="cell" onclick="openVideoFromDiscover('${v.id}')"><video src="${esc(videoSrc(v))}" muted preload="metadata" playsinline></video><span class="dstat">❤️ ${fmt(v.likes.length)}</span><button class="dl-btn" onclick="downloadVideo('${v.id}',event)" aria-label="تنزيل الفيديو">${ICON.download}</button></div><div class="vmeta"><b>${vDate(v.createdAt)}</b><span>🕒 ${vTime(v.createdAt)}</span></div></div>`
 }
 /* ---------- ملف شخصي عام (لأي مستخدم آخر) ---------- */
 function openUserProfile(email){
@@ -1517,14 +1707,14 @@ function renderUserProfile(){
    return `<div class="screen fade"><div class="topbar"><button class="side right" onclick="closeUserProfile()">${ICON.close}</button><b>@${esc(String(a.email).split("@")[0])}</b></div><div class="empty">🚫 هذا الحساب غير متاح حاليًا.</div>${nav("")}</div>`;
  }
  return `<div class="screen fade"><div class="topbar"><button class="side right" onclick="closeUserProfile()">${ICON.close}</button><b>@${esc(String(a.email).split("@")[0])}</b></div>
- <div class="profile-head"><div class="avatar lg">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}</div>
+ <div class="pscroll"><div class="cover sm"></div><div class="profile-head"><div class="avatar lg">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}</div>
  <div class="profile-name">${esc(a.name||"مستخدم")} ${a.isPrivate?`<span title="حساب خاص">${ICON.lock}</span>`:""}</div>
  <div class="muted" style="text-align:center;font-size:11.5px">كود: ${esc(userCodeLabel(a))}</div><div class="mini-badge" style="margin:6px auto 0">🪙 ${fmt(tokenBalance(a))} توكن</div>
  ${bizLine}
  <div class="stats"><div><b>${Array.isArray(a.followers)?a.followers.length:0}</b><span>متابعون</span></div><div><b>${Array.isArray(a.following)?a.following.length:0}</b><span>يتابع</span></div><div><b>${locked?"—":theirVideos.length}</b><span>فيديو</span></div></div>
  <div style="display:flex;gap:8px;justify-content:center;margin-top:14px">${followBtn}${msgBtn}</div></div>
  ${locked?`<div class="empty">${ICON.lock}<div style="margin-top:10px">هذا الحساب خاص.<br>يجب أن تصبح صديقًا لـ ${esc(a.name||"صاحب الحساب")} حتى تشاهد فيديوهاته.</div></div>`
- :`<div class="grid">${theirVideos.length?theirVideos.map(publicGridCell).join(""):`<div class="empty" style="grid-column:1/-1">لا توجد فيديوهات بعد.</div>`}</div>`}
+ :`<div class="vids-head"><b>🎬 الفيديوهات (${theirVideos.length})</b><span>${theirVideos.length?"آخر فيديو: "+vDate(theirVideos[0].createdAt):""}</span></div><div class="grid">${theirVideos.length?theirVideos.map(publicGridCell).join(""):`<div class="empty" style="grid-column:1/-1">لا توجد فيديوهات بعد.</div>`}</div>`}</div>
  ${nav("")}</div>`
 }
 function avatarChange(e){
@@ -1535,7 +1725,7 @@ function logout(){
  stopCamera();
  state.session=null;
  state.pending=null;
- state.ui={...state.ui,comments:null,share:null,publish:false,recorded:null,recordedBlob:null,uploadFile:null,permissions:false};
+ state.ui={...state.ui,comments:null,share:null,notifications:false,publish:false,recorded:null,recordedBlob:null,uploadFile:null,permissions:false};
  save();
  state.screen="auth";
  state.ui.authMode="login";
@@ -1546,7 +1736,7 @@ function switchAccount(){
  stopCamera();
  state.session=null;
  state.pending=null;
- state.ui={...state.ui,comments:null,share:null,publish:false,recorded:null,recordedBlob:null,uploadFile:null,permissions:false};
+ state.ui={...state.ui,comments:null,share:null,notifications:false,publish:false,recorded:null,recordedBlob:null,uploadFile:null,permissions:false};
  save();
  state.screen="auth";
  state.ui.authMode="login";
@@ -1612,7 +1802,7 @@ async function requestMediaPermissions(){
     const title=app.querySelector("#permissionTitle"),text=app.querySelector("#permissionText"),retry=app.querySelector("#permissionRetry");
     const isFile=location.protocol==="file:";
     if(title)title.textContent=isFile?"Chrome يمنع الكاميرا من ملف محلي":"المتصفح يمنع الكاميرا من الملف المحلي";
-    if(text)text.innerHTML=isFile?"الصفحة مفتوحة كملف على جهازك مباشرة (<b>file://</b>)، وChrome بيمنع إذن الكاميرا والميكروفون من الملفات المحلية حتى لو ضغطت سماح — مفيش «إعدادات موقع 🔒» أصلًا تقدر تفتحها هنا. الحل: دوس <b>تصوير بكاميرا الهاتف</b> تحت (بيشتغل دايمًا)، أو ارفع الملف على استضافة HTTPS زي Vercel/Netlify عشان الكاميرا تشتغل جوه الصفحة نفسها.":"أنت فاتح SnapVibe من شاشة التنزيلات <b>content://</b>. في هذه الحالة Chrome لا يسمح لصفحة الملف المحلي بطلب الكاميرا والميكروفون. استخدم زر <b>تصوير بكاميرا الهاتف</b> أسفل، أو افتح SnapVibe من رابط <b>HTTPS</b>.";
+    if(text)text.innerHTML=isFile?"الصفحة مفتوحة كملف على جهازك مباشرة (<b>file://</b>)، وChrome بيمنع إذن الكاميرا والميكروفون من الملفات المحلية حتى لو ضغطت سماح — مفيش «إعدادات موقع 🔒» أصلًا تقدر تفتحها هنا. الحل: دوس <b>تصوير بكاميرا الهاتف</b> تحت (بيشتغل دايمًا)، أو ارفع الملف على استضافة HTTPS زي Vercel/Netlify عشان الكاميرا تشتغل جوه الصفحة نفسها.":"أنت فاتح Zaply من شاشة التنزيلات <b>content://</b>. في هذه الحالة Chrome لا يسمح لصفحة الملف المحلي بطلب الكاميرا والميكروفون. استخدم زر <b>تصوير بكاميرا الهاتف</b> أسفل، أو افتح Zaply من رابط <b>HTTPS</b>.";
     if(retry)retry.style.display="none";
     return false;
   }
@@ -1621,7 +1811,7 @@ async function requestMediaPermissions(){
     return false
   }
   if(!window.isSecureContext && location.hostname!=="localhost" && location.hostname!=="127.0.0.1"){
-    toast("افتح SnapVibe من رابط HTTPS حتى تعمل أذونات الكاميرا والمايك.");
+    toast("افتح Zaply من رابط HTTPS حتى تعمل أذونات الكاميرا والمايك.");
     return false
   }
   try{
@@ -1635,7 +1825,7 @@ async function requestMediaPermissions(){
     setTimeout(startCamera,120);
     return true
   }catch(e){
-    console.error("SnapVibe permission error:",e);
+    console.error("Zaply permission error:",e);
     state.ui.permissions=true;
     render();
     const title=app.querySelector("#permissionTitle"), text=app.querySelector("#permissionText"), retry=app.querySelector("#permissionRetry");
@@ -1667,7 +1857,7 @@ async function startCamera(){
   if(fallback)fallback.classList.remove("hidden");
   if(err){
    if(location.protocol==="file:")err.textContent="الكاميرا ما بتشتغلش من ملف محلي (file://) في Chrome حتى مع الموافقة. دوس «تصوير بكاميرا الهاتف» تحت، أو ارفع الملف على استضافة HTTPS.";
-   else if(location.protocol==="content:")err.textContent="الكاميرا ما بتشتغلش من شاشة التنزيلات (content://). دوس «تصوير بكاميرا الهاتف» تحت، أو افتح SnapVibe من رابط HTTPS.";
+   else if(location.protocol==="content:")err.textContent="الكاميرا ما بتشتغلش من شاشة التنزيلات (content://). دوس «تصوير بكاميرا الهاتف» تحت، أو افتح Zaply من رابط HTTPS.";
    else err.textContent=e?.name==="NotAllowedError"?"تم رفض إذن الكاميرا أو الميكروفون. افتح إعدادات الموقع 🔒 بجوار عنوان الصفحة واسمح بالوصول ثم اضغط تشغيل الكاميرا.":"تعذر تشغيل الكاميرا. جرّب Chrome على HTTPS أو localhost.";
   }
  }
@@ -1709,7 +1899,7 @@ function stopCamera(){
 }
 
 function renderCreate(){
- if(state.ui.permissions)return `<div class="screen fade"><div class="permission-screen"><div class="permission-icon">📷🎙️</div><h1 id="permissionTitle">السماح بالكاميرا والميكروفون</h1><p id="permissionText" class="muted">SnapVibe يحتاج إذن الكاميرا والميكروفون حتى تقدر تصور فيديو بالصوت والصورة. اضغط الزر وسيسأل المتصفح عن الإذنين، ولن يبدأ التسجيل قبل موافقتك.</p><button id="permissionRetry" class="btn btn-primary full" style="display:none" onclick="requestMediaPermissions()">إعادة المحاولة</button><button class="btn btn-primary full" onclick="requestMediaPermissions()">السماح وتشغيل الكاميرا</button><button class="btn btn-primary full" style="margin-top:9px" onclick="openPhoneCamera()">📷 تصوير بكاميرا الهاتف</button><button class="btn btn-ghost full" style="margin-top:9px" onclick="state.ui.permissions=false;render();setTimeout(()=>document.getElementById('videoFile')?.click(),50)">رفع فيديو من الجهاز</button><input id="cameraCapture" type="file" accept="video/*" capture="environment" class="hidden" onchange="uploadVideo(event)"><p class="note" style="margin-top:14px">لو الصفحة مفتوحة من <b>content://</b> في شاشة التنزيلات، استخدم «تصوير بكاميرا الهاتف» أو افتح الموقع من HTTPS حتى تعمل أذونات الكاميرا والميكروفون داخل SnapVibe.</p></div></div>`;
+ if(state.ui.permissions)return `<div class="screen fade"><div class="permission-screen"><div class="permission-icon">📷🎙️</div><h1 id="permissionTitle">السماح بالكاميرا والميكروفون</h1><p id="permissionText" class="muted">Zaply يحتاج إذن الكاميرا والميكروفون حتى تقدر تصور فيديو بالصوت والصورة. اضغط الزر وسيسأل المتصفح عن الإذنين، ولن يبدأ التسجيل قبل موافقتك.</p><button id="permissionRetry" class="btn btn-primary full" style="display:none" onclick="requestMediaPermissions()">إعادة المحاولة</button><button class="btn btn-primary full" onclick="requestMediaPermissions()">السماح وتشغيل الكاميرا</button><button class="btn btn-primary full" style="margin-top:9px" onclick="openPhoneCamera()">📷 تصوير بكاميرا الهاتف</button><button class="btn btn-ghost full" style="margin-top:9px" onclick="state.ui.permissions=false;render();setTimeout(()=>document.getElementById('videoFile')?.click(),50)">رفع فيديو من الجهاز</button><input id="cameraCapture" type="file" accept="video/*" capture="environment" class="hidden" onchange="uploadVideo(event)"><p class="note" style="margin-top:14px">لو الصفحة مفتوحة من <b>content://</b> في شاشة التنزيلات، استخدم «تصوير بكاميرا الهاتف» أو افتح الموقع من HTTPS حتى تعمل أذونات الكاميرا والميكروفون داخل Zaply.</p></div></div>`;
  if(state.ui.stage==="preview")return `<div class="screen fade"><div class="camera"><video class="preview" src="${esc(state.ui.recorded)}" autoplay loop playsinline controls></video><div class="cambar"><button class="round" onclick="retake()">${ICON.close}</button><b>معاينة</b><span style="width:40px"></span></div><div class="controls"><button class="btn btn-ghost btn-sm" onclick="retake()">إعادة</button><button class="btn btn-primary btn-sm" onclick="state.ui.publish=true;render()">التالي</button></div></div>${publishSheet()}</div>`;
  return `<div class="screen fade"><div class="camera"><video id="camPreview" autoplay muted playsinline></video><div id="camFallback" class="empty hidden" style="position:absolute;inset:0;z-index:3;background:#05060b"><div><b>الكاميرا أو الميكروفون غير متاحين</b><br><span id="camErrorText">اسمح للمتصفح باستخدام الكاميرا والميكروفون، أو ارفع فيديو من جهازك.</span><br><button class="btn btn-primary btn-sm" style="margin-top:12px" onclick="startCamera()">تشغيل الكاميرا</button><button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="openPhoneCamera()">📷 تصوير بكاميرا الهاتف</button></div></div>
  <div class="cambar"><button class="round" onclick="go('home')">${ICON.close}</button><b>فيديو جديد</b><span style="width:40px"></span></div>
@@ -1797,14 +1987,14 @@ async function publish(){
  if(Number(state.ui.videoDuration)>MAX_VIDEO_SECONDS+0.2){toast("الحد الأقصى للفيديو 5 دقائق فقط");return}
  if(!SUPABASE_READY){toast("⚠️ لازم تظبط إعدادات Supabase الأول عشان الفيديو يترفع (راجع أعلى الكود)");return}
  const id="v"+Date.now(),file=state.ui.uploadFile||state.ui.recordedBlob;
- const v={id,ownerEmail:state.session.email,ownerName:a.name,caption:app.querySelector("#caption")?.value.trim()||"فيديو جديد على SnapVibe ✨",privacy:state.ui.privacy,status:"pending",song:state.ui.song,likes:[],comments:[],createdAt:Date.now()};
+ const v={id,ownerEmail:state.session.email,ownerName:a.name,caption:app.querySelector("#caption")?.value.trim()||"فيديو جديد على Zaply ✨",privacy:state.ui.privacy,status:"pending",song:state.ui.song,likes:[],comments:[],createdAt:Date.now()};
  toast("⏳ جاري رفع الفيديو على السيرفر...");
  try{
    const blob=file||(state.ui.recorded?await fetch(state.ui.recorded).then(r=>r.blob()):null);
    if(!blob) throw new Error("no_file");
    v.videoURL=await uploadVideoFile(id,blob);
  }catch(e){
-   console.error("SnapVibe publish error:",e);
+   console.error("Zaply publish error:",e);
    recordSystemError('publish',e?.message||String(e),{ownerEmail:state.session?.email||'',videoId:id});
    toast(`❌ فشل رفع الفيديو: ${String(e?.message||e).slice(0,140)}`);
    return;
@@ -1822,17 +2012,17 @@ function renderAdmin(){
  const ownerFilter=state.ui.adminOwner; const list=state.videos.filter(v=>(!ownerFilter||v.ownerEmail===ownerFilter)&&(f==="all"||v.status===f));
  const withdrawals=(state.withdrawals||[]).slice().sort((x,y)=>y.createdAt-x.createdAt);
  const pendingWithdrawals=withdrawals.filter(w=>w.status==='pending').length;
- return `<div class="screen fade"><div class="topbar"><b>لوحة المطور</b><button class="topbar side left" onclick="adminLogout()">${ICON.close}</button></div>
- <div class="review-note" style="margin:10px 11px 0;${SUPABASE_READY?"":"border-color:#ff4d4f"}"><b>${SUPABASE_READY?"🟢 متصل بقاعدة البيانات (Firebase)":"🔴 Supabase غير متصل"}</b><span>${SUPABASE_READY?"الحسابات والتوكن والهدايا والشحن والسحب والأخطاء وبيانات الفيديو تُحفظ على Firebase. ملفات الفيديو نفسها فقط تُرفع على Supabase Storage.":"راجع firebaseConfig وقواعد Firestore، وتأكد أن Supabase مضبوط فقط لتخزين الفيديو."}</span></div>
+ return `<div class="screen fade"><div class="topbar"><b>لوحة المطور</b><button class="side left" onclick="adminLogout()">${ICON.close}</button></div>
+ <div class="pscroll" style="padding-bottom:30px"><div class="review-note" style="margin:10px 11px 0;${FIREBASE_READY&&remoteLoaded?"":"border-color:#ff4d4f"}"><b>${FIREBASE_READY&&remoteLoaded?"🟢 متصل بقاعدة البيانات (Firebase)":"🔴 غير متصل بقاعدة البيانات (Firebase)"}</b><span>${FIREBASE_READY?"الحسابات والتوكن والهدايا والشحن والسحب والأخطاء وبيانات الفيديو تُحفظ على Firebase. ملفات الفيديو نفسها فقط تُرفع على Supabase Storage.":"راجع firebaseConfig وقواعد Firestore، وتأكد أن Supabase مضبوط فقط لتخزين الفيديو."}</span></div>
  <div class="review-note" style="margin:10px 11px 0;${SUPABASE_READY?"":"border-color:#ff4d4f"}"><b>${SUPABASE_READY?"🟢 متصل بتخزين الفيديوهات (Supabase)":"🔴 غير متصل بتخزين الفيديوهات — رفع الفيديو لن يعمل"}</b><span>${SUPABASE_READY?"ملفات الفيديو بتترفع وتتشاف من أي جهاز.":"لازم تدخل إعدادات Supabase في أول الكود (supabaseConfig) وتعمل bucket اسمه videos."}</span></div>
- <div class="review-note" style="margin:10px 11px 0"><b>👁️ المراجعة قبل النشر</b><span>كل فيديو يرسله أي شخص يصل هنا أولًا، حتى لو اختار عام أو أصدقاء أو خاص. لا يظهر للناس إلا بعد موافقة المطور.</span></div><div style="padding:10px 11px 0;display:flex;gap:7px;flex-wrap:wrap"><button class="btn btn-sm ${state.ui.adminTab==='videos'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='videos';state.ui.adminOwner=null;render()">🎬 الفيديوهات (${state.videos.length}) · قيد المراجعة ${state.videos.filter(v=>v.status==="pending").length}</button><button class="btn btn-sm ${state.ui.adminTab==='users'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='users';render()">👥 الأشخاص (${users.length})</button><button class="btn btn-sm ${state.ui.adminTab==='withdrawals'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='withdrawals';render()">💳 طلبات السحب (${withdrawals.length}) · قيد المراجعة ${pendingWithdrawals}</button><button class="btn btn-sm ${state.ui.adminTab==='recharges'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='recharges';render()">🪙 الشحن (${(state.rechargeRequests||[]).length}) · جديد ${(state.rechargeRequests||[]).filter(x=>x.status==='pending').length}</button><button class="btn btn-sm ${state.ui.adminTab==='errors'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='errors';render()">🐞 الأخطاء (${(state.systemErrors||[]).length})</button></div>
+ <div class="review-note" style="margin:10px 11px 0"><b>👁️ المراجعة قبل النشر</b><span>كل فيديو يرسله أي شخص يصل هنا أولًا، حتى لو اختار عام أو أصدقاء أو خاص. لا يظهر للناس إلا بعد موافقة المطور.</span></div><div style="padding:10px 11px 0;display:flex;gap:7px;flex-wrap:wrap"><button class="btn btn-sm ${state.ui.adminTab==='videos'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='videos';state.ui.adminOwner=null;render()">🎬 الفيديوهات (${state.videos.length}) · قيد المراجعة ${state.videos.filter(v=>v.status==="pending").length}</button><button class="btn btn-sm ${state.ui.adminTab==='users'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='users';render()">👥 الأشخاص (${users.length})</button><button class="btn btn-sm ${state.ui.adminTab==='withdrawals'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='withdrawals';render()">💳 طلبات السحب (${withdrawals.length}) · قيد المراجعة ${pendingWithdrawals}</button><button class="btn btn-sm ${state.ui.adminTab==='recharges'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='recharges';render()">🪙 الشحن (${(state.rechargeRequests||[]).length}) · جديد ${(state.rechargeRequests||[]).filter(x=>x.status==='pending').length}</button><button class="btn btn-sm ${state.ui.adminTab==='errors'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='errors';render()">🐞 الأخطاء (${(state.systemErrors||[]).length})</button><button class="btn btn-sm ${state.ui.adminTab==='messages'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='messages';render()">📢 الرسائل (${(state.adminMessages||[]).length})</button></div>
  <div style="padding:6px 11px 0"><button class="btn btn-sm btn-danger" onclick="openResetSystem()">♻️ إعادة ضبط النظام بالكامل</button></div>
- ${state.ui.adminTab==='users'?renderAdminUsers(users):state.ui.adminTab==='withdrawals'?renderAdminWithdrawals(withdrawals):state.ui.adminTab==='recharges'?renderAdminRecharges():state.ui.adminTab==='errors'?renderAdminErrors():`<div class="filters">${[["all","الكل"],["pending","قيد المراجعة"],["approved","مقبول"],["rejected","مرفوض"]].map(x=>`<button class="btn btn-sm ${f===x[0]?"btn-primary":"btn-ghost"}" onclick="state.ui.adminFilter='${x[0]}';render()">${x[1]}</button>`).join("")}</div><div class="admin-list">${list.length?list.map(adminCard).join(""):`<div class="empty">لا توجد فيديوهات في هذا التصنيف.</div>`}</div>`}
- ${adminBanSheet()}${resetConfirmSheet()}</div>`
+ ${state.ui.adminTab==='users'?renderAdminUsers(users):state.ui.adminTab==='withdrawals'?renderAdminWithdrawals(withdrawals):state.ui.adminTab==='recharges'?renderAdminRecharges():state.ui.adminTab==='errors'?renderAdminErrors():state.ui.adminTab==='messages'?renderAdminMessages(users):`<div class="filters">${[["all","الكل"],["pending","قيد المراجعة"],["approved","مقبول"],["rejected","مرفوض"]].map(x=>`<button class="btn btn-sm ${f===x[0]?"btn-primary":"btn-ghost"}" onclick="state.ui.adminFilter='${x[0]}';render()">${x[1]}</button>`).join("")}</div><div class="admin-list">${list.length?list.map(adminCard).join(""):`<div class="empty">لا توجد فيديوهات في هذا التصنيف.</div>`}</div>`}</div>
+ ${adminBanSheet()}${resetConfirmSheet()}${adminMsgSheet()}</div>`
 }
 function renderAdminRecharges(){
  const list=(state.rechargeRequests||[]).slice().sort((a,b)=>b.createdAt-a.createdAt);
- return `<div class="admin-list">${list.length?list.map(r=>`<div class="admin-card" style="display:block"><div class="admin-info"><b>${esc(r.ownerName||'مستخدم')} <span class="status ${r.status==='approved'?'approved':r.status==='rejected'?'rejected':'pending'}">${r.status==='approved'?'مقبول':r.status==='rejected'?'مرفوض':'قيد المراجعة'}</span></b><div class="admin-cap">${esc(r.ownerEmail)}<br>🪙 المطلوب: ${fmt(r.requestedTokens)} توكن${r.priceEGP?` (${fmt(r.priceEGP)} جنيه)`:''}<br>📱 ${esc(r.methodName||r.method)}<br>🧾 ${esc(r.note)}<br>${new Date(r.createdAt).toLocaleString('ar-EG')}</div></div><div class="admin-actions">${r.status==='pending'?`<button class="btn btn-sm btn-success" onclick="approveRecharge('${r.id}')">✅ تأكيد وإضافة</button><button class="btn btn-sm btn-danger" onclick="rejectRecharge('${r.id}')">رفض</button>`:''}</div></div>`).join(''):`<div class="empty">لا توجد طلبات شحن.</div>`}</div>`;
+ return `<div class="admin-list">${list.length?list.map(r=>`<div class="admin-card" style="display:block"><div class="admin-info"><b>${esc(r.ownerName||'مستخدم')} <span class="status ${r.status==='approved'?'approved':r.status==='rejected'?'rejected':'pending'}">${r.status==='approved'?'مقبول':r.status==='rejected'?'مرفوض':'قيد المراجعة'}</span></b><div class="admin-cap">${esc(r.ownerEmail)}<br>🪙 المطلوب: ${tokFmt(r.requestedTokens)} توكن${r.priceEgp?` · 💵 <b>${egpText(r.priceEgp)}</b>`:''}<br>📱 ${esc(r.methodName||r.method)}<br>🧾 ${esc(r.note)}<br>${new Date(r.createdAt).toLocaleString('ar-EG')}</div></div><div class="admin-actions">${r.status==='pending'?`<button class="btn btn-sm btn-success" onclick="approveRecharge('${r.id}')">✅ تأكيد وإضافة</button><button class="btn btn-sm btn-danger" onclick="rejectRecharge('${r.id}')">رفض</button>`:''}</div></div>`).join(''):`<div class="empty">لا توجد طلبات شحن.</div>`}</div>`;
 }
 function renderAdminErrors(){
  const list=state.systemErrors||[];
@@ -1875,7 +2065,7 @@ function adminUserCard(a){
  const blocked=isBanned(a);
  const mine=state.videos.filter(v=>v.ownerEmail===a.email);
  const status=banDetail(a);
- return `<div class="admin-card" style="display:block"><div style="display:flex;align-items:center;gap:10px"><div class="avatar sm">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}</div><div class="admin-info"><b>${esc(a.name||'مستخدم')} <span class="mini-badge">${esc(userCodeLabel(a))}</span></b><div class="admin-cap">${esc(a.email)}<br>العمر: ${esc(a.age||'—')} سنة · الفيديوهات: ${mine.length}<br>🪙 التوكن: <b>${fmt(tokenBalance(a))}</b> · مرسل: ${fmt(a.totalTokensSent||0)} · مستلم: ${fmt(a.totalTokensReceived||0)}</div></div></div><div style="margin-top:8px"><div class="admin-actions" style="margin-bottom:8px"><button class="btn btn-sm btn-primary" onclick="adminAddTokens('${esc(a.email)}')">🪙 إضافة توكن</button></div><span class="status ${blocked?'rejected':'approved'}">${blocked?'غير نشط · '+esc(status):'نشط'}</span>${blocked&&a.banReason?`<div class="admin-cap" style="margin-top:5px">السبب: ${esc(a.banReason)}</div>`:""}</div><div class="admin-actions" style="margin-top:9px">${blocked?`<button class="btn btn-sm btn-success" onclick="unbanUser('${esc(a.email)}')">🔓 رفع الحظر</button>`:`<button class="btn btn-sm btn-danger" onclick="openBan('${esc(a.email)}')">🚫 حظر الحساب</button>`}<button class="btn btn-sm btn-ghost" onclick="adminUserVideos('${esc(a.email)}')">🎬 فيديوهات الشخص</button></div></div>`
+ return `<div class="admin-card" style="display:block"><div style="display:flex;align-items:center;gap:10px"><div class="avatar sm">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}</div><div class="admin-info"><b>${esc(a.name||'مستخدم')} <span class="mini-badge">${esc(userCodeLabel(a))}</span></b><div class="admin-cap">${esc(a.email)}<br>العمر: ${esc(a.age||'—')} سنة · الفيديوهات: ${mine.length}<br>🪙 التوكن: <b>${fmt(tokenBalance(a))}</b> · مرسل: ${fmt(a.totalTokensSent||0)} · مستلم: ${fmt(a.totalTokensReceived||0)}</div></div></div><div style="margin-top:8px"><div class="admin-actions" style="margin-bottom:8px"><button class="btn btn-sm btn-primary" onclick="adminAddTokens('${esc(a.email)}')">🪙 إضافة توكن</button><button class="btn btn-sm btn-ghost" onclick="openAdminMsg('${esc(a.email)}')">✉️ رسالة</button></div><span class="status ${blocked?'rejected':'approved'}">${blocked?'غير نشط · '+esc(status):'نشط'}</span>${blocked&&a.banReason?`<div class="admin-cap" style="margin-top:5px">السبب: ${esc(a.banReason)}</div>`:""}</div><div class="admin-actions" style="margin-top:9px">${blocked?`<button class="btn btn-sm btn-success" onclick="unbanUser('${esc(a.email)}')">🔓 رفع الحظر</button>`:`<button class="btn btn-sm btn-danger" onclick="openBan('${esc(a.email)}')">🚫 حظر الحساب</button>`}<button class="btn btn-sm btn-ghost" onclick="adminUserVideos('${esc(a.email)}')">🎬 فيديوهات الشخص</button></div></div>`
 }
 function adminAddTokens(email){
  const e=accountKey(email),a=getAccount(e);if(!a)return;
@@ -1948,11 +2138,11 @@ function openResetSystem(){state.ui.resetConfirm=true;render()}
 function closeResetSystem(){state.ui.resetConfirm=false;render()}
 function downloadBackup(){
  try{
-   const backup={exportedAt:Date.now(),accounts:state.accounts,videos:state.videos.map(stripLocalOnly),withdrawals:state.withdrawals||[],rechargeRequests:state.rechargeRequests||[],giftTransactions:state.giftTransactions||[],systemErrors:state.systemErrors||[]};
+   const backup={exportedAt:Date.now(),accounts:state.accounts,videos:state.videos.map(stripLocalOnly),withdrawals:state.withdrawals||[],rechargeRequests:state.rechargeRequests||[],giftTransactions:state.giftTransactions||[],systemErrors:state.systemErrors||[],adminMessages:state.adminMessages||[]};
    const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"});
    const url=URL.createObjectURL(blob);
    const link=document.createElement("a");
-   link.href=url;link.download="snapvibe-backup-"+Date.now()+".json";
+   link.href=url;link.download="zaply-backup-"+Date.now()+".json";
    document.body.appendChild(link);link.click();document.body.removeChild(link);
    setTimeout(()=>URL.revokeObjectURL(url),2000);
    return true;
@@ -1966,6 +2156,7 @@ function resetSystem(){
  state.rechargeRequests=[];
  state.giftTransactions=[];
  state.systemErrors=[];
+ state.adminMessages=[];
  state.pending=null;
  try{localStorage.removeItem(STORAGE_KEY)}catch(e){}
  save();
@@ -1991,7 +2182,7 @@ function init(){
       state.session=null; state.screen="auth"; state.ui.authMode="login";
     }
     try{render();}catch(e){
-      console.error("SnapVibe startup render error",e);
+      console.error("Zaply startup render error",e);
       try{state.session=null;state.screen="auth";state.ui.authMode="login";render();}catch(e2){}
     }
     setTimeout(function(){
@@ -2013,8 +2204,132 @@ function init(){
 // ارسم شاشة البداية فورًا؛ لا ننتظر أي تخزين أو IndexedDB أو مؤقت.
 // هذا مهم خصوصًا عند فتح الملف من content://downloads على الهاتف.
 try{render();}catch(e){
-  app.innerHTML='<div class="screen splash"><div class="s-logo" role="img" aria-label="حرف S شعار SnapVibe">S</div><div class="splash-welcome splash-title">أهلاً بيك 👋</div><div class="splash-welcome">مرحبًا بك في SnapVibe</div><div class="loader"><i></i></div></div>';
+  app.innerHTML=splashHTML();
 }
+/* ---------- رسائل المطور للمستخدمين ---------- */
+function renderAdminMessages(users){
+ const list=(state.adminMessages||[]).slice().sort((a,b)=>b.at-a.at);
+ const nm=(to)=>to==='all'?'كل المستخدمين':(getAccount(to)?.name||to);
+ return `<div class="admin-list"><div class="review-box" style="text-align:right"><b>📢 رسائل المطور</b><span>ابعت إعلان لكل المستخدمين أو رسالة لشخص واحد (من تبويب «الأشخاص» زر ✉️). بتظهر عندهم في الإشعارات وفي «رسائل المطور» جوّه الرسائل.</span></div>
+ <button class="btn btn-primary full" onclick="openAdminMsg('all')">📢 رسالة لكل المستخدمين (${users.length})</button>
+ <div class="settings-group-label">آخر الرسائل المرسلة</div>
+ ${list.length?list.map(m=>`<div class="admin-card" style="display:block"><div class="admin-info"><b>إلى: ${esc(nm(m.to))}</b><div class="admin-cap" style="white-space:pre-wrap">${esc(m.text)}<br>${new Date(m.at).toLocaleString('ar-EG')}</div></div><div class="admin-actions"><button class="btn btn-sm btn-danger" onclick="deleteAdminMsg('${m.id}')">حذف</button></div></div>`).join(''):`<div class="empty" style="height:auto;padding:30px">لسه ما بعتّش أي رسالة.</div>`}</div>`;
+}
+function openAdminMsg(to){state.ui.adminMsg={to:to,text:''};render();setTimeout(()=>document.getElementById('adminMsgText')?.focus(),80)}
+function closeAdminMsg(){state.ui.adminMsg=null;render()}
+function adminMsgSheet(){
+ const m=state.ui.adminMsg;if(!m)return '';
+ const target=m.to==='all'?`كل المستخدمين (${adminUsers().length})`:esc(getAccount(m.to)?.name||m.to);
+ return `<div class="overlay" onclick="if(event.target===this)closeAdminMsg()"><section class="sheet"><div class="handle"></div><h2>📢 رسالة من المطور</h2><div class="review-box" style="text-align:right;margin-top:0"><span>إلى</span><b style="color:var(--text);margin:2px 0 0">${target}</b></div>
+ <div class="field"><label>نص الرسالة</label><textarea id="adminMsgText" rows="5" maxlength="600" placeholder="اكتب رسالتك هنا..." oninput="state.ui.adminMsg.text=this.value;document.getElementById('adminMsgCount').textContent=this.value.length">${esc(m.text||'')}</textarea><div class="note" style="text-align:left;margin-top:4px"><span id="adminMsgCount">${(m.text||'').length}</span> / 600</div></div>
+ <button class="btn btn-primary full" onclick="sendAdminMsg()">إرسال ${m.to==='all'?'للجميع':'الرسالة'}</button><button class="btn btn-ghost full" style="margin-top:8px" onclick="closeAdminMsg()">إلغاء</button></section></div>`;
+}
+function sendAdminMsg(){
+ const m=state.ui.adminMsg;if(!m)return;
+ const text=String(m.text||'').trim();
+ if(text.length<2){toast('اكتب نص الرسالة');return}
+ const to=m.to==='all'?'all':accountKey(m.to);
+ if(to!=='all'&&!getAccount(to)){toast('الحساب غير موجود');return}
+ state.adminMessages=Array.isArray(state.adminMessages)?state.adminMessages:[];
+ state.adminMessages.unshift({id:'am'+Date.now()+Math.random().toString(36).slice(2,6),to,text:text.slice(0,600),at:Date.now()});
+ state.adminMessages=state.adminMessages.slice(0,200);
+ save();state.ui.adminMsg=null;render();
+ toast(to==='all'?'✅ تم إرسال الرسالة لكل المستخدمين':'✅ تم إرسال الرسالة');
+}
+function deleteAdminMsg(id){state.adminMessages=(state.adminMessages||[]).filter(x=>x.id!==id);save();render()}
+function myAdminMessages(){
+ const me=account();if(!me)return [];
+ const key=accountKey(me.email),born=Number(me.createdAt)||0;
+ return (state.adminMessages||[]).filter(m=>(m.to==='all'&&m.at>=born)||(m.to!=='all'&&accountKey(m.to)===key)).sort((a,b)=>b.at-a.at);
+}
+function adminMsgUnread(){const me=account();if(!me)return 0;const r=Number(me.adminMsgReadAt)||0;return myAdminMessages().filter(m=>m.at>r).length}
+function openDevMessages(){
+ if(!requireLogin())return;
+ const me=account();if(me){me.adminMsgReadAt=Date.now();save()}
+ state.ui.devMsgs=true;state.ui.messages=false;state.ui.notifications=false;
+ if(state.screen!=="home"&&state.screen!=="profile")state.screen="home";
+ render();
+}
+function closeDevMessages(){state.ui.devMsgs=false;render()}
+function devMessagesRow(){
+ const list=myAdminMessages(),unread=adminMsgUnread(),last=list[0];
+ return `<button class="message-row dev-row" style="width:100%;text-align:right;color:inherit;display:flex;align-items:center;gap:12px" onclick="openDevMessages()">${zmark("",44)}<div style="flex:1;min-width:0"><b>Zaply · رسائل المطور</b><div class="muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${last?esc(last.text.slice(0,60)):'لا توجد رسائل'}</div></div>${unread?`<span class="request-badge">${unread} جديد</span>`:''}</button>`;
+}
+function devMessagesSheet(){
+ if(!state.ui.devMsgs)return '';
+ const list=myAdminMessages();
+ return `<div class="overlay" onclick="if(event.target===this)closeDevMessages()"><section class="sheet"><div class="handle"></div><div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">${zmark("",48)}<div><h2 style="margin:0">رسائل المطور</h2><div class="muted" style="font-size:12px">رسائل رسمية من فريق Zaply</div></div></div><div class="messages-list">${list.length?list.map(m=>`<div class="message-bubble"><b>${m.to==='all'?'📢 إعلان للجميع':'✉️ رسالة ليك'}</b><br><span style="white-space:pre-wrap">${esc(m.text)}</span><div class="muted" style="font-size:10px;margin-top:5px">${new Date(m.at).toLocaleString('ar-EG')}</div></div>`).join(''):`<div class="empty" style="height:auto;padding:30px">مفيش رسائل من المطور لسه.</div>`}</div><button class="btn btn-ghost full" style="margin-top:12px" onclick="closeDevMessages()">إغلاق</button></section></div>`;
+}
+
+/* ---------- تجربة التطبيق: تفاعل الفيديو + تثبيت + اهتزاز خفيف ---------- */
+let _tapT=null,_lastTap=0;
+function vTap(ev,v){
+  const now=Date.now();
+  if(now-_lastTap<300){
+    clearTimeout(_tapT);_lastTap=0;
+    const card=v.closest(".video-card"),id=card?.dataset.id,vid=state.videos.find(x=>x.id===id);
+    if(!state.session){requireLogin();return}
+    if(card){
+      const r=card.getBoundingClientRect();
+      card.insertAdjacentHTML("beforeend",`<div class="burst" style="left:${ev.clientX-r.left}px;top:${ev.clientY-r.top}px">${ICON.heartfill}</div>`);
+      setTimeout(()=>card.querySelector(".burst")?.remove(),900);
+    }
+    if(vid&&!liked(vid))likeVideo(id);
+    return;
+  }
+  _lastTap=now;
+  _tapT=setTimeout(()=>{
+    if(!audioUnlocked){videoGesture(v);return}
+    const card=v.closest(".video-card");
+    const flash=(svg)=>{card?.querySelector(".flash")?.remove();card?.insertAdjacentHTML("beforeend",`<div class="flash">${svg}</div>`);setTimeout(()=>card?.querySelector(".flash")?.remove(),650)};
+    if(v.paused){v.play().catch(()=>{});flash(ICON.play)}else{v.pause();flash(ICON.pause)}
+  },300);
+}
+function vProg(v){const i=v.closest(".video-card")?.querySelector(".vprog i");if(i&&v.duration)i.style.width=(v.currentTime/v.duration*100)+"%"}
+
+let deferredInstall=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstall=e});
+window.addEventListener("appinstalled",()=>{deferredInstall=null;toast("✅ تم تثبيت Zaply على جهازك")});
+function isStandalone(){try{return (window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true}catch(e){return false}}
+async function installApp(){
+  if(deferredInstall){
+    try{deferredInstall.prompt();await deferredInstall.userChoice}catch(e){}
+    deferredInstall=null;closeSettings();return;
+  }
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  closeSettings();
+  toast(ios?"من زر المشاركة اختار «إضافة إلى الشاشة الرئيسية»":"من قائمة المتصفح (⋮) اختار «تثبيت التطبيق»");
+}
+// اهتزاز خفيف عند اللمس (على الأجهزة اللي بتدعمه)
+document.addEventListener("click",e=>{try{if(navigator.vibrate&&e.target.closest&&e.target.closest("button,.cell"))navigator.vibrate(6)}catch(_){}},true);
+// أيقونة التطبيق + manifest (بتعمل على الروابط https)
+(function setupPWA(){
+  try{
+    const mk=(size)=>{
+      const c=document.createElement("canvas");c.width=c.height=size;const x=c.getContext("2d");
+      const g=x.createLinearGradient(0,0,size,size);g.addColorStop(0,"#8B5CF6");g.addColorStop(.55,"#D946EF");g.addColorStop(1,"#EC4899");
+      x.fillStyle=g;x.fillRect(0,0,size,size);
+      x.strokeStyle="#fff";x.lineWidth=size*.1;x.lineCap="round";x.lineJoin="round";
+      const p=size*.3,q=size*.7;x.beginPath();x.moveTo(p,p);x.lineTo(q,p);x.lineTo(p,q);x.lineTo(q,q);x.stroke();
+      return c.toDataURL("image/png");
+    };
+    const i192=mk(192),i512=mk(512);
+    const ap=document.createElement("link");ap.rel="apple-touch-icon";ap.href=i192;document.head.appendChild(ap);
+    if(/^https?:$/.test(location.protocol)){
+      const manifest={name:"Zaply",short_name:"Zaply",description:"شارك لحظاتك بفيديوهات قصيرة",lang:"ar",dir:"rtl",display:"standalone",orientation:"portrait",background_color:"#0A0A10",theme_color:"#0A0A10",start_url:location.href.split("#")[0],icons:[{src:i192,sizes:"192x192",type:"image/png",purpose:"any maskable"},{src:i512,sizes:"512x512",type:"image/png",purpose:"any maskable"}]};
+      const l=document.createElement("link");l.rel="manifest";l.href=URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:"application/manifest+json"}));document.head.appendChild(l);
+    }
+  }catch(e){console.warn("PWA setup skipped",e)}
+})();
+
+function initBackends(){
+  const fb=initFirebase(); initSupabase();
+  if(fb && !remoteUnsub){try{load()}catch(e){console.warn("load after libs failed",e)}}
+  return FIREBASE_READY&&SUPABASE_READY;
+}
+(window.__svLibs||Promise.resolve()).then(initBackends);
+// لو المكتبات وصلت متأخر (نت بطيء) نعيد المحاولة كل 3 ثواني لمدة دقيقة
+(function(){let n=0;const t=setInterval(()=>{if(initBackends()||++n>20)clearInterval(t)},3000)})();
 init();
 </script>
 
@@ -2022,7 +2337,7 @@ init();
 /* فحص إعدادات Supabase عند تشغيل الصفحة */
 window.addEventListener("load",()=>{
   if(!SUPABASE_READY){
-    console.warn("SnapVibe: Supabase غير جاهز.");
+    console.warn("Zaply: Supabase غير جاهز.");
   }
 });
 </script>
