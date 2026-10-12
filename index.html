@@ -444,6 +444,17 @@ h1{font-size:26px;font-weight:900;letter-spacing:-.3px}
 .song-chips{position:static;top:auto;left:auto;right:auto;margin:0 0 12px;padding-bottom:2px}
 .mt-back{position:absolute;top:calc(var(--sat) + 12px);right:14px;z-index:30;border:1px solid var(--line2);background:var(--surface2);color:var(--text);border-radius:999px;padding:8px 18px;font-weight:600}
 @media (prefers-reduced-motion:reduce){.mt-gear svg{animation:none}}
+
+/* ===== v3: verification badge, creator chips, left action rail ===== */
+.vb{display:inline-flex;vertical-align:-3px;margin-inline-start:3px}
+.vbadge{width:17px;height:17px;display:block;color:inherit}
+.profile-name .vbadge{width:21px;height:21px;color:inherit}
+.cat-chip{display:inline-flex;align-items:center;gap:3px;vertical-align:middle;font-size:10.5px;font-weight:600;line-height:1.5;padding:1px 9px;border-radius:999px;color:#fff;background:rgba(255,255,255,.12);background:color-mix(in srgb,var(--cc) 30%,transparent);border:1px solid var(--cc);margin-inline-start:4px;white-space:nowrap}
+.user-row{flex-wrap:wrap}
+.actions{flex-direction:column;left:12px;right:auto;bottom:calc(var(--sab) + 84px);justify-content:flex-start;gap:12px;padding:10px 6px 8px;border-radius:30px;background:rgba(6,20,26,.5);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid var(--line2)}
+.action{flex:none;width:100%}
+.action svg{width:42px;height:42px;padding:9px}
+.meta{left:84px;right:16px;bottom:calc(var(--sab) + 84px)}
 </style>
 </head>
 <body>
@@ -801,7 +812,7 @@ function stripLocalOnly(v){const x={...v};delete x.fileId;delete x.src;return x}
 function save(){
   // Cache محلي سريع فقط؛ المصدر الأساسي لكل البيانات هو Firebase.
   try{
-    const payload={accounts:state.accounts,videos:state.videos.map(stripLocalOnly),withdrawals:state.withdrawals||[],rechargeRequests:state.rechargeRequests||[],giftTransactions:state.giftTransactions||[],systemErrors:state.systemErrors||[],adminMessages:state.adminMessages||[],maint:state.maint||null};
+    const payload={accounts:state.accounts,videos:state.videos.map(stripLocalOnly),withdrawals:state.withdrawals||[],rechargeRequests:state.rechargeRequests||[],giftTransactions:state.giftTransactions||[],systemErrors:state.systemErrors||[],adminMessages:state.adminMessages||[],maint:state.maint||null,contentCats:state.contentCats||null};
     localStorage.setItem(STORAGE_KEY,JSON.stringify(payload));
   }catch(e){console.warn("Local cache unavailable",e)}
   try{syncChannel?.postMessage({type:"state-updated",at:Date.now()})}catch(e){}
@@ -810,7 +821,7 @@ function save(){
   {
     clearTimeout(saveDebounce);
     saveDebounce=setTimeout(()=>{
-      const payload={accounts:state.accounts,videos:state.videos.map(stripLocalOnly),withdrawals:state.withdrawals||[],rechargeRequests:state.rechargeRequests||[],giftTransactions:state.giftTransactions||[],systemErrors:state.systemErrors||[],adminMessages:state.adminMessages||[],maint:state.maint||null,updatedAt:Date.now()};
+      const payload={accounts:state.accounts,videos:state.videos.map(stripLocalOnly),withdrawals:state.withdrawals||[],rechargeRequests:state.rechargeRequests||[],giftTransactions:state.giftTransactions||[],systemErrors:state.systemErrors||[],adminMessages:state.adminMessages||[],maint:state.maint||null,contentCats:state.contentCats||null,updatedAt:Date.now()};
       lastSavedAt=payload.updatedAt;
       remoteDoc().set(payload,{merge:false}).catch(e=>{
         console.error("Firestore sync failed",e);
@@ -844,6 +855,7 @@ function applyLoadedState(x){
   state.systemErrors=Array.isArray(x?.systemErrors)?x.systemErrors:[];
   state.adminMessages=Array.isArray(x?.adminMessages)?x.adminMessages:[];
   state.maint=(x&&x.maint&&typeof x.maint==='object')?x.maint:(state.maint||{on:false,until:0,msg:''});
+  state.contentCats=(Array.isArray(x&&x.contentCats)&&x.contentCats.length)?x.contentCats:(state.contentCats||null);
 }
 function load(){
   try{
@@ -1126,6 +1138,8 @@ function notificationEvents(){
   if(!me)return [];
   const myEmail=accountKey(me.email);
   const out=[];
+  const rq0=me.bizRequest;if(rq0&&rq0.status!=='pending'&&rq0.reviewedAt)out.push({id:'biz-'+rq0.reviewedAt,at:Number(rq0.reviewedAt)||0,icon:rq0.status==='approved'?'✅':'ℹ️',title:'طلب الحساب التجاري',text:rq0.status==='approved'?'تم قبول طلبك وظهرت علامة التوثيق ✓ بجانب اسمك':'تم رفض طلب الحساب التجاري',action:"go('profile')"});
+  if(me.verified&&me.verifiedVia==='dev'&&me.verifiedAt)out.push({id:'verified-'+me.verifiedAt,at:Number(me.verifiedAt)||0,icon:'✅',title:'تم توثيق حسابك',text:'ظهرت علامة التوثيق ✓ بجانب اسمك',action:"go('profile')"});
   relList(me,'friendRequests').forEach(r=>{
     const from=getAccount(typeof r==='string'?r:r?.from);
     if(from)out.push({id:'friend-'+from.email+'-'+(r?.at||0),at:Number(r?.at)||0,icon:'👥',title:'طلب صداقة جديد',text:`${from.name||'مستخدم'} أرسل لك طلب صداقة`,action:"state.ui.messages=true;state.ui.selectedChat=null;render()"});
@@ -1364,7 +1378,7 @@ function videoCard(v,idx){
  const followBtn=(!isOwn&&me&&st!=="friends")?`<button class="follow-chip ${st==="sent"?"sent":""}" onclick="toggleFriend('${esc(v.ownerEmail)}')">${st==="sent"?"تم الطلب":"+ متابعة"}</button>`:"";
  const bizTag=acc&&acc.accountType==="business"?` <span class="mini-badge biz">تجاري</span>`:"";
  return `<article class="video-card" data-id="${v.id}"><video src="${esc(videoSrc(v))}" muted loop playsinline webkit-playsinline="true" preload="${idx===0?"auto":"metadata"}" onclick="vTap(event,this)" onloadeddata="vOn(this)" onplaying="vOn(this)" onwaiting="vWait(this)" onerror="vErr(this)" ontimeupdate="vProg(this)"></video><div class="vload">${zmark("draw")}</div><button class="sound-btn" aria-label="تشغيل الصوت" onclick="toggleSound(event,this)">${ICON.mute}</button><div class="vprog"><i></i></div>
- <div class="meta"><div class="user-row"><button class="avatar mini" onclick="openUserProfile('${esc(v.ownerEmail)}')" aria-label="ملف صاحب الفيديو">${av}</button><div class="user" style="cursor:pointer" onclick="openUserProfile('${esc(v.ownerEmail)}')">@${esc(v.ownerName)}${bizTag}</div>${followBtn}</div><div class="caption">${esc(v.caption)}</div>${v.song&&v.song!==SONGS[0]?`<div class="song">${ICON.music}${esc(v.song)}</div>`:""}</div>
+ <div class="meta"><div class="user-row"><button class="avatar mini" onclick="openUserProfile('${esc(v.ownerEmail)}')" aria-label="ملف صاحب الفيديو">${av}</button><div class="user" style="cursor:pointer" onclick="openUserProfile('${esc(v.ownerEmail)}')">@${esc(v.ownerName)}${badges(acc)}${bizTag}</div>${followBtn}</div><div class="caption">${esc(v.caption)}</div>${v.song&&v.song!==SONGS[0]?`<div class="song">${ICON.music}${esc(v.song)}</div>`:""}</div>
  <div class="actions"><button class="avatar sm" style="padding:0" onclick="openUserProfile('${esc(v.ownerEmail)}')" aria-label="ملف صاحب الفيديو">${av}</button>
  <button class="action like-btn ${liked(v)?"liked":""}" onclick="likeVideo('${v.id}')" aria-label="إعجاب">${ICON.heart}<span>${fmt(v.likes.length)}</span></button>
  <button class="action" onclick="openComments('${v.id}')" aria-label="تعليقات">${ICON.comment}<span>${fmt(v.comments.length)}</span></button>
@@ -1476,7 +1490,7 @@ function overlays(){
  let h="";
  if(state.ui.comments){
   const v=state.videos.find(x=>x.id===state.ui.comments);
-  if(v)h+=`<div class="overlay" onclick="if(event.target===this)closeComments()"><section class="sheet comments"><div class="handle"></div><h2>التعليقات (${v.comments.length})</h2><div class="comment-list">${v.comments.length?v.comments.map(c=>`<div class="comment"><div class="cav">${initials(c.name)}</div><div><div class="comment-name">${esc(c.name)}</div><div class="comment-text">${esc(c.text)}</div></div></div>`).join(""):`<div class="empty" style="height:auto;padding:35px 5px">لسه مفيش تعليقات.</div>`}</div><div class="comment-input"><input id="commentText" placeholder="اكتب تعليقًا باحترام..." onkeydown="if(event.key==='Enter')addComment('${v.id}')"><button class="send" onclick="addComment('${v.id}')">${ICON.send}</button></div><div class="note" style="margin-top:6px">🛡️ التعليق المسيء لا يُنشر، ويُوقف حساب صاحبه تلقائيًا لمدة ساعة.</div></section></div>`
+  if(v)h+=`<div class="overlay" onclick="if(event.target===this)closeComments()"><section class="sheet comments"><div class="handle"></div><h2>التعليقات (${v.comments.length})</h2><div class="comment-list">${v.comments.length?v.comments.map(c=>`<div class="comment"><div class="cav">${initials(c.name)}</div><div><div class="comment-name">${esc(c.name)}${c.email?badges(getAccount(c.email)):''}</div><div class="comment-text">${esc(c.text)}</div></div></div>`).join(""):`<div class="empty" style="height:auto;padding:35px 5px">لسه مفيش تعليقات.</div>`}</div><div class="comment-input"><input id="commentText" placeholder="اكتب تعليقًا باحترام..." onkeydown="if(event.key==='Enter')addComment('${v.id}')"><button class="send" onclick="addComment('${v.id}')">${ICON.send}</button></div><div class="note" style="margin-top:6px">🛡️ التعليق المسيء لا يُنشر، ويُوقف حساب صاحبه تلقائيًا لمدة ساعة.</div></section></div>`
  }
  if(state.ui.share)h+=`<div class="overlay" onclick="if(event.target===this)closeShare()"><section class="sheet"><div class="handle"></div><h2>مشاركة الفيديو</h2><button class="btn btn-ghost full" onclick="copyLink('${state.ui.share}')">نسخ رابط الفيديو</button><button class="btn btn-ghost full" style="margin-top:8px" onclick="closeShare()">إلغاء</button></section></div>`;
  if(state.ui.giftVideoId) h+=giftSheet();
@@ -1494,7 +1508,7 @@ function addComment(id){
    autoBanForComment(a.email,bad,text);
    return;
  }
- v.comments.push({name:a.name||"مستخدم",text,createdAt:Date.now()});
+ v.comments.push({name:a.name||"مستخدم",email:a.email,text,createdAt:Date.now()});
  save();render();toast("تم نشر التعليق");
 }
 function autoBanForComment(email,matchedWord,text){
@@ -1598,7 +1612,7 @@ function runSearch(q){
      const bizTag=a.accountType==='business'?' <span class="mini-badge biz">تجاري</span>':'';
      const isDup=(dupNameCount[normalizeSearchText(a.name||'')]||0)>1;
      const codeLine=`<span${isDup?' style="color:var(--cyan);font-weight:700"':''}>كود: ${esc(userCodeLabel(a))}</span>`;
-     return `<div class="search-result person-result"><button class="avatar sm" style="border:0;padding:0" onclick="closeSearch();openUserProfile('${esc(a.email)}')">${avatar}</button><div class="search-person-info" style="cursor:pointer" onclick="closeSearch();openUserProfile('${esc(a.email)}')"><b>${esc(a.name||'مستخدم')}${bizTag}</b><div class="muted">@${esc(String(a.email).split('@')[0])} · ${codeLine}</div>${isDup?`<div class="muted" style="font-size:10.5px;color:var(--warning)">⚠️ في أكتر من شخص بنفس الاسم — استخدم الكود للتأكد إنك بتختار الشخص الصح</div>`:''}</div>${action}</div>`;
+     return `<div class="search-result person-result"><button class="avatar sm" style="border:0;padding:0" onclick="closeSearch();openUserProfile('${esc(a.email)}')">${avatar}</button><div class="search-person-info" style="cursor:pointer" onclick="closeSearch();openUserProfile('${esc(a.email)}')"><b>${esc(a.name||'مستخدم')}${badges(a)}${bizTag}</b><div class="muted">@${esc(String(a.email).split('@')[0])} · ${codeLine}</div>${isDup?`<div class="muted" style="font-size:10.5px;color:var(--warning)">⚠️ في أكتر من شخص بنفس الاسم — استخدم الكود للتأكد إنك بتختار الشخص الصح</div>`:''}</div>${action}</div>`;
    }).join('');
  }
  if(vids.length){
@@ -1626,7 +1640,7 @@ function saveBizAccount(){
 }
 function switchToPersonalAccount(){
  const a=account();if(!a)return;
- a.accountType='personal';a.bizCategory=null;
+ a.accountType='personal';a.bizCategory=null;a.bizRequest=null;if(a.verifiedVia==='biz'){a.verified=false;a.verifiedVia=null}
  save();render();
  toast('تم التحويل لحساب شخصي');
 }
@@ -1640,11 +1654,19 @@ function settingsSheet(){
   <p class="muted" style="margin-top:14px">المراسلة متاحة فقط بين الأصدقاء المقبولين، ومهما كانت إعدادات حسابك.</p>
  `);
  if(sec==='business'){
-   if(a?.accountType==='business'&&!state.ui.editBiz){
-     return settingsSubSheet('🏢 الحساب التجاري',`<div class="review-box"><b>حسابك تجاري حاليًا</b><span>${esc(a.bizCategory||'نشاط تجاري عام')}</span></div><button class="btn btn-ghost full" style="margin-top:10px" onclick="openBizEditor()">تعديل نوع النشاط</button><button class="btn btn-outline-danger full" style="margin-top:8px" onclick="switchToPersonalAccount()">التحويل لحساب شخصي</button>`);
-   }
-   return settingsSubSheet('🏢 التحويل لحساب تجاري',`<p class="muted">الحساب التجاري يظهر بعلامة «تجاري» بجانب اسمك، ويناسب الصفحات والمتاجر والعلامات التجارية.</p><div class="field" style="margin-top:12px"><label>نوع النشاط</label><input id="bizCategory" placeholder="مثال: متجر ملابس، مطعم، صفحة فنان..." value="${esc(a?.bizCategory||'')}"></div><button class="btn btn-primary full" onclick="saveBizAccount()">تفعيل الحساب التجاري</button>`);
- }
+    const rq=a?.bizRequest;
+    const vnote=a?.verified?`<div class="review-box" style="margin-top:10px"><b>${CHECK_SVG} حسابك موثق</b><span>علامة التوثيق ظاهرة بجانب اسمك.</span></div>`:'';
+    if(a?.accountType==='business'&&!state.ui.editBiz){
+      return settingsSubSheet('🏢 الحساب التجاري',`<div class="review-box"><b>حسابك تجاري حاليًا</b><span>${esc(a.bizCategory||'نشاط تجاري عام')}</span></div>${vnote}<button class="btn btn-ghost full" style="margin-top:10px" onclick="openBizEditor()">تعديل نوع النشاط</button><button class="btn btn-outline-danger full" style="margin-top:8px" onclick="switchToPersonalAccount()">التحويل لحساب شخصي</button>`);
+    }
+    if(a?.accountType==='business'){
+      return settingsSubSheet('🏢 تعديل نوع النشاط',`<div class="field"><label>نوع النشاط</label><input id="bizCategory" value="${esc(a?.bizCategory||'')}"></div><button class="btn btn-primary full" onclick="saveBizAccount()">حفظ</button>`);
+    }
+    if(rq&&rq.status==='pending'){
+      return settingsSubSheet('🏢 طلب الحساب التجاري',`<div class="review-box" style="text-align:center"><b>⏳ الطلب قيد المراجعة</b><span>الاسم: ${esc(rq.name)}<br>البريد: ${esc(rq.email)}</span></div><p class="muted" style="margin-top:12px">المطور هيراجع طلبك. لو اتقبل هتظهر علامة التوثيق ✓ جنب اسمك، ولو اترفض مش هتظهر. هيجيلك إشعار بالنتيجة.</p>`);
+    }
+    return settingsSubSheet('🏢 طلب حساب تاجر موثّق',`${rq&&rq.status==='rejected'?'<div class="review-box" style="margin-bottom:10px"><b>❌ الطلب السابق اترفض</b><span>تقدر تبعت طلب جديد ببيانات صحيحة.</span></div>':''}<p class="muted">الحساب التجاري مش بيتفعل على طول. اكتب بياناتك وهتتراجع من المطور، ولو اتقبلت هتظهر علامة التوثيق ✓ جنب اسمك.</p><div class="field" style="margin-top:12px"><label>الاسم (اسمك أو اسم نشاطك)</label><input id="bizName" maxlength="60" placeholder="مثال: متجر الأناقة"></div><div class="field"><label>البريد الإلكتروني</label><input id="bizEmail" type="email" inputmode="email" maxlength="80" placeholder="name@example.com"></div><div class="field"><label>نوع النشاط (اختياري)</label><input id="bizCategory" maxlength="50" placeholder="متجر ملابس، مطعم، صفحة فنان..."></div><div id="bizErr" class="error"></div><button class="btn btn-primary full" onclick="submitBizRequest()">إرسال الطلب للمراجعة</button>`);
+  }
  return `<div class="overlay" onclick="if(event.target===this)closeSettings()"><section class="sheet settings-sheet"><div class="handle"></div><h2>⚙️ إعدادات الحساب</h2><div class="account-email" style="margin-bottom:8px">${esc(state.session?.email||"")}</div>
  <div class="settings-group-label">الحساب</div>
  <button class="setting-item" onclick="state.ui.settings='privacy';render()"><span>🔒 الخصوصية والأمان</span><span>‹</span></button>
@@ -1756,7 +1778,7 @@ function renderProfile(){
  return `<div class="screen fade"><div class="pscroll">
  <div class="cover"><button class="glass-btn c-right" onclick="state.ui.settings=true;render()" aria-label="الإعدادات">${ICON.settings}</button><button class="glass-btn c-left" onclick="go('earnings')" aria-label="الأرباح">${ICON.wallet}</button></div>
  <div class="profile-head"><div class="avatar lg">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}<button class="avatar-edit" onclick="document.getElementById('avatar').click()" aria-label="تغيير الصورة">${ICON.camera}</button><input id="avatar" type="file" accept="image/*" class="hidden" onchange="avatarChange(event)"></div>
- ${state.ui.editName?`<div style="display:flex;gap:8px;justify-content:center"><input id="newName" value="${esc(a.name)}" style="width:190px;text-align:center;padding:10px"><button class="btn btn-primary btn-sm" onclick="saveName()">حفظ</button></div>`:`<div class="profile-name">${esc(a.name)} ${a.isPrivate?`<span title="حساب خاص">${ICON.lock}</span>`:""}</div>`}
+ ${state.ui.editName?`<div style="display:flex;gap:8px;justify-content:center"><input id="newName" value="${esc(a.name)}" style="width:190px;text-align:center;padding:10px"><button class="btn btn-primary btn-sm" onclick="saveName()">حفظ</button></div>`:`<div class="profile-name">${esc(a.name)}${badges(a)} ${a.isPrivate?`<span title="حساب خاص">${ICON.lock}</span>`:""}</div>`}
  <div class="muted" style="margin-top:2px">${a.age} سنة</div>${bizLine}
  <div class="stats"><div onclick="openRel('followers')"><b>${nF}</b><span>متابعون</span></div><div onclick="openRel('following')"><b>${nG}</b><span>يتابع</span></div><div><b>${mine.length}</b><span>فيديو</span></div><div><b>${fmt(likes)}</b><span>إعجاب</span></div></div>
  <div class="profile-actions"><button class="btn btn-primary" onclick="state.ui.editName=true;render()">${ICON.pencil} تعديل الملف</button><button class="btn btn-ghost" onclick="openRel('friends')">${ICON.users} الأصدقاء (${nFr})</button></div></div>
@@ -1803,7 +1825,7 @@ function renderUserProfile(){
  }
  return `<div class="screen fade"><div class="topbar"><button class="side right" onclick="closeUserProfile()">${ICON.close}</button><b>@${esc(String(a.email).split("@")[0])}</b></div>
  <div class="pscroll"><div class="cover sm"></div><div class="profile-head"><div class="avatar lg">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}</div>
- <div class="profile-name">${esc(a.name||"مستخدم")} ${a.isPrivate?`<span title="حساب خاص">${ICON.lock}</span>`:""}</div>
+ <div class="profile-name">${esc(a.name||"مستخدم")}${badges(a)} ${a.isPrivate?`<span title="حساب خاص">${ICON.lock}</span>`:""}</div>
  <div class="muted" style="text-align:center;font-size:11.5px">كود: ${esc(userCodeLabel(a))}</div><div class="mini-badge" style="margin:6px auto 0">🪙 ${fmt(tokenBalance(a))} توكن</div>
  ${bizLine}
  <div class="stats"><div><b>${Array.isArray(a.followers)?a.followers.length:0}</b><span>متابعون</span></div><div><b>${Array.isArray(a.following)?a.following.length:0}</b><span>يتابع</span></div><div><b>${locked?"—":theirVideos.length}</b><span>فيديو</span></div></div>
@@ -2110,10 +2132,10 @@ function renderAdmin(){
  return `<div class="screen fade"><div class="topbar"><b>لوحة المطور</b><button class="side left" onclick="adminLogout()">${ICON.close}</button></div>
  <div class="pscroll" style="padding-bottom:30px"><div class="review-note" style="margin:10px 11px 0;${FIREBASE_READY&&remoteLoaded?"":"border-color:#ff4d4f"}"><b>${FIREBASE_READY&&remoteLoaded?"🟢 متصل بقاعدة البيانات (Firebase)":"🔴 غير متصل بقاعدة البيانات (Firebase)"}</b><span>${FIREBASE_READY?"الحسابات والتوكن والهدايا والشحن والسحب والأخطاء وبيانات الفيديو تُحفظ على Firebase. ملفات الفيديو نفسها فقط تُرفع على Supabase Storage.":"راجع firebaseConfig وقواعد Firestore، وتأكد أن Supabase مضبوط فقط لتخزين الفيديو."}</span></div>
  <div class="review-note" style="margin:10px 11px 0;${SUPABASE_READY?"":"border-color:#ff4d4f"}"><b>${SUPABASE_READY?"🟢 متصل بتخزين الفيديوهات (Supabase)":"🔴 غير متصل بتخزين الفيديوهات — رفع الفيديو لن يعمل"}</b><span>${SUPABASE_READY?"ملفات الفيديو بتترفع وتتشاف من أي جهاز.":"لازم تدخل إعدادات Supabase في أول الكود (supabaseConfig) وتعمل bucket اسمه videos."}</span></div>
- ${maintCard()}<div class="review-note" style="margin:10px 11px 0"><b>👁️ المراجعة قبل النشر</b><span>كل فيديو يرسله أي شخص يصل هنا أولًا، حتى لو اختار عام أو أصدقاء أو خاص. لا يظهر للناس إلا بعد موافقة المطور.</span></div><div style="padding:10px 11px 0;display:flex;gap:7px;flex-wrap:wrap"><button class="btn btn-sm ${state.ui.adminTab==='videos'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='videos';state.ui.adminOwner=null;render()">🎬 الفيديوهات (${state.videos.length}) · قيد المراجعة ${state.videos.filter(v=>v.status==="pending").length}</button><button class="btn btn-sm ${state.ui.adminTab==='users'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='users';render()">👥 الأشخاص (${users.length})</button><button class="btn btn-sm ${state.ui.adminTab==='withdrawals'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='withdrawals';render()">💳 طلبات السحب (${withdrawals.length}) · قيد المراجعة ${pendingWithdrawals}</button><button class="btn btn-sm ${state.ui.adminTab==='recharges'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='recharges';render()">🪙 الشحن (${(state.rechargeRequests||[]).length}) · جديد ${(state.rechargeRequests||[]).filter(x=>x.status==='pending').length}</button><button class="btn btn-sm ${state.ui.adminTab==='errors'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='errors';render()">🐞 الأخطاء (${(state.systemErrors||[]).length})</button><button class="btn btn-sm ${state.ui.adminTab==='messages'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='messages';render()">📢 الرسائل (${(state.adminMessages||[]).length})</button></div>
+ ${maintCard()}<div class="review-note" style="margin:10px 11px 0"><b>👁️ المراجعة قبل النشر</b><span>كل فيديو يرسله أي شخص يصل هنا أولًا، حتى لو اختار عام أو أصدقاء أو خاص. لا يظهر للناس إلا بعد موافقة المطور.</span></div><div style="padding:10px 11px 0;display:flex;gap:7px;flex-wrap:wrap"><button class="btn btn-sm ${state.ui.adminTab==='videos'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='videos';state.ui.adminOwner=null;render()">🎬 الفيديوهات (${state.videos.length}) · قيد المراجعة ${state.videos.filter(v=>v.status==="pending").length}</button><button class="btn btn-sm ${state.ui.adminTab==='users'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='users';render()">👥 الأشخاص (${users.length})</button><button class="btn btn-sm ${state.ui.adminTab==='biz'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='biz';render()">🏢 طلبات التجار (${pendingBizList().length})</button><button class="btn btn-sm ${state.ui.adminTab==='cats'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='cats';render()">🏷️ صناعات المحتوى</button><button class="btn btn-sm ${state.ui.adminTab==='withdrawals'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='withdrawals';render()">💳 طلبات السحب (${withdrawals.length}) · قيد المراجعة ${pendingWithdrawals}</button><button class="btn btn-sm ${state.ui.adminTab==='recharges'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='recharges';render()">🪙 الشحن (${(state.rechargeRequests||[]).length}) · جديد ${(state.rechargeRequests||[]).filter(x=>x.status==='pending').length}</button><button class="btn btn-sm ${state.ui.adminTab==='errors'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='errors';render()">🐞 الأخطاء (${(state.systemErrors||[]).length})</button><button class="btn btn-sm ${state.ui.adminTab==='messages'?'btn-primary':'btn-ghost'}" onclick="state.ui.adminTab='messages';render()">📢 الرسائل (${(state.adminMessages||[]).length})</button></div>
  <div style="padding:6px 11px 0"><button class="btn btn-sm btn-danger" onclick="openResetSystem()">♻️ إعادة ضبط النظام بالكامل</button></div>
- ${state.ui.adminTab==='users'?renderAdminUsers(users):state.ui.adminTab==='withdrawals'?renderAdminWithdrawals(withdrawals):state.ui.adminTab==='recharges'?renderAdminRecharges():state.ui.adminTab==='errors'?renderAdminErrors():state.ui.adminTab==='messages'?renderAdminMessages(users):`<div class="filters">${[["all","الكل"],["pending","قيد المراجعة"],["approved","مقبول"],["rejected","مرفوض"]].map(x=>`<button class="btn btn-sm ${f===x[0]?"btn-primary":"btn-ghost"}" onclick="state.ui.adminFilter='${x[0]}';render()">${x[1]}</button>`).join("")}</div><div class="admin-list">${list.length?list.map(adminCard).join(""):`<div class="empty">لا توجد فيديوهات في هذا التصنيف.</div>`}</div>`}</div>
- ${adminBanSheet()}${resetConfirmSheet()}${adminMsgSheet()}</div>`
+ ${state.ui.adminTab==='biz'?renderAdminBiz():state.ui.adminTab==='cats'?renderAdminCats():state.ui.adminTab==='users'?renderAdminUsers(users):state.ui.adminTab==='withdrawals'?renderAdminWithdrawals(withdrawals):state.ui.adminTab==='recharges'?renderAdminRecharges():state.ui.adminTab==='errors'?renderAdminErrors():state.ui.adminTab==='messages'?renderAdminMessages(users):`<div class="filters">${[["all","الكل"],["pending","قيد المراجعة"],["approved","مقبول"],["rejected","مرفوض"]].map(x=>`<button class="btn btn-sm ${f===x[0]?"btn-primary":"btn-ghost"}" onclick="state.ui.adminFilter='${x[0]}';render()">${x[1]}</button>`).join("")}</div><div class="admin-list">${list.length?list.map(adminCard).join(""):`<div class="empty">لا توجد فيديوهات في هذا التصنيف.</div>`}</div>`}</div>
+ ${adminBanSheet()}${resetConfirmSheet()}${adminMsgSheet()}${catAssignSheet()}</div>`
 }
 function renderAdminRecharges(){
  const list=(state.rechargeRequests||[]).slice().sort((a,b)=>b.createdAt-a.createdAt);
@@ -2160,7 +2182,7 @@ function adminUserCard(a){
  const blocked=isBanned(a);
  const mine=state.videos.filter(v=>v.ownerEmail===a.email);
  const status=banDetail(a);
- return `<div class="admin-card" style="display:block"><div style="display:flex;align-items:center;gap:10px"><div class="avatar sm">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}</div><div class="admin-info"><b>${esc(a.name||'مستخدم')} <span class="mini-badge">${esc(userCodeLabel(a))}</span></b><div class="admin-cap">${esc(a.email)}<br>العمر: ${esc(a.age||'—')} سنة · الفيديوهات: ${mine.length}<br>🪙 التوكن: <b>${fmt(tokenBalance(a))}</b> · مرسل: ${fmt(a.totalTokensSent||0)} · مستلم: ${fmt(a.totalTokensReceived||0)}</div></div></div><div style="margin-top:8px"><div class="admin-actions" style="margin-bottom:8px"><button class="btn btn-sm btn-primary" onclick="adminAddTokens('${esc(a.email)}')">🪙 إضافة توكن</button><button class="btn btn-sm btn-ghost" onclick="openAdminMsg('${esc(a.email)}')">✉️ رسالة</button></div><span class="status ${blocked?'rejected':'approved'}">${blocked?'غير نشط · '+esc(status):'نشط'}</span>${blocked&&a.banReason?`<div class="admin-cap" style="margin-top:5px">السبب: ${esc(a.banReason)}</div>`:""}</div><div class="admin-actions" style="margin-top:9px">${blocked?`<button class="btn btn-sm btn-success" onclick="unbanUser('${esc(a.email)}')">🔓 رفع الحظر</button>`:`<button class="btn btn-sm btn-danger" onclick="openBan('${esc(a.email)}')">🚫 حظر الحساب</button>`}<button class="btn btn-sm btn-ghost" onclick="adminUserVideos('${esc(a.email)}')">🎬 فيديوهات الشخص</button></div></div>`
+ return `<div class="admin-card" style="display:block"><div style="display:flex;align-items:center;gap:10px"><div class="avatar sm">${a.avatar?`<img src="${esc(a.avatar)}">`:initials(a.name)}</div><div class="admin-info"><b>${esc(a.name||'مستخدم')}${badges(a)} <span class="mini-badge">${esc(userCodeLabel(a))}</span></b><div class="admin-cap">${esc(a.email)}<br>العمر: ${esc(a.age||'—')} سنة · الفيديوهات: ${mine.length}<br>🪙 التوكن: <b>${fmt(tokenBalance(a))}</b> · مرسل: ${fmt(a.totalTokensSent||0)} · مستلم: ${fmt(a.totalTokensReceived||0)}</div></div></div><div style="margin-top:8px"><div class="admin-actions" style="margin-bottom:8px"><button class="btn btn-sm btn-primary" onclick="adminAddTokens('${esc(a.email)}')">🪙 إضافة توكن</button><button class="btn btn-sm btn-ghost" onclick="openAdminMsg('${esc(a.email)}')">✉️ رسالة</button><button class="btn btn-sm ${a.verified?'btn-success':'btn-ghost'}" onclick="adminToggleVerify('${esc(a.email)}')">${a.verified?'✓ موثق (إلغاء)':'☑️ توثيق'}</button><button class="btn btn-sm btn-ghost" onclick="openCatAssign('${esc(a.email)}')">🏷️ صناعة المحتوى</button></div><span class="status ${blocked?'rejected':'approved'}">${blocked?'غير نشط · '+esc(status):'نشط'}</span>${blocked&&a.banReason?`<div class="admin-cap" style="margin-top:5px">السبب: ${esc(a.banReason)}</div>`:""}</div><div class="admin-actions" style="margin-top:9px">${blocked?`<button class="btn btn-sm btn-success" onclick="unbanUser('${esc(a.email)}')">🔓 رفع الحظر</button>`:`<button class="btn btn-sm btn-danger" onclick="openBan('${esc(a.email)}')">🚫 حظر الحساب</button>`}<button class="btn btn-sm btn-ghost" onclick="adminUserVideos('${esc(a.email)}')">🎬 فيديوهات الشخص</button></div></div>`
 }
 function adminAddTokens(email){
  const e=accountKey(email),a=getAccount(e);if(!a)return;
@@ -2340,6 +2362,60 @@ function maintCard(){
 function setMaint(mins){if(!(mins>=0)||mins>10080){toast('اكتب عدد دقايق من 1 إلى 10080');return}const m=state.maint||{};state.maint=Object.assign({},m,{on:true,until:mins?Date.now()+mins*60000:0,msg:String(state.ui.mtMsg!=null?state.ui.mtMsg:(m.msg||'')).slice(0,160),at:Date.now()});save();render();toast(mins?'🔒 التطبيق اتقفل للصيانة':'🔒 التطبيق مقفول لحد ما تفتحه')}
 function openApp(){state.maint=Object.assign({},state.maint||{},{on:false,until:0,at:Date.now()});save();render();toast('🔓 التطبيق اتفتح للمستخدمين')}
 function setDaily(k,v){state.maint=Object.assign({},state.maint||{},{[k]:v});save();render()}
+
+
+/* ---------- التوثيق وصناعات المحتوى ---------- */
+const CHECK_SVG='<svg class="vbadge" viewBox="0 0 24 24" role="img" aria-label="حساب موثق"><path fill="#1D9BF0" d="M12 1.8l2.6 1.6 3-.2 1.3 2.7 2.6 1.6-.2 3 1.6 2.6-1.6 2.6.2 3-2.7 1.3-1.6 2.6-3-.2L12 22.2l-2.6-1.6-3 .2-1.3-2.7-2.6-1.6.2-3L1.1 11l1.6-2.6-.2-3 2.7-1.3 1.6-2.6 3 .2z"/><path d="M7.8 12.4l3 3 5.6-6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const CONTENT_CATS_DEFAULT=[{id:'comedy',label:'كوميدي',emoji:'😂',color:'#F59E0B'},{id:'cook',label:'طبخ',emoji:'🍳',color:'#F97316'},{id:'sport',label:'رياضة',emoji:'⚽',color:'#22C55E'},{id:'games',label:'ألعاب',emoji:'🎮',color:'#8B5CF6'},{id:'beauty',label:'جمال وموضة',emoji:'💄',color:'#EC4899'},{id:'edu',label:'تعليم',emoji:'📚',color:'#3B82F6'},{id:'travel',label:'سفر',emoji:'✈️',color:'#06B6D4'},{id:'cars',label:'سيارات',emoji:'🚗',color:'#EF4444'},{id:'tech',label:'تقنية',emoji:'💻',color:'#14B8A6'},{id:'art',label:'فن ورسم',emoji:'🎨',color:'#A855F7'},{id:'music',label:'موسيقى',emoji:'🎤',color:'#0EA5E9'}];
+function catList(){return (state.contentCats&&state.contentCats.length)?state.contentCats:CONTENT_CATS_DEFAULT}
+function catOf(a){return a&&a.creatorCat?(catList().find(c=>c.id===a.creatorCat)||null):null}
+function badges(a){
+ if(!a)return '';
+ let h='';
+ if(a.verified)h+=' <span class="vb" title="حساب موثق">'+CHECK_SVG+'</span>';
+ const c=catOf(a);
+ if(c)h+=` <span class="cat-chip" style="--cc:${esc(c.color)}" title="${esc(c.label)}">${esc(c.emoji)} ${esc(c.label)}</span>`;
+ return h;
+}
+function submitBizRequest(){
+ const a=account();if(!a)return;
+ const val=id=>String((app.querySelector(id)||{}).value||'').trim();
+ const nm=val('#bizName'),em=val('#bizEmail'),cat=val('#bizCategory'),err=app.querySelector('#bizErr');
+ if(nm.length<2){if(err)err.textContent='اكتب اسمك أو اسم نشاطك';return}
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){if(err)err.textContent='اكتب بريد إلكتروني صحيح';return}
+ a.bizRequest={status:'pending',name:nm.slice(0,60),email:em.slice(0,80),category:cat.slice(0,50),at:Date.now()};
+ save();render();toast('⏳ تم إرسال الطلب، وهو قيد المراجعة');
+}
+function pendingBizList(){return Object.values(state.accounts).filter(a=>a.bizRequest&&a.bizRequest.status==='pending')}
+function renderAdminBiz(){
+ const all=Object.values(state.accounts).filter(a=>a.bizRequest).sort((x,y)=>(y.bizRequest.at||0)-(x.bizRequest.at||0));
+ return `<div class="admin-list">${all.length?all.map(a=>{const r=a.bizRequest,st=r.status==='approved'?'approved':r.status==='rejected'?'rejected':'pending';return `<div class="admin-card" style="display:block"><div class="admin-info"><b>${esc(r.name)} <span class="status ${st}">${st==='approved'?'مقبول':st==='rejected'?'مرفوض':'قيد المراجعة'}</span></b><div class="admin-cap">📧 ${esc(r.email)}<br>الحساب: ${esc(a.email)} (${esc(a.name||'')})${r.category?`<br>النشاط: ${esc(r.category)}`:''}<br>${new Date(r.at).toLocaleString('ar-EG')}</div></div>${r.status==='pending'?`<div class="admin-actions" style="margin-top:8px"><button class="btn btn-sm btn-success" data-e="${esc(a.email)}" onclick="approveBiz(this.dataset.e)">✅ قبول وتوثيق</button><button class="btn btn-sm btn-danger" data-e="${esc(a.email)}" onclick="rejectBiz(this.dataset.e)">رفض</button></div>`:''}</div>`}).join(''):`<div class="empty">مفيش طلبات حساب تجاري.</div>`}</div>`;
+}
+function approveBiz(email){const a=getAccount(email);if(!a||!a.bizRequest||a.bizRequest.status!=='pending')return;const r=a.bizRequest;a.accountType='business';a.bizCategory=r.category||a.bizCategory||'نشاط تجاري عام';a.verified=true;a.verifiedVia='biz';a.verifiedAt=Date.now();r.status='approved';r.reviewedAt=Date.now();save();render();toast('✅ اتقبل الطلب وظهرت علامة التوثيق')}
+function rejectBiz(email){const a=getAccount(email);if(!a||!a.bizRequest||a.bizRequest.status!=='pending')return;a.bizRequest.status='rejected';a.bizRequest.reviewedAt=Date.now();save();render();toast('تم رفض الطلب')}
+function adminToggleVerify(email){const a=getAccount(email);if(!a)return;a.verified=!a.verified;if(a.verified){a.verifiedVia='dev';a.verifiedAt=Date.now()}else{a.verifiedVia=null}save();render();toast(a.verified?'✓ تم توثيق الحساب':'تم إلغاء التوثيق')}
+function renderAdminCats(){
+ const cats=catList();
+ return `<div class="admin-list"><div class="review-box" style="text-align:right"><b>🏷️ صناعات المحتوى</b><span>أنشئ أي صناعة محتوى بالرمز واللون اللي تحبه، وبعدين عيّنها لأي شخص من تبويب «الأشخاص». بتظهر كشارة تميّزه جنب اسمه.</span></div>
+ <div class="admin-card" style="display:block"><div class="field"><label>اسم الصناعة</label><input id="catLabel" maxlength="24" placeholder="مثال: بودكاست"></div><div style="display:flex;gap:8px;align-items:flex-end"><div class="field" style="flex:1;margin:0"><label>رمز (إيموجي)</label><input id="catEmoji" maxlength="4" placeholder="🎙️"></div><div class="field" style="margin:0"><label>اللون</label><input id="catColor" type="color" value="#14B8A6" style="width:64px;padding:2px;height:46px"></div></div><button class="btn btn-primary full" style="margin-top:10px" onclick="addContentCat()">➕ إضافة الصناعة</button></div>
+ ${cats.map(c=>`<div class="admin-card"><span class="cat-chip" style="--cc:${esc(c.color)}">${esc(c.emoji)} ${esc(c.label)}</span><div class="admin-info"></div><span class="muted" style="font-size:11px">${Object.values(state.accounts).filter(a=>a.creatorCat===c.id).length} شخص</span><button class="btn btn-sm btn-danger" data-i="${esc(c.id)}" onclick="delContentCat(this.dataset.i)">حذف</button></div>`).join('')}</div>`;
+}
+function addContentCat(){
+ const l=String((document.getElementById('catLabel')||{}).value||'').trim(),e=String((document.getElementById('catEmoji')||{}).value||'').trim()||'⭐',c=String((document.getElementById('catColor')||{}).value||'#14B8A6');
+ if(!l){toast('اكتب اسم الصناعة');return}
+ const cats=catList().map(x=>Object.assign({},x));
+ if(cats.some(x=>x.label===l)){toast('الصناعة موجودة بالفعل');return}
+ cats.push({id:'c'+Date.now().toString(36),label:l.slice(0,24),emoji:e.slice(0,4),color:/^#[0-9a-fA-F]{6}$/.test(c)?c:'#14B8A6'});
+ state.contentCats=cats;save();render();toast('✅ اتضافت الصناعة');
+}
+function delContentCat(id){state.contentCats=catList().filter(c=>c.id!==id);Object.values(state.accounts).forEach(a=>{if(a.creatorCat===id)a.creatorCat=null});save();render()}
+function openCatAssign(email){state.ui.catTarget=email;render()}
+function closeCatAssign(){state.ui.catTarget=null;render()}
+function adminSetCat(email,id){const a=getAccount(email);if(!a)return;a.creatorCat=id||null;state.ui.catTarget=null;save();render();toast(id?'🏷️ تم تعيين الصناعة':'تمت إزالة الصناعة')}
+function catAssignSheet(){
+ const e=state.ui.catTarget;if(!e)return '';const a=getAccount(e);if(!a)return '';
+ return `<div class="overlay" onclick="if(event.target===this)closeCatAssign()"><section class="sheet"><div class="handle"></div><h2>🏷️ صناعة المحتوى لـ ${esc(a.name||'')}</h2><div style="display:flex;flex-wrap:wrap;gap:8px">${catList().map(c=>`<button class="btn btn-sm ${a.creatorCat===c.id?'btn-primary':'btn-ghost'}" data-e="${esc(e)}" data-i="${esc(c.id)}" onclick="adminSetCat(this.dataset.e,this.dataset.i)">${esc(c.emoji)} ${esc(c.label)}</button>`).join('')}</div><button class="btn btn-ghost full" style="margin-top:12px" data-e="${esc(e)}" onclick="adminSetCat(this.dataset.e,null)">إزالة الصناعة</button><button class="btn btn-ghost full" style="margin-top:8px" onclick="closeCatAssign()">إغلاق</button></section></div>`;
+}
 
 /* ---------- Init ---------- */
 function init(){
